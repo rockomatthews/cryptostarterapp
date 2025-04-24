@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/core": "^0.39.0",
+    "@auth/core": "0.34.2",
     "@auth/prisma-adapter": "^2.9.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",

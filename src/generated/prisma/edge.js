@@ -83,6 +83,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -173,6 +176,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -227,7 +235,7 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
+  "activeProvider": "postgresql",
   "postinstall": false,
   "inlineDatasources": {
     "db": {
@@ -237,8 +245,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// NextAuth.js Models\nmodel Account {\n  id                String  @id @default(cuid())\n  userId            String\n  type              String\n  provider          String\n  providerAccountId String\n  refresh_token     String?\n  access_token      String?\n  expires_at        Int?\n  token_type        String?\n  scope             String?\n  id_token          String?\n  session_state     String?\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([provider, providerAccountId])\n}\n\nmodel Session {\n  id           String   @id @default(cuid())\n  sessionToken String   @unique\n  userId       String\n  expires      DateTime\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel User {\n  id            String         @id @default(cuid())\n  name          String?\n  username      String?        @unique\n  email         String?        @unique\n  emailVerified DateTime?\n  image         String?\n  bio           String?\n  accounts      Account[]\n  sessions      Session[]\n  campaigns     Campaign[]\n  contributions Contribution[]\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n}\n\n// CryptoStarter Models\nmodel Campaign {\n  id               String   @id @default(cuid())\n  title            String\n  shortDescription String\n  description      String\n  fundingGoal      Float\n  currentAmount    Float    @default(0)\n  deadline         DateTime\n  category         String\n  mainImage        String?\n  additionalMedia  Media[]\n  website          String?\n  socials          Social[]\n  walletAddress    String\n  createdAt        DateTime @default(now())\n  updatedAt        DateTime @updatedAt\n  active           Boolean  @default(true)\n\n  userId String\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  contributions Contribution[]\n}\n\nmodel Media {\n  id        String   @id @default(cuid())\n  url       String\n  type      String // image or video\n  createdAt DateTime @default(now())\n\n  campaignId String\n  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)\n}\n\nmodel Social {\n  id        String   @id @default(cuid())\n  platform  String\n  url       String\n  createdAt DateTime @default(now())\n\n  campaignId String\n  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)\n}\n\nmodel Contribution {\n  id        String   @id @default(cuid())\n  amount    Float\n  message   String?\n  anonymous Boolean  @default(false)\n  createdAt DateTime @default(now())\n\n  userId String\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  campaignId String\n  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)\n}\n",
-  "inlineSchemaHash": "9fcc9e9c5415ff000d51a03a177a83b225053db046f78046e0a1622feb4f6af2",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// NextAuth.js Models\nmodel Account {\n  id                String  @id @default(cuid())\n  userId            String\n  type              String\n  provider          String\n  providerAccountId String\n  refresh_token     String?\n  access_token      String?\n  expires_at        Int?\n  token_type        String?\n  scope             String?\n  id_token          String?\n  session_state     String?\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([provider, providerAccountId])\n}\n\nmodel Session {\n  id           String   @id @default(cuid())\n  sessionToken String   @unique\n  userId       String\n  expires      DateTime\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel User {\n  id            String         @id @default(cuid())\n  name          String?\n  username      String?        @unique\n  email         String?        @unique\n  emailVerified DateTime?\n  image         String?\n  bio           String?\n  accounts      Account[]\n  sessions      Session[]\n  campaigns     Campaign[]\n  contributions Contribution[]\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n}\n\n// CryptoStarter Models\nmodel Campaign {\n  id               String   @id @default(cuid())\n  title            String\n  shortDescription String\n  description      String\n  fundingGoal      Float\n  currentAmount    Float    @default(0)\n  deadline         DateTime\n  category         String\n  mainImage        String?\n  additionalMedia  Media[]\n  website          String?\n  socials          Social[]\n  walletAddress    String\n  createdAt        DateTime @default(now())\n  updatedAt        DateTime @updatedAt\n  active           Boolean  @default(true)\n\n  userId String\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  contributions Contribution[]\n}\n\nmodel Media {\n  id        String   @id @default(cuid())\n  url       String\n  type      String // image or video\n  createdAt DateTime @default(now())\n\n  campaignId String\n  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)\n}\n\nmodel Social {\n  id        String   @id @default(cuid())\n  platform  String\n  url       String\n  createdAt DateTime @default(now())\n\n  campaignId String\n  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)\n}\n\nmodel Contribution {\n  id        String   @id @default(cuid())\n  amount    Float\n  message   String?\n  anonymous Boolean  @default(false)\n  createdAt DateTime @default(now())\n\n  userId String\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  campaignId String\n  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)\n}\n",
+  "inlineSchemaHash": "e55d5d29800f48bb9d051a12114243a4a00e59820ef5222df955f5f2edd20355",
   "copyEngine": true
 }
 config.dirname = '/'

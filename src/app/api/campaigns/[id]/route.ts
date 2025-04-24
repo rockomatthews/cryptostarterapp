@@ -3,14 +3,11 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '../../../../lib/prisma';
 import { authOptions } from '../../../../lib/auth';
 
-type Params = {
-  params: {
-    id: string;
-  };
-};
-
 // GET a specific campaign
-export async function GET(request: Request, { params }: Params) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params;
     
@@ -61,7 +58,10 @@ export async function GET(request: Request, { params }: Params) {
 }
 
 // PUT to update a campaign
-export async function PUT(request: Request, { params }: Params) {
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params;
     const session = await getServerSession(authOptions);
@@ -139,7 +139,10 @@ export async function PUT(request: Request, { params }: Params) {
 }
 
 // DELETE a campaign
-export async function DELETE(request: Request, { params }: Params) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const { id } = params;
     const session = await getServerSession(authOptions);
@@ -191,4 +194,4 @@ export async function DELETE(request: Request, { params }: Params) {
       { status: 500 }
     );
   }
-} 
+}

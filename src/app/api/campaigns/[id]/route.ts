@@ -6,10 +6,10 @@ import { authOptions } from '../../../../lib/auth';
 // GET a specific campaign
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     
     const campaign = await prisma.campaign.findUnique({
       where: {
@@ -60,10 +60,10 @@ export async function GET(
 // PUT to update a campaign
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -144,10 +144,10 @@ export async function PUT(
 // DELETE a campaign
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {

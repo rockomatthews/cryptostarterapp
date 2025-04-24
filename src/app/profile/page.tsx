@@ -3,7 +3,8 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Container, Typography, Box, Paper, Avatar, Button, Grid, Tabs, Tab, Card, CardContent, CardMedia, Divider } from '@mui/material';
+import { Container, Typography, Box, Paper, Avatar, Button, Tabs, Tab, Card, CardContent, CardMedia, Divider } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Link from 'next/link';
 

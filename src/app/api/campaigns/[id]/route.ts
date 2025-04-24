@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { prisma } from '../../../../lib/prisma';
-import { authOptions } from '../../../../lib/auth';
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 // GET a specific campaign
 export async function GET(
@@ -9,8 +9,8 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
-    
+    const params = await context.params;
+    const id = params.id;
     const campaign = await prisma.campaign.findUnique({
       where: {
         id,
@@ -23,35 +23,21 @@ export async function GET(
             image: true,
           },
         },
-        contributions: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: 'desc',
-          },
-        },
       },
     });
 
     if (!campaign) {
       return NextResponse.json(
-        { error: 'Campaign not found' },
+        { message: "Campaign not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json(campaign);
   } catch (error) {
-    console.error('Error fetching campaign:', error);
+    console.error("Error fetching campaign:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch campaign' },
+      { message: "Error fetching campaign" },
       { status: 500 }
     );
   }
@@ -63,17 +49,19 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
     const session = await getServerSession(authOptions);
-
-    if (!session?.user) {
+    if (!session || !session.user) {
       return NextResponse.json(
-        { error: 'You must be logged in to update a campaign' },
+        { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    // Get the campaign to check ownership
+    const params = await context.params;
+    const id = params.id;
+    const body = await request.json();
+
+    // Fetch the campaign to check ownership
     const existingCampaign = await prisma.campaign.findUnique({
       where: {
         id,
@@ -85,57 +73,58 @@ export async function PUT(
 
     if (!existingCampaign) {
       return NextResponse.json(
-        { error: 'Campaign not found' },
+        { message: "Campaign not found" },
         { status: 404 }
       );
     }
 
-    // Check if the user is the owner of the campaign
+    // Check if the user is the owner
     if (existingCampaign.userId !== session.user.id) {
       return NextResponse.json(
-        { error: 'You are not authorized to update this campaign' },
+        { message: "Unauthorized - You are not the owner of this campaign" },
         { status: 403 }
       );
     }
 
-    const body = await request.json();
-    
-    const { 
-      title, 
-      description, 
-      targetAmount, 
-      deadline, 
-      category, 
-      image,
-      walletAddress,
-      active
-    } = body;
-
     // Update the campaign
-    const campaign = await prisma.campaign.update({
+    const updatedCampaign = await prisma.campaign.update({
       where: {
         id,
       },
       data: {
-        ...(title && { title }),
-        ...(description && { 
-          description,
-          shortDescription: description.substring(0, 150) + (description.length > 150 ? '...' : '')
-        }),
-        ...(targetAmount && { fundingGoal: parseFloat(targetAmount) }),
-        ...(deadline && { deadline: new Date(deadline) }),
-        ...(category && { category }),
-        ...(image && { mainImage: image }),
-        ...(walletAddress && { walletAddress }),
-        ...(active !== undefined && { active }),
+        title: body.title,
+        description: body.description,
+        shortDescription: body.description?.substring(0, 150) + (body.description?.length > 150 ? '...' : ''),
+        category: body.category,
+        fundingGoal: body.fundingGoal,
+        deadline: body.deadline ? new Date(body.deadline) : undefined,
+        mainImage: body.mainImage,
+        website: body.website,
+        walletAddress: body.walletAddress,
+        active: body.active,
+        updatedAt: new Date(),
+        socials: {
+          deleteMany: {},
+          create: body.socials?.map((social: { platform: string, url: string }) => ({
+            platform: social.platform,
+            url: social.url
+          })) || []
+        },
+        additionalMedia: {
+          deleteMany: {},
+          create: body.additionalMedia?.map((media: { type: string, url: string }) => ({
+            type: media.type,
+            url: media.url
+          })) || []
+        }
       },
     });
 
-    return NextResponse.json(campaign);
+    return NextResponse.json(updatedCampaign);
   } catch (error) {
-    console.error('Error updating campaign:', error);
+    console.error("Error updating campaign:", error);
     return NextResponse.json(
-      { error: 'Failed to update campaign' },
+      { message: "Error updating campaign" },
       { status: 500 }
     );
   }
@@ -147,17 +136,18 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
     const session = await getServerSession(authOptions);
-
-    if (!session?.user) {
+    if (!session || !session.user) {
       return NextResponse.json(
-        { error: 'You must be logged in to delete a campaign' },
+        { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    // Get the campaign to check ownership
+    const params = await context.params;
+    const id = params.id;
+
+    // Fetch the campaign to check ownership
     const existingCampaign = await prisma.campaign.findUnique({
       where: {
         id,
@@ -169,15 +159,15 @@ export async function DELETE(
 
     if (!existingCampaign) {
       return NextResponse.json(
-        { error: 'Campaign not found' },
+        { message: "Campaign not found" },
         { status: 404 }
       );
     }
 
-    // Check if the user is the owner of the campaign
+    // Check if the user is the owner
     if (existingCampaign.userId !== session.user.id) {
       return NextResponse.json(
-        { error: 'You are not authorized to delete this campaign' },
+        { message: "Unauthorized - You are not the owner of this campaign" },
         { status: 403 }
       );
     }
@@ -189,11 +179,11 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ message: "Campaign deleted successfully" });
   } catch (error) {
-    console.error('Error deleting campaign:', error);
+    console.error("Error deleting campaign:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch campaign' },
+      { message: "Error deleting campaign" },
       { status: 500 }
     );
   }

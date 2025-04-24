@@ -6,9 +6,8 @@ import { useEffect, useState } from 'react';
 import { 
   Container, Typography, Box, Paper, TextField, Button,
   Chip, FormControl, InputLabel, Select,
-  MenuItem, InputAdornment, Divider
+  MenuItem, InputAdornment, Divider, Stack
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -296,8 +295,8 @@ export default function CreateCampaign() {
               Basic Information
             </Typography>
             
-            <Grid container spacing={3}>
-              <Grid xs={12}>
+            <Stack container spacing={3}>
+              <Stack size={12}>
                 <TextField
                   fullWidth
                   label="Campaign Title"
@@ -308,9 +307,9 @@ export default function CreateCampaign() {
                   helperText={errors.title}
                   required
                 />
-              </Grid>
+              </Stack>
               
-              <Grid xs={12} md={6}>
+              <Stack item xs={12} md={6}>
                 <TextField
                   fullWidth
                   label="Funding Goal"
@@ -325,9 +324,9 @@ export default function CreateCampaign() {
                   helperText={errors.fundingGoal}
                   required
                 />
-              </Grid>
+              </Stack>
               
-              <Grid xs={12} md={6}>
+              <Stack item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Campaign Deadline"
@@ -345,9 +344,9 @@ export default function CreateCampaign() {
                     disablePast
                   />
                 </LocalizationProvider>
-              </Grid>
+              </Stack>
               
-              <Grid xs={12}>
+              <Stack item xs={12}>
                 <FormControl fullWidth error={!!errors.category} required>
                   <InputLabel id="category-label">Category</InputLabel>
                   <Select
@@ -368,9 +367,9 @@ export default function CreateCampaign() {
                     </Typography>
                   )}
                 </FormControl>
-              </Grid>
+              </Stack>
               
-              <Grid xs={12}>
+              <Stack item xs={12}>
                 <TextField
                   fullWidth
                   label="Short Description"
@@ -384,9 +383,9 @@ export default function CreateCampaign() {
                   inputProps={{ maxLength: 150 }}
                   required
                 />
-              </Grid>
+              </Stack>
               
-              <Grid xs={12}>
+              <Stack item xs={12}>
                 <TextField
                   fullWidth
                   label="Full Description"
@@ -399,8 +398,8 @@ export default function CreateCampaign() {
                   helperText={errors.description || "Detailed information about your campaign"}
                   required
                 />
-              </Grid>
-            </Grid>
+              </Stack>
+            </Stack>
             
             <Divider sx={{ my: 3 }} />
             
@@ -425,9 +424,9 @@ export default function CreateCampaign() {
                 Add Photos/Videos
               </Button>
               
-              <Grid container spacing={2} sx={{ mt: 2 }}>
+              <Stack container spacing={2} sx={{ mt: 2 }}>
                 {additionalMedia.map((media, index) => (
-                  <Grid xs={6} sm={4} md={3} key={index}>
+                  <Stack item xs={6} sm={4} md={3} key={index}>
                     <Box sx={{ position: 'relative' }}>
                       {media.type === 'image' ? (
                         <img
@@ -469,9 +468,9 @@ export default function CreateCampaign() {
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Box>
-                  </Grid>
+                  </Stack>
                 ))}
-              </Grid>
+              </Stack>
             </Box>
             
             <Divider sx={{ my: 3 }} />
@@ -481,8 +480,8 @@ export default function CreateCampaign() {
               Links & Wallet
             </Typography>
             
-            <Grid container spacing={3}>
-              <Grid xs={12}>
+            <Stack container spacing={3}>
+              <Stack item xs={12}>
                 <TextField
                   fullWidth
                   label="Website (Optional)"
@@ -491,9 +490,9 @@ export default function CreateCampaign() {
                   variant="outlined"
                   placeholder="https://example.com"
                 />
-              </Grid>
+              </Stack>
               
-              <Grid xs={12}>
+              <Stack item xs={12}>
                 <Typography variant="subtitle2" gutterBottom>
                   Social Media Links (Optional)
                 </Typography>
@@ -544,9 +543,9 @@ export default function CreateCampaign() {
                     />
                   ))}
                 </Box>
-              </Grid>
+              </Stack>
               
-              <Grid xs={12}>
+              <Stack item xs={12}>
                 <TextField
                   fullWidth
                   label="Wallet Address"
@@ -557,8 +556,8 @@ export default function CreateCampaign() {
                   helperText={errors.walletAddress || "Wallet address where funds will be sent"}
                   required
                 />
-              </Grid>
-            </Grid>
+              </Stack>
+            </Stack>
             
             <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
               <Button 

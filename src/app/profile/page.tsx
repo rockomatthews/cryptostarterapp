@@ -3,8 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Container, Typography, Box, Paper, Avatar, Button, Tabs, Tab, Card, CardContent, CardMedia, Divider } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Container, Typography, Box, Paper, Avatar, Button, Tabs, Tab, Card, CardContent, CardMedia, Divider, Stack } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Link from 'next/link';
 
@@ -80,8 +79,8 @@ export default function Profile() {
     <Container maxWidth="md">
       <Box sx={{ mt: 4 }}>
         <Paper sx={{ p: 3 }}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Stack container spacing={3}>
+            <Stack item xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Box sx={{ position: 'relative' }}>
                 <Avatar
                   src={session?.user?.image || ''}
@@ -100,8 +99,8 @@ export default function Profile() {
               >
                 Edit Profile
               </Button>
-            </Grid>
-            <Grid item xs={12} md={8}>
+            </Stack>
+            <Stack item xs={12} md={8}>
               <Typography variant="h4" gutterBottom>
                 Profile Information
               </Typography>
@@ -125,8 +124,8 @@ export default function Profile() {
                   Bio information not yet available
                 </Typography>
               </Box>
-            </Grid>
-          </Grid>
+            </Stack>
+          </Stack>
         </Paper>
 
         <Box sx={{ width: '100%', mt: 4 }}>
@@ -139,10 +138,10 @@ export default function Profile() {
           
           <TabPanel value={tabValue} index={0}>
             {campaigns && campaigns.length > 0 ? (
-              <Grid container spacing={3}>
+              <Stack container spacing={3}>
                 {/* Map through the user's campaigns */}
                 {/* This would be populated with actual campaign data */}
-                <Grid item xs={12} sm={6} md={4}>
+                <Stack item xs={12} sm={6} md={4}>
                   <Card>
                     <CardMedia
                       component="img"
@@ -159,8 +158,8 @@ export default function Profile() {
                       </Typography>
                     </CardContent>
                   </Card>
-                </Grid>
-              </Grid>
+                </Stack>
+              </Stack>
             ) : (
               <Box sx={{ textAlign: 'center', py: 4 }}>
                 <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -180,10 +179,10 @@ export default function Profile() {
           
           <TabPanel value={tabValue} index={1}>
             {contributions && contributions.length > 0 ? (
-              <Grid container spacing={3}>
+              <Stack container spacing={3}>
                 {/* Map through the user's contributions */}
                 {/* This would be populated with actual contribution data */}
-                <Grid item xs={12}>
+                <Stack item xs={12}>
                   <Card>
                     <CardContent>
                       <Typography variant="h6">
@@ -197,8 +196,8 @@ export default function Profile() {
                       </Typography>
                     </CardContent>
                   </Card>
-                </Grid>
-              </Grid>
+                </Stack>
+              </Stack>
             ) : (
               <Box sx={{ textAlign: 'center', py: 4 }}>
                 <Typography variant="h6" color="text.secondary" gutterBottom>

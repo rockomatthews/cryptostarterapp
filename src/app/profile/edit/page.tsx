@@ -3,39 +3,57 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Container, Typography, Box, Paper, TextField, Button, Avatar, IconButton, Tooltip } from '@mui/material';
+import { Container, Typography, Box, Paper, TextField, Button, Avatar, IconButton, Tooltip, Snackbar, Alert } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
 export default function EditProfile() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
     }
     
-    if (session?.user?.name) {
-      setUsername(session.user.name);
-    }
+    const fetchUserData = async () => {
+      if (session?.user?.id) {
+        try {
+          const response = await fetch(`/api/users/${session.user.id}`);
+          if (response.ok) {
+            const userData = await response.json();
+            
+            if (userData.username) {
+              setUsername(userData.username);
+            } else if (session?.user?.name) {
+              setUsername(session.user.name);
+            }
+            
+            if (userData.bio) {
+              setBio(userData.bio);
+            }
+            
+            if (userData.image) {
+              setImagePreview(userData.image);
+            } else if (session?.user?.image) {
+              setImagePreview(session.user.image);
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching user data:', err);
+        }
+      }
+    };
     
-    if (session?.user?.image) {
-      setImagePreview(session.user.image);
+    if (session?.user?.id) {
+      fetchUserData();
     }
-    
-    // Here you would fetch the user's bio from your API
-    // For example:
-    // if (session?.user?.id) {
-    //   fetch(`/api/users/${session.user.id}`)
-    //     .then(res => res.json())
-    //     .then(data => {
-    //       setBio(data.bio || '');
-    //     });
-    // }
   }, [status, router, session]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,36 +70,51 @@ export default function EditProfile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
     
-    // Here you would upload the image if changed
-    // and update the user profile
-    
-    // For example:
-    // let imageUrl = session?.user?.image;
-    // if (imageFile) {
-    //   const formData = new FormData();
-    //   formData.append('file', imageFile);
-    //   const uploadRes = await fetch('/api/upload', {
-    //     method: 'POST',
-    //     body: formData
-    //   });
-    //   const uploadData = await uploadRes.json();
-    //   imageUrl = uploadData.url;
-    // }
-    
-    // Then update the user profile
-    // await fetch(`/api/users/${session?.user?.id}`, {
-    //   method: 'PUT',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     username,
-    //     bio,
-    //     image: imageUrl
-    //   })
-    // });
-    
-    // For now, just navigate back to profile
-    router.push('/profile');
+    try {
+      // For now, we'll just use the image preview as the image URL
+      // In a real app, you would upload the image to a storage service
+      const userData = {
+        username,
+        bio,
+        image: imagePreview
+      };
+      
+      const response = await fetch(`/api/users/${session?.user?.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update profile');
+      }
+      
+      // Update the session to reflect changes
+      await update({
+        ...session,
+        user: {
+          ...session?.user,
+          name: username,
+          image: imagePreview
+        }
+      });
+      
+      setSuccess(true);
+      
+      // Navigate back to profile after short delay
+      setTimeout(() => {
+        router.push('/profile');
+      }, 1500);
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (status === 'loading') {
@@ -174,6 +207,7 @@ export default function EditProfile() {
               <Button 
                 variant="outlined" 
                 onClick={() => router.push('/profile')}
+                disabled={loading}
               >
                 Cancel
               </Button>
@@ -181,13 +215,26 @@ export default function EditProfile() {
                 type="submit" 
                 variant="contained" 
                 color="primary"
+                disabled={loading}
               >
-                Save Changes
+                {loading ? 'Saving...' : 'Save Changes'}
               </Button>
             </Box>
           </form>
         </Paper>
       </Box>
+      
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
+        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
+          {error}
+        </Alert>
+      </Snackbar>
+      
+      <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
+        <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
+          Profile updated successfully!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 } 

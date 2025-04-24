@@ -38,10 +38,37 @@ export default function Profile() {
   const [tabValue, setTabValue] = useState(0);
   const [campaigns, setCampaigns] = useState([]);
   const [contributions, setContributions] = useState([]);
+  const [userData, setUserData] = useState<{
+    username?: string;
+    bio?: string;
+    image?: string;
+  }>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
+    }
+    
+    const fetchUserData = async () => {
+      if (session?.user?.id) {
+        try {
+          setLoading(true);
+          const response = await fetch(`/api/users/${session.user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setUserData(data);
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    if (session?.user?.id) {
+      fetchUserData();
     }
     
     // Here you would fetch campaigns and contributions data
@@ -64,7 +91,7 @@ export default function Profile() {
     setTabValue(newValue);
   };
 
-  if (status === 'loading') {
+  if (status === 'loading' || loading) {
     return (
       <Container maxWidth="md">
         <Box sx={{ mt: 8, display: 'flex', justifyContent: 'center' }}>
@@ -82,12 +109,12 @@ export default function Profile() {
             <Box sx={{ flex: { md: '0 0 33.33%' }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Box sx={{ position: 'relative' }}>
                 <Avatar
-                  src={session?.user?.image || ''}
-                  alt={session?.user?.name || 'Profile'}
+                  src={userData.image || session?.user?.image || ''}
+                  alt={userData.username || session?.user?.name || 'Profile'}
                   sx={{ width: 120, height: 120, mb: 2 }}
                 />
               </Box>
-              <Typography variant="h5">{session?.user?.name}</Typography>
+              <Typography variant="h5">{userData.username || session?.user?.name}</Typography>
               <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
                 {session?.user?.email}
               </Typography>
@@ -108,8 +135,7 @@ export default function Profile() {
                   Username
                 </Typography>
                 <Typography variant="body1">
-                  {/* This would come from your user object once the username field is populated */}
-                  {session?.user?.name || 'Not set'}
+                  {userData.username || session?.user?.name || 'Not set'}
                 </Typography>
               </Box>
               
@@ -118,9 +144,7 @@ export default function Profile() {
                   Bio
                 </Typography>
                 <Typography variant="body1">
-                  {/* This would come from your user object */}
-                  {/* Replace with actual bio from database */}
-                  Bio information not yet available
+                  {userData.bio || 'No bio information available'}
                 </Typography>
               </Box>
             </Box>

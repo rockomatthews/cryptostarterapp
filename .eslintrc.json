@@ -1,6 +1,6 @@
 {
   "extends": "next/core-web-vitals",
-  "ignorePatterns": ["src/generated/**/*"],
+  "ignorePatterns": ["src/generated/**/*", "src/generated/prisma/**/*"],
   "rules": {
     "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/no-explicit-any": "warn",

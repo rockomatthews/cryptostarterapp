@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { 
   Container, Typography, Box, Paper, TextField, Button,
   Chip, FormControl, InputLabel, Select,
-  MenuItem, InputAdornment, Divider, Stack
+  MenuItem, InputAdornment, Divider
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
@@ -295,8 +295,8 @@ export default function CreateCampaign() {
               Basic Information
             </Typography>
             
-            <Stack container spacing={3}>
-              <Stack size={12}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box>
                 <TextField
                   fullWidth
                   label="Campaign Title"
@@ -307,9 +307,9 @@ export default function CreateCampaign() {
                   helperText={errors.title}
                   required
                 />
-              </Stack>
+              </Box>
               
-              <Stack item xs={12} md={6}>
+              <Box>
                 <TextField
                   fullWidth
                   label="Funding Goal"
@@ -324,9 +324,9 @@ export default function CreateCampaign() {
                   helperText={errors.fundingGoal}
                   required
                 />
-              </Stack>
+              </Box>
               
-              <Stack item xs={12} md={6}>
+              <Box>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Campaign Deadline"
@@ -344,9 +344,9 @@ export default function CreateCampaign() {
                     disablePast
                   />
                 </LocalizationProvider>
-              </Stack>
+              </Box>
               
-              <Stack item xs={12}>
+              <Box>
                 <FormControl fullWidth error={!!errors.category} required>
                   <InputLabel id="category-label">Category</InputLabel>
                   <Select
@@ -367,9 +367,9 @@ export default function CreateCampaign() {
                     </Typography>
                   )}
                 </FormControl>
-              </Stack>
+              </Box>
               
-              <Stack item xs={12}>
+              <Box>
                 <TextField
                   fullWidth
                   label="Short Description"
@@ -383,9 +383,9 @@ export default function CreateCampaign() {
                   inputProps={{ maxLength: 150 }}
                   required
                 />
-              </Stack>
+              </Box>
               
-              <Stack item xs={12}>
+              <Box>
                 <TextField
                   fullWidth
                   label="Full Description"
@@ -398,8 +398,8 @@ export default function CreateCampaign() {
                   helperText={errors.description || "Detailed information about your campaign"}
                   required
                 />
-              </Stack>
-            </Stack>
+              </Box>
+            </Box>
             
             <Divider sx={{ my: 3 }} />
             
@@ -424,9 +424,9 @@ export default function CreateCampaign() {
                 Add Photos/Videos
               </Button>
               
-              <Stack container spacing={2} sx={{ mt: 2 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 2, mt: 2 }}>
                 {additionalMedia.map((media, index) => (
-                  <Stack item xs={6} sm={4} md={3} key={index}>
+                  <Box key={index}>
                     <Box sx={{ position: 'relative' }}>
                       {media.type === 'image' ? (
                         <img
@@ -468,9 +468,9 @@ export default function CreateCampaign() {
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Box>
-                  </Stack>
+                  </Box>
                 ))}
-              </Stack>
+              </Box>
             </Box>
             
             <Divider sx={{ my: 3 }} />
@@ -480,8 +480,8 @@ export default function CreateCampaign() {
               Links & Wallet
             </Typography>
             
-            <Stack container spacing={3}>
-              <Stack item xs={12}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box>
                 <TextField
                   fullWidth
                   label="Website (Optional)"
@@ -490,9 +490,9 @@ export default function CreateCampaign() {
                   variant="outlined"
                   placeholder="https://example.com"
                 />
-              </Stack>
+              </Box>
               
-              <Stack item xs={12}>
+              <Box>
                 <Typography variant="subtitle2" gutterBottom>
                   Social Media Links (Optional)
                 </Typography>
@@ -543,9 +543,9 @@ export default function CreateCampaign() {
                     />
                   ))}
                 </Box>
-              </Stack>
+              </Box>
               
-              <Stack item xs={12}>
+              <Box>
                 <TextField
                   fullWidth
                   label="Wallet Address"
@@ -556,8 +556,8 @@ export default function CreateCampaign() {
                   helperText={errors.walletAddress || "Wallet address where funds will be sent"}
                   required
                 />
-              </Stack>
-            </Stack>
+              </Box>
+            </Box>
             
             <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
               <Button 

@@ -6,10 +6,9 @@ import { prisma } from "@/lib/prisma";
 // GET a specific campaign
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const params = await context.params;
     const id = params.id;
     const campaign = await prisma.campaign.findUnique({
       where: {
@@ -46,7 +45,7 @@ export async function GET(
 // PUT to update a campaign
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -57,7 +56,6 @@ export async function PUT(
       );
     }
 
-    const params = await context.params;
     const id = params.id;
     const body = await request.json();
 
@@ -133,7 +131,7 @@ export async function PUT(
 // DELETE a campaign
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -144,7 +142,6 @@ export async function DELETE(
       );
     }
 
-    const params = await context.params;
     const id = params.id;
 
     // Fetch the campaign to check ownership

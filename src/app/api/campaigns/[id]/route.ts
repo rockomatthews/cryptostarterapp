@@ -1,13 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '../../../../lib/prisma';
 import { authOptions } from '../../../../lib/auth';
 
 // GET a specific campaign
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
-): Promise<NextResponse> {
+) {
   try {
     const { id } = params;
     
@@ -59,9 +59,9 @@ export async function GET(
 
 // PUT to update a campaign
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
-): Promise<NextResponse> {
+) {
   try {
     const { id } = params;
     const session = await getServerSession(authOptions);
@@ -140,9 +140,9 @@ export async function PUT(
 
 // DELETE a campaign
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
-): Promise<NextResponse> {
+) {
   try {
     const { id } = params;
     const session = await getServerSession(authOptions);

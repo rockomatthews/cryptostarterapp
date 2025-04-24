@@ -118,11 +118,14 @@ export async function PUT(
       },
       data: {
         ...(title && { title }),
-        ...(description && { description }),
-        ...(targetAmount && { targetAmount: parseFloat(targetAmount) }),
+        ...(description && { 
+          description,
+          shortDescription: description.substring(0, 150) + (description.length > 150 ? '...' : '')
+        }),
+        ...(targetAmount && { fundingGoal: parseFloat(targetAmount) }),
         ...(deadline && { deadline: new Date(deadline) }),
         ...(category && { category }),
-        ...(image && { image }),
+        ...(image && { mainImage: image }),
         ...(walletAddress && { walletAddress }),
         ...(active !== undefined && { active }),
       },

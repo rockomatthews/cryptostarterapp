@@ -72,11 +72,12 @@ export async function POST(request: Request) {
     const campaign = await prisma.campaign.create({
       data: {
         title,
+        shortDescription: description.substring(0, 150) + (description.length > 150 ? '...' : ''),
         description,
-        targetAmount: parseFloat(targetAmount),
+        fundingGoal: parseFloat(targetAmount),
         deadline: new Date(deadline),
         category,
-        image,
+        mainImage: image,
         walletAddress,
         userId: session.user.id,
       },

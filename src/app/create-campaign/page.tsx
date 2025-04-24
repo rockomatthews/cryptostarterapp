@@ -4,10 +4,12 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { 
-  Container, Typography, Box, Paper, TextField, Button, 
-  Grid, IconButton, Chip, FormControl, InputLabel, Select,
+  Container, Typography, Box, Paper, TextField, Button,
+  Chip, FormControl, InputLabel, Select,
   MenuItem, InputAdornment, Divider
 } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import IconButton from '@mui/material/IconButton';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -295,7 +297,7 @@ export default function CreateCampaign() {
             </Typography>
             
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <TextField
                   fullWidth
                   label="Campaign Title"
@@ -308,7 +310,7 @@ export default function CreateCampaign() {
                 />
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <TextField
                   fullWidth
                   label="Funding Goal"
@@ -325,7 +327,7 @@ export default function CreateCampaign() {
                 />
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Campaign Deadline"
@@ -345,7 +347,7 @@ export default function CreateCampaign() {
                 </LocalizationProvider>
               </Grid>
               
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <FormControl fullWidth error={!!errors.category} required>
                   <InputLabel id="category-label">Category</InputLabel>
                   <Select
@@ -368,7 +370,7 @@ export default function CreateCampaign() {
                 </FormControl>
               </Grid>
               
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <TextField
                   fullWidth
                   label="Short Description"
@@ -384,7 +386,7 @@ export default function CreateCampaign() {
                 />
               </Grid>
               
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <TextField
                   fullWidth
                   label="Full Description"
@@ -425,7 +427,7 @@ export default function CreateCampaign() {
               
               <Grid container spacing={2} sx={{ mt: 2 }}>
                 {additionalMedia.map((media, index) => (
-                  <Grid item xs={6} sm={4} md={3} key={index}>
+                  <Grid xs={6} sm={4} md={3} key={index}>
                     <Box sx={{ position: 'relative' }}>
                       {media.type === 'image' ? (
                         <img
@@ -480,7 +482,7 @@ export default function CreateCampaign() {
             </Typography>
             
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <TextField
                   fullWidth
                   label="Website (Optional)"
@@ -491,7 +493,7 @@ export default function CreateCampaign() {
                 />
               </Grid>
               
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <Typography variant="subtitle2" gutterBottom>
                   Social Media Links (Optional)
                 </Typography>
@@ -544,7 +546,7 @@ export default function CreateCampaign() {
                 </Box>
               </Grid>
               
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <TextField
                   fullWidth
                   label="Wallet Address"

@@ -63,22 +63,25 @@ model VerificationToken {
 
 // CryptoStarter Models
 model Campaign {
-  id               String   @id @default(cuid())
-  title            String
-  shortDescription String
-  description      String
-  fundingGoal      Float
-  currentAmount    Float    @default(0)
-  deadline         DateTime
-  category         String
-  mainImage        String?
-  additionalMedia  Media[]
-  website          String?
-  socials          Social[]
-  walletAddress    String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  active           Boolean  @default(true)
+  id                 String   @id @default(cuid())
+  title              String
+  shortDescription   String
+  description        String
+  fundingGoal        Float
+  currentAmount      Float    @default(0)
+  deadline           DateTime
+  category           String
+  mainImage          String?
+  additionalMedia    Media[]
+  website            String?
+  socials            Social[]
+  walletAddress      String
+  cryptocurrencyType String // The cryptocurrency requested by campaign creator
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  active             Boolean  @default(true)
+  goalReached        Boolean  @default(false)
+  fundsDistributed   Boolean  @default(false)
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -107,15 +110,35 @@ model Social {
 }
 
 model Contribution {
-  id        String   @id @default(cuid())
-  amount    Float
-  message   String?
-  anonymous Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id                 String   @id @default(cuid())
+  amount             Float // Amount in USD equivalent
+  originalAmount     Float // Original amount in donated currency
+  donationCurrency   String // Currency used for donation (ETH, BTC, SOL, etc.)
+  transactionHash    String? // Hash of the transaction for reference
+  donorWalletAddress String // Donor's wallet address for potential refunds
+  message            String?
+  anonymous          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  refunded           Boolean  @default(false)
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   campaignId String
   campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+// Transaction API Logs
+model TransactionLog {
+  id          String   @id @default(cuid())
+  type        String // donation, refund, distribution
+  amount      Float
+  currency    String
+  status      String // pending, completed, failed
+  apiResponse String? // Raw response from cryptoprocessing.io
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  contributionId String?
+  campaignId     String?
 }

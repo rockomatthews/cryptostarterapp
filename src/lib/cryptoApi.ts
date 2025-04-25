@@ -9,7 +9,7 @@ import { Prisma } from '@prisma/client';
 // API Configuration
 const API_BASE_URL = 'https://api.cryptoprocessing.io/v1';
 const API_KEY = process.env.CRYPTO_PROCESSING_API_KEY || '';
-const API_SECRET = process.env.CRYPTO_PROCESSING_API_SECRET || '';
+const STORE_ID = process.env.CRYPTO_PROCESSING_STORE_ID || '';
 
 // Create axios instance for API calls
 const apiClient = axios.create({
@@ -17,7 +17,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'X-API-Key': API_KEY,
-    'X-API-Secret': API_SECRET
+    'X-Store-ID': STORE_ID
   }
 });
 

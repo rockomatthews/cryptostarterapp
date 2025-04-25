@@ -167,9 +167,12 @@ exports.Prisma.CampaignScalarFieldEnum = {
   mainImage: 'mainImage',
   website: 'website',
   walletAddress: 'walletAddress',
+  cryptocurrencyType: 'cryptocurrencyType',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   active: 'active',
+  goalReached: 'goalReached',
+  fundsDistributed: 'fundsDistributed',
   userId: 'userId'
 };
 
@@ -192,10 +195,28 @@ exports.Prisma.SocialScalarFieldEnum = {
 exports.Prisma.ContributionScalarFieldEnum = {
   id: 'id',
   amount: 'amount',
+  originalAmount: 'originalAmount',
+  donationCurrency: 'donationCurrency',
+  transactionHash: 'transactionHash',
+  donorWalletAddress: 'donorWalletAddress',
   message: 'message',
   anonymous: 'anonymous',
   createdAt: 'createdAt',
+  refunded: 'refunded',
   userId: 'userId',
+  campaignId: 'campaignId'
+};
+
+exports.Prisma.TransactionLogScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  apiResponse: 'apiResponse',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  contributionId: 'contributionId',
   campaignId: 'campaignId'
 };
 
@@ -223,7 +244,8 @@ exports.Prisma.ModelName = {
   Campaign: 'Campaign',
   Media: 'Media',
   Social: 'Social',
-  Contribution: 'Contribution'
+  Contribution: 'Contribution',
+  TransactionLog: 'TransactionLog'
 };
 
 /**

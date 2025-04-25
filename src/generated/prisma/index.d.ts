@@ -53,6 +53,11 @@ export type Social = $Result.DefaultSelection<Prisma.$SocialPayload>
  * 
  */
 export type Contribution = $Result.DefaultSelection<Prisma.$ContributionPayload>
+/**
+ * Model TransactionLog
+ * 
+ */
+export type TransactionLog = $Result.DefaultSelection<Prisma.$TransactionLogPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -258,6 +263,16 @@ export class PrismaClient<
     * ```
     */
   get contribution(): Prisma.ContributionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.transactionLog`: Exposes CRUD operations for the **TransactionLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TransactionLogs
+    * const transactionLogs = await prisma.transactionLog.findMany()
+    * ```
+    */
+  get transactionLog(): Prisma.TransactionLogDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -705,7 +720,8 @@ export namespace Prisma {
     Campaign: 'Campaign',
     Media: 'Media',
     Social: 'Social',
-    Contribution: 'Contribution'
+    Contribution: 'Contribution',
+    TransactionLog: 'TransactionLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -724,7 +740,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "user" | "verificationToken" | "campaign" | "media" | "social" | "contribution"
+      modelProps: "account" | "session" | "user" | "verificationToken" | "campaign" | "media" | "social" | "contribution" | "transactionLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1320,6 +1336,80 @@ export namespace Prisma {
           }
         }
       }
+      TransactionLog: {
+        payload: Prisma.$TransactionLogPayload<ExtArgs>
+        fields: Prisma.TransactionLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TransactionLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TransactionLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload>
+          }
+          findFirst: {
+            args: Prisma.TransactionLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TransactionLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload>
+          }
+          findMany: {
+            args: Prisma.TransactionLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload>[]
+          }
+          create: {
+            args: Prisma.TransactionLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload>
+          }
+          createMany: {
+            args: Prisma.TransactionLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TransactionLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload>[]
+          }
+          delete: {
+            args: Prisma.TransactionLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload>
+          }
+          update: {
+            args: Prisma.TransactionLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.TransactionLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TransactionLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TransactionLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.TransactionLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionLogPayload>
+          }
+          aggregate: {
+            args: Prisma.TransactionLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTransactionLog>
+          }
+          groupBy: {
+            args: Prisma.TransactionLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TransactionLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TransactionLogCountArgs<ExtArgs>
+            result: $Utils.Optional<TransactionLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1412,6 +1502,7 @@ export namespace Prisma {
     media?: MediaOmit
     social?: SocialOmit
     contribution?: ContributionOmit
+    transactionLog?: TransactionLogOmit
   }
 
   /* Types for Logging */
@@ -6023,9 +6114,12 @@ export namespace Prisma {
     mainImage: string | null
     website: string | null
     walletAddress: string | null
+    cryptocurrencyType: string | null
     createdAt: Date | null
     updatedAt: Date | null
     active: boolean | null
+    goalReached: boolean | null
+    fundsDistributed: boolean | null
     userId: string | null
   }
 
@@ -6041,9 +6135,12 @@ export namespace Prisma {
     mainImage: string | null
     website: string | null
     walletAddress: string | null
+    cryptocurrencyType: string | null
     createdAt: Date | null
     updatedAt: Date | null
     active: boolean | null
+    goalReached: boolean | null
+    fundsDistributed: boolean | null
     userId: string | null
   }
 
@@ -6059,9 +6156,12 @@ export namespace Prisma {
     mainImage: number
     website: number
     walletAddress: number
+    cryptocurrencyType: number
     createdAt: number
     updatedAt: number
     active: number
+    goalReached: number
+    fundsDistributed: number
     userId: number
     _all: number
   }
@@ -6089,9 +6189,12 @@ export namespace Prisma {
     mainImage?: true
     website?: true
     walletAddress?: true
+    cryptocurrencyType?: true
     createdAt?: true
     updatedAt?: true
     active?: true
+    goalReached?: true
+    fundsDistributed?: true
     userId?: true
   }
 
@@ -6107,9 +6210,12 @@ export namespace Prisma {
     mainImage?: true
     website?: true
     walletAddress?: true
+    cryptocurrencyType?: true
     createdAt?: true
     updatedAt?: true
     active?: true
+    goalReached?: true
+    fundsDistributed?: true
     userId?: true
   }
 
@@ -6125,9 +6231,12 @@ export namespace Prisma {
     mainImage?: true
     website?: true
     walletAddress?: true
+    cryptocurrencyType?: true
     createdAt?: true
     updatedAt?: true
     active?: true
+    goalReached?: true
+    fundsDistributed?: true
     userId?: true
     _all?: true
   }
@@ -6230,9 +6339,12 @@ export namespace Prisma {
     mainImage: string | null
     website: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt: Date
     updatedAt: Date
     active: boolean
+    goalReached: boolean
+    fundsDistributed: boolean
     userId: string
     _count: CampaignCountAggregateOutputType | null
     _avg: CampaignAvgAggregateOutputType | null
@@ -6267,9 +6379,12 @@ export namespace Prisma {
     mainImage?: boolean
     website?: boolean
     walletAddress?: boolean
+    cryptocurrencyType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     userId?: boolean
     additionalMedia?: boolean | Campaign$additionalMediaArgs<ExtArgs>
     socials?: boolean | Campaign$socialsArgs<ExtArgs>
@@ -6290,9 +6405,12 @@ export namespace Prisma {
     mainImage?: boolean
     website?: boolean
     walletAddress?: boolean
+    cryptocurrencyType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["campaign"]>
@@ -6309,9 +6427,12 @@ export namespace Prisma {
     mainImage?: boolean
     website?: boolean
     walletAddress?: boolean
+    cryptocurrencyType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["campaign"]>
@@ -6328,13 +6449,16 @@ export namespace Prisma {
     mainImage?: boolean
     website?: boolean
     walletAddress?: boolean
+    cryptocurrencyType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     userId?: boolean
   }
 
-  export type CampaignOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "shortDescription" | "description" | "fundingGoal" | "currentAmount" | "deadline" | "category" | "mainImage" | "website" | "walletAddress" | "createdAt" | "updatedAt" | "active" | "userId", ExtArgs["result"]["campaign"]>
+  export type CampaignOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "shortDescription" | "description" | "fundingGoal" | "currentAmount" | "deadline" | "category" | "mainImage" | "website" | "walletAddress" | "cryptocurrencyType" | "createdAt" | "updatedAt" | "active" | "goalReached" | "fundsDistributed" | "userId", ExtArgs["result"]["campaign"]>
   export type CampaignInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     additionalMedia?: boolean | Campaign$additionalMediaArgs<ExtArgs>
     socials?: boolean | Campaign$socialsArgs<ExtArgs>
@@ -6369,9 +6493,12 @@ export namespace Prisma {
       mainImage: string | null
       website: string | null
       walletAddress: string
+      cryptocurrencyType: string
       createdAt: Date
       updatedAt: Date
       active: boolean
+      goalReached: boolean
+      fundsDistributed: boolean
       userId: string
     }, ExtArgs["result"]["campaign"]>
     composites: {}
@@ -6811,9 +6938,12 @@ export namespace Prisma {
     readonly mainImage: FieldRef<"Campaign", 'String'>
     readonly website: FieldRef<"Campaign", 'String'>
     readonly walletAddress: FieldRef<"Campaign", 'String'>
+    readonly cryptocurrencyType: FieldRef<"Campaign", 'String'>
     readonly createdAt: FieldRef<"Campaign", 'DateTime'>
     readonly updatedAt: FieldRef<"Campaign", 'DateTime'>
     readonly active: FieldRef<"Campaign", 'Boolean'>
+    readonly goalReached: FieldRef<"Campaign", 'Boolean'>
+    readonly fundsDistributed: FieldRef<"Campaign", 'Boolean'>
     readonly userId: FieldRef<"Campaign", 'String'>
   }
     
@@ -9431,18 +9561,25 @@ export namespace Prisma {
 
   export type ContributionAvgAggregateOutputType = {
     amount: number | null
+    originalAmount: number | null
   }
 
   export type ContributionSumAggregateOutputType = {
     amount: number | null
+    originalAmount: number | null
   }
 
   export type ContributionMinAggregateOutputType = {
     id: string | null
     amount: number | null
+    originalAmount: number | null
+    donationCurrency: string | null
+    transactionHash: string | null
+    donorWalletAddress: string | null
     message: string | null
     anonymous: boolean | null
     createdAt: Date | null
+    refunded: boolean | null
     userId: string | null
     campaignId: string | null
   }
@@ -9450,9 +9587,14 @@ export namespace Prisma {
   export type ContributionMaxAggregateOutputType = {
     id: string | null
     amount: number | null
+    originalAmount: number | null
+    donationCurrency: string | null
+    transactionHash: string | null
+    donorWalletAddress: string | null
     message: string | null
     anonymous: boolean | null
     createdAt: Date | null
+    refunded: boolean | null
     userId: string | null
     campaignId: string | null
   }
@@ -9460,9 +9602,14 @@ export namespace Prisma {
   export type ContributionCountAggregateOutputType = {
     id: number
     amount: number
+    originalAmount: number
+    donationCurrency: number
+    transactionHash: number
+    donorWalletAddress: number
     message: number
     anonymous: number
     createdAt: number
+    refunded: number
     userId: number
     campaignId: number
     _all: number
@@ -9471,18 +9618,25 @@ export namespace Prisma {
 
   export type ContributionAvgAggregateInputType = {
     amount?: true
+    originalAmount?: true
   }
 
   export type ContributionSumAggregateInputType = {
     amount?: true
+    originalAmount?: true
   }
 
   export type ContributionMinAggregateInputType = {
     id?: true
     amount?: true
+    originalAmount?: true
+    donationCurrency?: true
+    transactionHash?: true
+    donorWalletAddress?: true
     message?: true
     anonymous?: true
     createdAt?: true
+    refunded?: true
     userId?: true
     campaignId?: true
   }
@@ -9490,9 +9644,14 @@ export namespace Prisma {
   export type ContributionMaxAggregateInputType = {
     id?: true
     amount?: true
+    originalAmount?: true
+    donationCurrency?: true
+    transactionHash?: true
+    donorWalletAddress?: true
     message?: true
     anonymous?: true
     createdAt?: true
+    refunded?: true
     userId?: true
     campaignId?: true
   }
@@ -9500,9 +9659,14 @@ export namespace Prisma {
   export type ContributionCountAggregateInputType = {
     id?: true
     amount?: true
+    originalAmount?: true
+    donationCurrency?: true
+    transactionHash?: true
+    donorWalletAddress?: true
     message?: true
     anonymous?: true
     createdAt?: true
+    refunded?: true
     userId?: true
     campaignId?: true
     _all?: true
@@ -9597,9 +9761,14 @@ export namespace Prisma {
   export type ContributionGroupByOutputType = {
     id: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash: string | null
+    donorWalletAddress: string
     message: string | null
     anonymous: boolean
     createdAt: Date
+    refunded: boolean
     userId: string
     campaignId: string
     _count: ContributionCountAggregateOutputType | null
@@ -9626,9 +9795,14 @@ export namespace Prisma {
   export type ContributionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     amount?: boolean
+    originalAmount?: boolean
+    donationCurrency?: boolean
+    transactionHash?: boolean
+    donorWalletAddress?: boolean
     message?: boolean
     anonymous?: boolean
     createdAt?: boolean
+    refunded?: boolean
     userId?: boolean
     campaignId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -9638,9 +9812,14 @@ export namespace Prisma {
   export type ContributionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     amount?: boolean
+    originalAmount?: boolean
+    donationCurrency?: boolean
+    transactionHash?: boolean
+    donorWalletAddress?: boolean
     message?: boolean
     anonymous?: boolean
     createdAt?: boolean
+    refunded?: boolean
     userId?: boolean
     campaignId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -9650,9 +9829,14 @@ export namespace Prisma {
   export type ContributionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     amount?: boolean
+    originalAmount?: boolean
+    donationCurrency?: boolean
+    transactionHash?: boolean
+    donorWalletAddress?: boolean
     message?: boolean
     anonymous?: boolean
     createdAt?: boolean
+    refunded?: boolean
     userId?: boolean
     campaignId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -9662,14 +9846,19 @@ export namespace Prisma {
   export type ContributionSelectScalar = {
     id?: boolean
     amount?: boolean
+    originalAmount?: boolean
+    donationCurrency?: boolean
+    transactionHash?: boolean
+    donorWalletAddress?: boolean
     message?: boolean
     anonymous?: boolean
     createdAt?: boolean
+    refunded?: boolean
     userId?: boolean
     campaignId?: boolean
   }
 
-  export type ContributionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "message" | "anonymous" | "createdAt" | "userId" | "campaignId", ExtArgs["result"]["contribution"]>
+  export type ContributionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "originalAmount" | "donationCurrency" | "transactionHash" | "donorWalletAddress" | "message" | "anonymous" | "createdAt" | "refunded" | "userId" | "campaignId", ExtArgs["result"]["contribution"]>
   export type ContributionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     campaign?: boolean | CampaignDefaultArgs<ExtArgs>
@@ -9692,9 +9881,14 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       amount: number
+      originalAmount: number
+      donationCurrency: string
+      transactionHash: string | null
+      donorWalletAddress: string
       message: string | null
       anonymous: boolean
       createdAt: Date
+      refunded: boolean
       userId: string
       campaignId: string
     }, ExtArgs["result"]["contribution"]>
@@ -10124,9 +10318,14 @@ export namespace Prisma {
   interface ContributionFieldRefs {
     readonly id: FieldRef<"Contribution", 'String'>
     readonly amount: FieldRef<"Contribution", 'Float'>
+    readonly originalAmount: FieldRef<"Contribution", 'Float'>
+    readonly donationCurrency: FieldRef<"Contribution", 'String'>
+    readonly transactionHash: FieldRef<"Contribution", 'String'>
+    readonly donorWalletAddress: FieldRef<"Contribution", 'String'>
     readonly message: FieldRef<"Contribution", 'String'>
     readonly anonymous: FieldRef<"Contribution", 'Boolean'>
     readonly createdAt: FieldRef<"Contribution", 'DateTime'>
+    readonly refunded: FieldRef<"Contribution", 'Boolean'>
     readonly userId: FieldRef<"Contribution", 'String'>
     readonly campaignId: FieldRef<"Contribution", 'String'>
   }
@@ -10544,6 +10743,1100 @@ export namespace Prisma {
 
 
   /**
+   * Model TransactionLog
+   */
+
+  export type AggregateTransactionLog = {
+    _count: TransactionLogCountAggregateOutputType | null
+    _avg: TransactionLogAvgAggregateOutputType | null
+    _sum: TransactionLogSumAggregateOutputType | null
+    _min: TransactionLogMinAggregateOutputType | null
+    _max: TransactionLogMaxAggregateOutputType | null
+  }
+
+  export type TransactionLogAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type TransactionLogSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type TransactionLogMinAggregateOutputType = {
+    id: string | null
+    type: string | null
+    amount: number | null
+    currency: string | null
+    status: string | null
+    apiResponse: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    contributionId: string | null
+    campaignId: string | null
+  }
+
+  export type TransactionLogMaxAggregateOutputType = {
+    id: string | null
+    type: string | null
+    amount: number | null
+    currency: string | null
+    status: string | null
+    apiResponse: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    contributionId: string | null
+    campaignId: string | null
+  }
+
+  export type TransactionLogCountAggregateOutputType = {
+    id: number
+    type: number
+    amount: number
+    currency: number
+    status: number
+    apiResponse: number
+    createdAt: number
+    updatedAt: number
+    contributionId: number
+    campaignId: number
+    _all: number
+  }
+
+
+  export type TransactionLogAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type TransactionLogSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type TransactionLogMinAggregateInputType = {
+    id?: true
+    type?: true
+    amount?: true
+    currency?: true
+    status?: true
+    apiResponse?: true
+    createdAt?: true
+    updatedAt?: true
+    contributionId?: true
+    campaignId?: true
+  }
+
+  export type TransactionLogMaxAggregateInputType = {
+    id?: true
+    type?: true
+    amount?: true
+    currency?: true
+    status?: true
+    apiResponse?: true
+    createdAt?: true
+    updatedAt?: true
+    contributionId?: true
+    campaignId?: true
+  }
+
+  export type TransactionLogCountAggregateInputType = {
+    id?: true
+    type?: true
+    amount?: true
+    currency?: true
+    status?: true
+    apiResponse?: true
+    createdAt?: true
+    updatedAt?: true
+    contributionId?: true
+    campaignId?: true
+    _all?: true
+  }
+
+  export type TransactionLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TransactionLog to aggregate.
+     */
+    where?: TransactionLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TransactionLogs to fetch.
+     */
+    orderBy?: TransactionLogOrderByWithRelationInput | TransactionLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TransactionLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TransactionLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TransactionLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TransactionLogs
+    **/
+    _count?: true | TransactionLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TransactionLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TransactionLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TransactionLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TransactionLogMaxAggregateInputType
+  }
+
+  export type GetTransactionLogAggregateType<T extends TransactionLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateTransactionLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTransactionLog[P]>
+      : GetScalarType<T[P], AggregateTransactionLog[P]>
+  }
+
+
+
+
+  export type TransactionLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TransactionLogWhereInput
+    orderBy?: TransactionLogOrderByWithAggregationInput | TransactionLogOrderByWithAggregationInput[]
+    by: TransactionLogScalarFieldEnum[] | TransactionLogScalarFieldEnum
+    having?: TransactionLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TransactionLogCountAggregateInputType | true
+    _avg?: TransactionLogAvgAggregateInputType
+    _sum?: TransactionLogSumAggregateInputType
+    _min?: TransactionLogMinAggregateInputType
+    _max?: TransactionLogMaxAggregateInputType
+  }
+
+  export type TransactionLogGroupByOutputType = {
+    id: string
+    type: string
+    amount: number
+    currency: string
+    status: string
+    apiResponse: string | null
+    createdAt: Date
+    updatedAt: Date
+    contributionId: string | null
+    campaignId: string | null
+    _count: TransactionLogCountAggregateOutputType | null
+    _avg: TransactionLogAvgAggregateOutputType | null
+    _sum: TransactionLogSumAggregateOutputType | null
+    _min: TransactionLogMinAggregateOutputType | null
+    _max: TransactionLogMaxAggregateOutputType | null
+  }
+
+  type GetTransactionLogGroupByPayload<T extends TransactionLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TransactionLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TransactionLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TransactionLogGroupByOutputType[P]>
+            : GetScalarType<T[P], TransactionLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TransactionLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    apiResponse?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    contributionId?: boolean
+    campaignId?: boolean
+  }, ExtArgs["result"]["transactionLog"]>
+
+  export type TransactionLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    apiResponse?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    contributionId?: boolean
+    campaignId?: boolean
+  }, ExtArgs["result"]["transactionLog"]>
+
+  export type TransactionLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    apiResponse?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    contributionId?: boolean
+    campaignId?: boolean
+  }, ExtArgs["result"]["transactionLog"]>
+
+  export type TransactionLogSelectScalar = {
+    id?: boolean
+    type?: boolean
+    amount?: boolean
+    currency?: boolean
+    status?: boolean
+    apiResponse?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    contributionId?: boolean
+    campaignId?: boolean
+  }
+
+  export type TransactionLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "amount" | "currency" | "status" | "apiResponse" | "createdAt" | "updatedAt" | "contributionId" | "campaignId", ExtArgs["result"]["transactionLog"]>
+
+  export type $TransactionLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TransactionLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      type: string
+      amount: number
+      currency: string
+      status: string
+      apiResponse: string | null
+      createdAt: Date
+      updatedAt: Date
+      contributionId: string | null
+      campaignId: string | null
+    }, ExtArgs["result"]["transactionLog"]>
+    composites: {}
+  }
+
+  type TransactionLogGetPayload<S extends boolean | null | undefined | TransactionLogDefaultArgs> = $Result.GetResult<Prisma.$TransactionLogPayload, S>
+
+  type TransactionLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TransactionLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TransactionLogCountAggregateInputType | true
+    }
+
+  export interface TransactionLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TransactionLog'], meta: { name: 'TransactionLog' } }
+    /**
+     * Find zero or one TransactionLog that matches the filter.
+     * @param {TransactionLogFindUniqueArgs} args - Arguments to find a TransactionLog
+     * @example
+     * // Get one TransactionLog
+     * const transactionLog = await prisma.transactionLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TransactionLogFindUniqueArgs>(args: SelectSubset<T, TransactionLogFindUniqueArgs<ExtArgs>>): Prisma__TransactionLogClient<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TransactionLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TransactionLogFindUniqueOrThrowArgs} args - Arguments to find a TransactionLog
+     * @example
+     * // Get one TransactionLog
+     * const transactionLog = await prisma.transactionLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TransactionLogFindUniqueOrThrowArgs>(args: SelectSubset<T, TransactionLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TransactionLogClient<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TransactionLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionLogFindFirstArgs} args - Arguments to find a TransactionLog
+     * @example
+     * // Get one TransactionLog
+     * const transactionLog = await prisma.transactionLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TransactionLogFindFirstArgs>(args?: SelectSubset<T, TransactionLogFindFirstArgs<ExtArgs>>): Prisma__TransactionLogClient<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TransactionLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionLogFindFirstOrThrowArgs} args - Arguments to find a TransactionLog
+     * @example
+     * // Get one TransactionLog
+     * const transactionLog = await prisma.transactionLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TransactionLogFindFirstOrThrowArgs>(args?: SelectSubset<T, TransactionLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__TransactionLogClient<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TransactionLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TransactionLogs
+     * const transactionLogs = await prisma.transactionLog.findMany()
+     * 
+     * // Get first 10 TransactionLogs
+     * const transactionLogs = await prisma.transactionLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const transactionLogWithIdOnly = await prisma.transactionLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TransactionLogFindManyArgs>(args?: SelectSubset<T, TransactionLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TransactionLog.
+     * @param {TransactionLogCreateArgs} args - Arguments to create a TransactionLog.
+     * @example
+     * // Create one TransactionLog
+     * const TransactionLog = await prisma.transactionLog.create({
+     *   data: {
+     *     // ... data to create a TransactionLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends TransactionLogCreateArgs>(args: SelectSubset<T, TransactionLogCreateArgs<ExtArgs>>): Prisma__TransactionLogClient<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TransactionLogs.
+     * @param {TransactionLogCreateManyArgs} args - Arguments to create many TransactionLogs.
+     * @example
+     * // Create many TransactionLogs
+     * const transactionLog = await prisma.transactionLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TransactionLogCreateManyArgs>(args?: SelectSubset<T, TransactionLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TransactionLogs and returns the data saved in the database.
+     * @param {TransactionLogCreateManyAndReturnArgs} args - Arguments to create many TransactionLogs.
+     * @example
+     * // Create many TransactionLogs
+     * const transactionLog = await prisma.transactionLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TransactionLogs and only return the `id`
+     * const transactionLogWithIdOnly = await prisma.transactionLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TransactionLogCreateManyAndReturnArgs>(args?: SelectSubset<T, TransactionLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TransactionLog.
+     * @param {TransactionLogDeleteArgs} args - Arguments to delete one TransactionLog.
+     * @example
+     * // Delete one TransactionLog
+     * const TransactionLog = await prisma.transactionLog.delete({
+     *   where: {
+     *     // ... filter to delete one TransactionLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TransactionLogDeleteArgs>(args: SelectSubset<T, TransactionLogDeleteArgs<ExtArgs>>): Prisma__TransactionLogClient<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TransactionLog.
+     * @param {TransactionLogUpdateArgs} args - Arguments to update one TransactionLog.
+     * @example
+     * // Update one TransactionLog
+     * const transactionLog = await prisma.transactionLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TransactionLogUpdateArgs>(args: SelectSubset<T, TransactionLogUpdateArgs<ExtArgs>>): Prisma__TransactionLogClient<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TransactionLogs.
+     * @param {TransactionLogDeleteManyArgs} args - Arguments to filter TransactionLogs to delete.
+     * @example
+     * // Delete a few TransactionLogs
+     * const { count } = await prisma.transactionLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TransactionLogDeleteManyArgs>(args?: SelectSubset<T, TransactionLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TransactionLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TransactionLogs
+     * const transactionLog = await prisma.transactionLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TransactionLogUpdateManyArgs>(args: SelectSubset<T, TransactionLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TransactionLogs and returns the data updated in the database.
+     * @param {TransactionLogUpdateManyAndReturnArgs} args - Arguments to update many TransactionLogs.
+     * @example
+     * // Update many TransactionLogs
+     * const transactionLog = await prisma.transactionLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TransactionLogs and only return the `id`
+     * const transactionLogWithIdOnly = await prisma.transactionLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TransactionLogUpdateManyAndReturnArgs>(args: SelectSubset<T, TransactionLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TransactionLog.
+     * @param {TransactionLogUpsertArgs} args - Arguments to update or create a TransactionLog.
+     * @example
+     * // Update or create a TransactionLog
+     * const transactionLog = await prisma.transactionLog.upsert({
+     *   create: {
+     *     // ... data to create a TransactionLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TransactionLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TransactionLogUpsertArgs>(args: SelectSubset<T, TransactionLogUpsertArgs<ExtArgs>>): Prisma__TransactionLogClient<$Result.GetResult<Prisma.$TransactionLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TransactionLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionLogCountArgs} args - Arguments to filter TransactionLogs to count.
+     * @example
+     * // Count the number of TransactionLogs
+     * const count = await prisma.transactionLog.count({
+     *   where: {
+     *     // ... the filter for the TransactionLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends TransactionLogCountArgs>(
+      args?: Subset<T, TransactionLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TransactionLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TransactionLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TransactionLogAggregateArgs>(args: Subset<T, TransactionLogAggregateArgs>): Prisma.PrismaPromise<GetTransactionLogAggregateType<T>>
+
+    /**
+     * Group by TransactionLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TransactionLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TransactionLogGroupByArgs['orderBy'] }
+        : { orderBy?: TransactionLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TransactionLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTransactionLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TransactionLog model
+   */
+  readonly fields: TransactionLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TransactionLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TransactionLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TransactionLog model
+   */
+  interface TransactionLogFieldRefs {
+    readonly id: FieldRef<"TransactionLog", 'String'>
+    readonly type: FieldRef<"TransactionLog", 'String'>
+    readonly amount: FieldRef<"TransactionLog", 'Float'>
+    readonly currency: FieldRef<"TransactionLog", 'String'>
+    readonly status: FieldRef<"TransactionLog", 'String'>
+    readonly apiResponse: FieldRef<"TransactionLog", 'String'>
+    readonly createdAt: FieldRef<"TransactionLog", 'DateTime'>
+    readonly updatedAt: FieldRef<"TransactionLog", 'DateTime'>
+    readonly contributionId: FieldRef<"TransactionLog", 'String'>
+    readonly campaignId: FieldRef<"TransactionLog", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TransactionLog findUnique
+   */
+  export type TransactionLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * Filter, which TransactionLog to fetch.
+     */
+    where: TransactionLogWhereUniqueInput
+  }
+
+  /**
+   * TransactionLog findUniqueOrThrow
+   */
+  export type TransactionLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * Filter, which TransactionLog to fetch.
+     */
+    where: TransactionLogWhereUniqueInput
+  }
+
+  /**
+   * TransactionLog findFirst
+   */
+  export type TransactionLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * Filter, which TransactionLog to fetch.
+     */
+    where?: TransactionLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TransactionLogs to fetch.
+     */
+    orderBy?: TransactionLogOrderByWithRelationInput | TransactionLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TransactionLogs.
+     */
+    cursor?: TransactionLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TransactionLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TransactionLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TransactionLogs.
+     */
+    distinct?: TransactionLogScalarFieldEnum | TransactionLogScalarFieldEnum[]
+  }
+
+  /**
+   * TransactionLog findFirstOrThrow
+   */
+  export type TransactionLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * Filter, which TransactionLog to fetch.
+     */
+    where?: TransactionLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TransactionLogs to fetch.
+     */
+    orderBy?: TransactionLogOrderByWithRelationInput | TransactionLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TransactionLogs.
+     */
+    cursor?: TransactionLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TransactionLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TransactionLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TransactionLogs.
+     */
+    distinct?: TransactionLogScalarFieldEnum | TransactionLogScalarFieldEnum[]
+  }
+
+  /**
+   * TransactionLog findMany
+   */
+  export type TransactionLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * Filter, which TransactionLogs to fetch.
+     */
+    where?: TransactionLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TransactionLogs to fetch.
+     */
+    orderBy?: TransactionLogOrderByWithRelationInput | TransactionLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TransactionLogs.
+     */
+    cursor?: TransactionLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TransactionLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TransactionLogs.
+     */
+    skip?: number
+    distinct?: TransactionLogScalarFieldEnum | TransactionLogScalarFieldEnum[]
+  }
+
+  /**
+   * TransactionLog create
+   */
+  export type TransactionLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * The data needed to create a TransactionLog.
+     */
+    data: XOR<TransactionLogCreateInput, TransactionLogUncheckedCreateInput>
+  }
+
+  /**
+   * TransactionLog createMany
+   */
+  export type TransactionLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TransactionLogs.
+     */
+    data: TransactionLogCreateManyInput | TransactionLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TransactionLog createManyAndReturn
+   */
+  export type TransactionLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many TransactionLogs.
+     */
+    data: TransactionLogCreateManyInput | TransactionLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TransactionLog update
+   */
+  export type TransactionLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * The data needed to update a TransactionLog.
+     */
+    data: XOR<TransactionLogUpdateInput, TransactionLogUncheckedUpdateInput>
+    /**
+     * Choose, which TransactionLog to update.
+     */
+    where: TransactionLogWhereUniqueInput
+  }
+
+  /**
+   * TransactionLog updateMany
+   */
+  export type TransactionLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TransactionLogs.
+     */
+    data: XOR<TransactionLogUpdateManyMutationInput, TransactionLogUncheckedUpdateManyInput>
+    /**
+     * Filter which TransactionLogs to update
+     */
+    where?: TransactionLogWhereInput
+    /**
+     * Limit how many TransactionLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TransactionLog updateManyAndReturn
+   */
+  export type TransactionLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * The data used to update TransactionLogs.
+     */
+    data: XOR<TransactionLogUpdateManyMutationInput, TransactionLogUncheckedUpdateManyInput>
+    /**
+     * Filter which TransactionLogs to update
+     */
+    where?: TransactionLogWhereInput
+    /**
+     * Limit how many TransactionLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TransactionLog upsert
+   */
+  export type TransactionLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * The filter to search for the TransactionLog to update in case it exists.
+     */
+    where: TransactionLogWhereUniqueInput
+    /**
+     * In case the TransactionLog found by the `where` argument doesn't exist, create a new TransactionLog with this data.
+     */
+    create: XOR<TransactionLogCreateInput, TransactionLogUncheckedCreateInput>
+    /**
+     * In case the TransactionLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TransactionLogUpdateInput, TransactionLogUncheckedUpdateInput>
+  }
+
+  /**
+   * TransactionLog delete
+   */
+  export type TransactionLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+    /**
+     * Filter which TransactionLog to delete.
+     */
+    where: TransactionLogWhereUniqueInput
+  }
+
+  /**
+   * TransactionLog deleteMany
+   */
+  export type TransactionLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TransactionLogs to delete
+     */
+    where?: TransactionLogWhereInput
+    /**
+     * Limit how many TransactionLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TransactionLog without action
+   */
+  export type TransactionLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TransactionLog
+     */
+    select?: TransactionLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TransactionLog
+     */
+    omit?: TransactionLogOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10619,9 +11912,12 @@ export namespace Prisma {
     mainImage: 'mainImage',
     website: 'website',
     walletAddress: 'walletAddress',
+    cryptocurrencyType: 'cryptocurrencyType',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     active: 'active',
+    goalReached: 'goalReached',
+    fundsDistributed: 'fundsDistributed',
     userId: 'userId'
   };
 
@@ -10653,14 +11949,35 @@ export namespace Prisma {
   export const ContributionScalarFieldEnum: {
     id: 'id',
     amount: 'amount',
+    originalAmount: 'originalAmount',
+    donationCurrency: 'donationCurrency',
+    transactionHash: 'transactionHash',
+    donorWalletAddress: 'donorWalletAddress',
     message: 'message',
     anonymous: 'anonymous',
     createdAt: 'createdAt',
+    refunded: 'refunded',
     userId: 'userId',
     campaignId: 'campaignId'
   };
 
   export type ContributionScalarFieldEnum = (typeof ContributionScalarFieldEnum)[keyof typeof ContributionScalarFieldEnum]
+
+
+  export const TransactionLogScalarFieldEnum: {
+    id: 'id',
+    type: 'type',
+    amount: 'amount',
+    currency: 'currency',
+    status: 'status',
+    apiResponse: 'apiResponse',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    contributionId: 'contributionId',
+    campaignId: 'campaignId'
+  };
+
+  export type TransactionLogScalarFieldEnum = (typeof TransactionLogScalarFieldEnum)[keyof typeof TransactionLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -11033,9 +12350,12 @@ export namespace Prisma {
     mainImage?: StringNullableFilter<"Campaign"> | string | null
     website?: StringNullableFilter<"Campaign"> | string | null
     walletAddress?: StringFilter<"Campaign"> | string
+    cryptocurrencyType?: StringFilter<"Campaign"> | string
     createdAt?: DateTimeFilter<"Campaign"> | Date | string
     updatedAt?: DateTimeFilter<"Campaign"> | Date | string
     active?: BoolFilter<"Campaign"> | boolean
+    goalReached?: BoolFilter<"Campaign"> | boolean
+    fundsDistributed?: BoolFilter<"Campaign"> | boolean
     userId?: StringFilter<"Campaign"> | string
     additionalMedia?: MediaListRelationFilter
     socials?: SocialListRelationFilter
@@ -11055,9 +12375,12 @@ export namespace Prisma {
     mainImage?: SortOrderInput | SortOrder
     website?: SortOrderInput | SortOrder
     walletAddress?: SortOrder
+    cryptocurrencyType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     active?: SortOrder
+    goalReached?: SortOrder
+    fundsDistributed?: SortOrder
     userId?: SortOrder
     additionalMedia?: MediaOrderByRelationAggregateInput
     socials?: SocialOrderByRelationAggregateInput
@@ -11080,9 +12403,12 @@ export namespace Prisma {
     mainImage?: StringNullableFilter<"Campaign"> | string | null
     website?: StringNullableFilter<"Campaign"> | string | null
     walletAddress?: StringFilter<"Campaign"> | string
+    cryptocurrencyType?: StringFilter<"Campaign"> | string
     createdAt?: DateTimeFilter<"Campaign"> | Date | string
     updatedAt?: DateTimeFilter<"Campaign"> | Date | string
     active?: BoolFilter<"Campaign"> | boolean
+    goalReached?: BoolFilter<"Campaign"> | boolean
+    fundsDistributed?: BoolFilter<"Campaign"> | boolean
     userId?: StringFilter<"Campaign"> | string
     additionalMedia?: MediaListRelationFilter
     socials?: SocialListRelationFilter
@@ -11102,9 +12428,12 @@ export namespace Prisma {
     mainImage?: SortOrderInput | SortOrder
     website?: SortOrderInput | SortOrder
     walletAddress?: SortOrder
+    cryptocurrencyType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     active?: SortOrder
+    goalReached?: SortOrder
+    fundsDistributed?: SortOrder
     userId?: SortOrder
     _count?: CampaignCountOrderByAggregateInput
     _avg?: CampaignAvgOrderByAggregateInput
@@ -11128,9 +12457,12 @@ export namespace Prisma {
     mainImage?: StringNullableWithAggregatesFilter<"Campaign"> | string | null
     website?: StringNullableWithAggregatesFilter<"Campaign"> | string | null
     walletAddress?: StringWithAggregatesFilter<"Campaign"> | string
+    cryptocurrencyType?: StringWithAggregatesFilter<"Campaign"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Campaign"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Campaign"> | Date | string
     active?: BoolWithAggregatesFilter<"Campaign"> | boolean
+    goalReached?: BoolWithAggregatesFilter<"Campaign"> | boolean
+    fundsDistributed?: BoolWithAggregatesFilter<"Campaign"> | boolean
     userId?: StringWithAggregatesFilter<"Campaign"> | string
   }
 
@@ -11250,9 +12582,14 @@ export namespace Prisma {
     NOT?: ContributionWhereInput | ContributionWhereInput[]
     id?: StringFilter<"Contribution"> | string
     amount?: FloatFilter<"Contribution"> | number
+    originalAmount?: FloatFilter<"Contribution"> | number
+    donationCurrency?: StringFilter<"Contribution"> | string
+    transactionHash?: StringNullableFilter<"Contribution"> | string | null
+    donorWalletAddress?: StringFilter<"Contribution"> | string
     message?: StringNullableFilter<"Contribution"> | string | null
     anonymous?: BoolFilter<"Contribution"> | boolean
     createdAt?: DateTimeFilter<"Contribution"> | Date | string
+    refunded?: BoolFilter<"Contribution"> | boolean
     userId?: StringFilter<"Contribution"> | string
     campaignId?: StringFilter<"Contribution"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -11262,9 +12599,14 @@ export namespace Prisma {
   export type ContributionOrderByWithRelationInput = {
     id?: SortOrder
     amount?: SortOrder
+    originalAmount?: SortOrder
+    donationCurrency?: SortOrder
+    transactionHash?: SortOrderInput | SortOrder
+    donorWalletAddress?: SortOrder
     message?: SortOrderInput | SortOrder
     anonymous?: SortOrder
     createdAt?: SortOrder
+    refunded?: SortOrder
     userId?: SortOrder
     campaignId?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -11277,9 +12619,14 @@ export namespace Prisma {
     OR?: ContributionWhereInput[]
     NOT?: ContributionWhereInput | ContributionWhereInput[]
     amount?: FloatFilter<"Contribution"> | number
+    originalAmount?: FloatFilter<"Contribution"> | number
+    donationCurrency?: StringFilter<"Contribution"> | string
+    transactionHash?: StringNullableFilter<"Contribution"> | string | null
+    donorWalletAddress?: StringFilter<"Contribution"> | string
     message?: StringNullableFilter<"Contribution"> | string | null
     anonymous?: BoolFilter<"Contribution"> | boolean
     createdAt?: DateTimeFilter<"Contribution"> | Date | string
+    refunded?: BoolFilter<"Contribution"> | boolean
     userId?: StringFilter<"Contribution"> | string
     campaignId?: StringFilter<"Contribution"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -11289,9 +12636,14 @@ export namespace Prisma {
   export type ContributionOrderByWithAggregationInput = {
     id?: SortOrder
     amount?: SortOrder
+    originalAmount?: SortOrder
+    donationCurrency?: SortOrder
+    transactionHash?: SortOrderInput | SortOrder
+    donorWalletAddress?: SortOrder
     message?: SortOrderInput | SortOrder
     anonymous?: SortOrder
     createdAt?: SortOrder
+    refunded?: SortOrder
     userId?: SortOrder
     campaignId?: SortOrder
     _count?: ContributionCountOrderByAggregateInput
@@ -11307,11 +12659,95 @@ export namespace Prisma {
     NOT?: ContributionScalarWhereWithAggregatesInput | ContributionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Contribution"> | string
     amount?: FloatWithAggregatesFilter<"Contribution"> | number
+    originalAmount?: FloatWithAggregatesFilter<"Contribution"> | number
+    donationCurrency?: StringWithAggregatesFilter<"Contribution"> | string
+    transactionHash?: StringNullableWithAggregatesFilter<"Contribution"> | string | null
+    donorWalletAddress?: StringWithAggregatesFilter<"Contribution"> | string
     message?: StringNullableWithAggregatesFilter<"Contribution"> | string | null
     anonymous?: BoolWithAggregatesFilter<"Contribution"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Contribution"> | Date | string
+    refunded?: BoolWithAggregatesFilter<"Contribution"> | boolean
     userId?: StringWithAggregatesFilter<"Contribution"> | string
     campaignId?: StringWithAggregatesFilter<"Contribution"> | string
+  }
+
+  export type TransactionLogWhereInput = {
+    AND?: TransactionLogWhereInput | TransactionLogWhereInput[]
+    OR?: TransactionLogWhereInput[]
+    NOT?: TransactionLogWhereInput | TransactionLogWhereInput[]
+    id?: StringFilter<"TransactionLog"> | string
+    type?: StringFilter<"TransactionLog"> | string
+    amount?: FloatFilter<"TransactionLog"> | number
+    currency?: StringFilter<"TransactionLog"> | string
+    status?: StringFilter<"TransactionLog"> | string
+    apiResponse?: StringNullableFilter<"TransactionLog"> | string | null
+    createdAt?: DateTimeFilter<"TransactionLog"> | Date | string
+    updatedAt?: DateTimeFilter<"TransactionLog"> | Date | string
+    contributionId?: StringNullableFilter<"TransactionLog"> | string | null
+    campaignId?: StringNullableFilter<"TransactionLog"> | string | null
+  }
+
+  export type TransactionLogOrderByWithRelationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    apiResponse?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    contributionId?: SortOrderInput | SortOrder
+    campaignId?: SortOrderInput | SortOrder
+  }
+
+  export type TransactionLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TransactionLogWhereInput | TransactionLogWhereInput[]
+    OR?: TransactionLogWhereInput[]
+    NOT?: TransactionLogWhereInput | TransactionLogWhereInput[]
+    type?: StringFilter<"TransactionLog"> | string
+    amount?: FloatFilter<"TransactionLog"> | number
+    currency?: StringFilter<"TransactionLog"> | string
+    status?: StringFilter<"TransactionLog"> | string
+    apiResponse?: StringNullableFilter<"TransactionLog"> | string | null
+    createdAt?: DateTimeFilter<"TransactionLog"> | Date | string
+    updatedAt?: DateTimeFilter<"TransactionLog"> | Date | string
+    contributionId?: StringNullableFilter<"TransactionLog"> | string | null
+    campaignId?: StringNullableFilter<"TransactionLog"> | string | null
+  }, "id">
+
+  export type TransactionLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    apiResponse?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    contributionId?: SortOrderInput | SortOrder
+    campaignId?: SortOrderInput | SortOrder
+    _count?: TransactionLogCountOrderByAggregateInput
+    _avg?: TransactionLogAvgOrderByAggregateInput
+    _max?: TransactionLogMaxOrderByAggregateInput
+    _min?: TransactionLogMinOrderByAggregateInput
+    _sum?: TransactionLogSumOrderByAggregateInput
+  }
+
+  export type TransactionLogScalarWhereWithAggregatesInput = {
+    AND?: TransactionLogScalarWhereWithAggregatesInput | TransactionLogScalarWhereWithAggregatesInput[]
+    OR?: TransactionLogScalarWhereWithAggregatesInput[]
+    NOT?: TransactionLogScalarWhereWithAggregatesInput | TransactionLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TransactionLog"> | string
+    type?: StringWithAggregatesFilter<"TransactionLog"> | string
+    amount?: FloatWithAggregatesFilter<"TransactionLog"> | number
+    currency?: StringWithAggregatesFilter<"TransactionLog"> | string
+    status?: StringWithAggregatesFilter<"TransactionLog"> | string
+    apiResponse?: StringNullableWithAggregatesFilter<"TransactionLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TransactionLog"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TransactionLog"> | Date | string
+    contributionId?: StringNullableWithAggregatesFilter<"TransactionLog"> | string | null
+    campaignId?: StringNullableWithAggregatesFilter<"TransactionLog"> | string | null
   }
 
   export type AccountCreateInput = {
@@ -11606,9 +13042,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     additionalMedia?: MediaCreateNestedManyWithoutCampaignInput
     socials?: SocialCreateNestedManyWithoutCampaignInput
     user: UserCreateNestedOneWithoutCampaignsInput
@@ -11627,9 +13066,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     userId: string
     additionalMedia?: MediaUncheckedCreateNestedManyWithoutCampaignInput
     socials?: SocialUncheckedCreateNestedManyWithoutCampaignInput
@@ -11648,9 +13090,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     additionalMedia?: MediaUpdateManyWithoutCampaignNestedInput
     socials?: SocialUpdateManyWithoutCampaignNestedInput
     user?: UserUpdateOneRequiredWithoutCampaignsNestedInput
@@ -11669,9 +13114,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     additionalMedia?: MediaUncheckedUpdateManyWithoutCampaignNestedInput
     socials?: SocialUncheckedUpdateManyWithoutCampaignNestedInput
@@ -11690,9 +13138,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     userId: string
   }
 
@@ -11708,9 +13159,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CampaignUncheckedUpdateManyInput = {
@@ -11725,9 +13179,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -11844,9 +13301,14 @@ export namespace Prisma {
   export type ContributionCreateInput = {
     id?: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash?: string | null
+    donorWalletAddress: string
     message?: string | null
     anonymous?: boolean
     createdAt?: Date | string
+    refunded?: boolean
     user: UserCreateNestedOneWithoutContributionsInput
     campaign: CampaignCreateNestedOneWithoutContributionsInput
   }
@@ -11854,9 +13316,14 @@ export namespace Prisma {
   export type ContributionUncheckedCreateInput = {
     id?: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash?: string | null
+    donorWalletAddress: string
     message?: string | null
     anonymous?: boolean
     createdAt?: Date | string
+    refunded?: boolean
     userId: string
     campaignId: string
   }
@@ -11864,9 +13331,14 @@ export namespace Prisma {
   export type ContributionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutContributionsNestedInput
     campaign?: CampaignUpdateOneRequiredWithoutContributionsNestedInput
   }
@@ -11874,9 +13346,14 @@ export namespace Prisma {
   export type ContributionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     campaignId?: StringFieldUpdateOperationsInput | string
   }
@@ -11884,9 +13361,14 @@ export namespace Prisma {
   export type ContributionCreateManyInput = {
     id?: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash?: string | null
+    donorWalletAddress: string
     message?: string | null
     anonymous?: boolean
     createdAt?: Date | string
+    refunded?: boolean
     userId: string
     campaignId: string
   }
@@ -11894,19 +13376,120 @@ export namespace Prisma {
   export type ContributionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ContributionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     campaignId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TransactionLogCreateInput = {
+    id?: string
+    type: string
+    amount: number
+    currency: string
+    status: string
+    apiResponse?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contributionId?: string | null
+    campaignId?: string | null
+  }
+
+  export type TransactionLogUncheckedCreateInput = {
+    id?: string
+    type: string
+    amount: number
+    currency: string
+    status: string
+    apiResponse?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contributionId?: string | null
+    campaignId?: string | null
+  }
+
+  export type TransactionLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contributionId?: NullableStringFieldUpdateOperationsInput | string | null
+    campaignId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TransactionLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contributionId?: NullableStringFieldUpdateOperationsInput | string | null
+    campaignId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TransactionLogCreateManyInput = {
+    id?: string
+    type: string
+    amount: number
+    currency: string
+    status: string
+    apiResponse?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contributionId?: string | null
+    campaignId?: string | null
+  }
+
+  export type TransactionLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contributionId?: NullableStringFieldUpdateOperationsInput | string | null
+    campaignId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TransactionLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contributionId?: NullableStringFieldUpdateOperationsInput | string | null
+    campaignId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -12282,9 +13865,12 @@ export namespace Prisma {
     mainImage?: SortOrder
     website?: SortOrder
     walletAddress?: SortOrder
+    cryptocurrencyType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     active?: SortOrder
+    goalReached?: SortOrder
+    fundsDistributed?: SortOrder
     userId?: SortOrder
   }
 
@@ -12305,9 +13891,12 @@ export namespace Prisma {
     mainImage?: SortOrder
     website?: SortOrder
     walletAddress?: SortOrder
+    cryptocurrencyType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     active?: SortOrder
+    goalReached?: SortOrder
+    fundsDistributed?: SortOrder
     userId?: SortOrder
   }
 
@@ -12323,9 +13912,12 @@ export namespace Prisma {
     mainImage?: SortOrder
     website?: SortOrder
     walletAddress?: SortOrder
+    cryptocurrencyType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     active?: SortOrder
+    goalReached?: SortOrder
+    fundsDistributed?: SortOrder
     userId?: SortOrder
   }
 
@@ -12414,23 +14006,34 @@ export namespace Prisma {
   export type ContributionCountOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
+    originalAmount?: SortOrder
+    donationCurrency?: SortOrder
+    transactionHash?: SortOrder
+    donorWalletAddress?: SortOrder
     message?: SortOrder
     anonymous?: SortOrder
     createdAt?: SortOrder
+    refunded?: SortOrder
     userId?: SortOrder
     campaignId?: SortOrder
   }
 
   export type ContributionAvgOrderByAggregateInput = {
     amount?: SortOrder
+    originalAmount?: SortOrder
   }
 
   export type ContributionMaxOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
+    originalAmount?: SortOrder
+    donationCurrency?: SortOrder
+    transactionHash?: SortOrder
+    donorWalletAddress?: SortOrder
     message?: SortOrder
     anonymous?: SortOrder
     createdAt?: SortOrder
+    refunded?: SortOrder
     userId?: SortOrder
     campaignId?: SortOrder
   }
@@ -12438,14 +14041,67 @@ export namespace Prisma {
   export type ContributionMinOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
+    originalAmount?: SortOrder
+    donationCurrency?: SortOrder
+    transactionHash?: SortOrder
+    donorWalletAddress?: SortOrder
     message?: SortOrder
     anonymous?: SortOrder
     createdAt?: SortOrder
+    refunded?: SortOrder
     userId?: SortOrder
     campaignId?: SortOrder
   }
 
   export type ContributionSumOrderByAggregateInput = {
+    amount?: SortOrder
+    originalAmount?: SortOrder
+  }
+
+  export type TransactionLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    apiResponse?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    contributionId?: SortOrder
+    campaignId?: SortOrder
+  }
+
+  export type TransactionLogAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type TransactionLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    apiResponse?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    contributionId?: SortOrder
+    campaignId?: SortOrder
+  }
+
+  export type TransactionLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    amount?: SortOrder
+    currency?: SortOrder
+    status?: SortOrder
+    apiResponse?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    contributionId?: SortOrder
+    campaignId?: SortOrder
+  }
+
+  export type TransactionLogSumOrderByAggregateInput = {
     amount?: SortOrder
   }
 
@@ -13286,9 +14942,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     additionalMedia?: MediaCreateNestedManyWithoutCampaignInput
     socials?: SocialCreateNestedManyWithoutCampaignInput
     contributions?: ContributionCreateNestedManyWithoutCampaignInput
@@ -13306,9 +14965,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     additionalMedia?: MediaUncheckedCreateNestedManyWithoutCampaignInput
     socials?: SocialUncheckedCreateNestedManyWithoutCampaignInput
     contributions?: ContributionUncheckedCreateNestedManyWithoutCampaignInput
@@ -13327,18 +14989,28 @@ export namespace Prisma {
   export type ContributionCreateWithoutUserInput = {
     id?: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash?: string | null
+    donorWalletAddress: string
     message?: string | null
     anonymous?: boolean
     createdAt?: Date | string
+    refunded?: boolean
     campaign: CampaignCreateNestedOneWithoutContributionsInput
   }
 
   export type ContributionUncheckedCreateWithoutUserInput = {
     id?: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash?: string | null
+    donorWalletAddress: string
     message?: string | null
     anonymous?: boolean
     createdAt?: Date | string
+    refunded?: boolean
     campaignId: string
   }
 
@@ -13443,9 +15115,12 @@ export namespace Prisma {
     mainImage?: StringNullableFilter<"Campaign"> | string | null
     website?: StringNullableFilter<"Campaign"> | string | null
     walletAddress?: StringFilter<"Campaign"> | string
+    cryptocurrencyType?: StringFilter<"Campaign"> | string
     createdAt?: DateTimeFilter<"Campaign"> | Date | string
     updatedAt?: DateTimeFilter<"Campaign"> | Date | string
     active?: BoolFilter<"Campaign"> | boolean
+    goalReached?: BoolFilter<"Campaign"> | boolean
+    fundsDistributed?: BoolFilter<"Campaign"> | boolean
     userId?: StringFilter<"Campaign"> | string
   }
 
@@ -13471,9 +15146,14 @@ export namespace Prisma {
     NOT?: ContributionScalarWhereInput | ContributionScalarWhereInput[]
     id?: StringFilter<"Contribution"> | string
     amount?: FloatFilter<"Contribution"> | number
+    originalAmount?: FloatFilter<"Contribution"> | number
+    donationCurrency?: StringFilter<"Contribution"> | string
+    transactionHash?: StringNullableFilter<"Contribution"> | string | null
+    donorWalletAddress?: StringFilter<"Contribution"> | string
     message?: StringNullableFilter<"Contribution"> | string | null
     anonymous?: BoolFilter<"Contribution"> | boolean
     createdAt?: DateTimeFilter<"Contribution"> | Date | string
+    refunded?: BoolFilter<"Contribution"> | boolean
     userId?: StringFilter<"Contribution"> | string
     campaignId?: StringFilter<"Contribution"> | string
   }
@@ -13560,18 +15240,28 @@ export namespace Prisma {
   export type ContributionCreateWithoutCampaignInput = {
     id?: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash?: string | null
+    donorWalletAddress: string
     message?: string | null
     anonymous?: boolean
     createdAt?: Date | string
+    refunded?: boolean
     user: UserCreateNestedOneWithoutContributionsInput
   }
 
   export type ContributionUncheckedCreateWithoutCampaignInput = {
     id?: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash?: string | null
+    donorWalletAddress: string
     message?: string | null
     anonymous?: boolean
     createdAt?: Date | string
+    refunded?: boolean
     userId: string
   }
 
@@ -13704,9 +15394,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     socials?: SocialCreateNestedManyWithoutCampaignInput
     user: UserCreateNestedOneWithoutCampaignsInput
     contributions?: ContributionCreateNestedManyWithoutCampaignInput
@@ -13724,9 +15417,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     userId: string
     socials?: SocialUncheckedCreateNestedManyWithoutCampaignInput
     contributions?: ContributionUncheckedCreateNestedManyWithoutCampaignInput
@@ -13760,9 +15456,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     socials?: SocialUpdateManyWithoutCampaignNestedInput
     user?: UserUpdateOneRequiredWithoutCampaignsNestedInput
     contributions?: ContributionUpdateManyWithoutCampaignNestedInput
@@ -13780,9 +15479,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     socials?: SocialUncheckedUpdateManyWithoutCampaignNestedInput
     contributions?: ContributionUncheckedUpdateManyWithoutCampaignNestedInput
@@ -13800,9 +15502,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     additionalMedia?: MediaCreateNestedManyWithoutCampaignInput
     user: UserCreateNestedOneWithoutCampaignsInput
     contributions?: ContributionCreateNestedManyWithoutCampaignInput
@@ -13820,9 +15525,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     userId: string
     additionalMedia?: MediaUncheckedCreateNestedManyWithoutCampaignInput
     contributions?: ContributionUncheckedCreateNestedManyWithoutCampaignInput
@@ -13856,9 +15564,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     additionalMedia?: MediaUpdateManyWithoutCampaignNestedInput
     user?: UserUpdateOneRequiredWithoutCampaignsNestedInput
     contributions?: ContributionUpdateManyWithoutCampaignNestedInput
@@ -13876,9 +15587,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     additionalMedia?: MediaUncheckedUpdateManyWithoutCampaignNestedInput
     contributions?: ContributionUncheckedUpdateManyWithoutCampaignNestedInput
@@ -13927,9 +15641,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     additionalMedia?: MediaCreateNestedManyWithoutCampaignInput
     socials?: SocialCreateNestedManyWithoutCampaignInput
     user: UserCreateNestedOneWithoutCampaignsInput
@@ -13947,9 +15664,12 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
     userId: string
     additionalMedia?: MediaUncheckedCreateNestedManyWithoutCampaignInput
     socials?: SocialUncheckedCreateNestedManyWithoutCampaignInput
@@ -14020,9 +15740,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     additionalMedia?: MediaUpdateManyWithoutCampaignNestedInput
     socials?: SocialUpdateManyWithoutCampaignNestedInput
     user?: UserUpdateOneRequiredWithoutCampaignsNestedInput
@@ -14040,9 +15763,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     additionalMedia?: MediaUncheckedUpdateManyWithoutCampaignNestedInput
     socials?: SocialUncheckedUpdateManyWithoutCampaignNestedInput
@@ -14080,17 +15806,25 @@ export namespace Prisma {
     mainImage?: string | null
     website?: string | null
     walletAddress: string
+    cryptocurrencyType: string
     createdAt?: Date | string
     updatedAt?: Date | string
     active?: boolean
+    goalReached?: boolean
+    fundsDistributed?: boolean
   }
 
   export type ContributionCreateManyUserInput = {
     id?: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash?: string | null
+    donorWalletAddress: string
     message?: string | null
     anonymous?: boolean
     createdAt?: Date | string
+    refunded?: boolean
     campaignId: string
   }
 
@@ -14166,9 +15900,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     additionalMedia?: MediaUpdateManyWithoutCampaignNestedInput
     socials?: SocialUpdateManyWithoutCampaignNestedInput
     contributions?: ContributionUpdateManyWithoutCampaignNestedInput
@@ -14186,9 +15923,12 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
     additionalMedia?: MediaUncheckedUpdateManyWithoutCampaignNestedInput
     socials?: SocialUncheckedUpdateManyWithoutCampaignNestedInput
     contributions?: ContributionUncheckedUpdateManyWithoutCampaignNestedInput
@@ -14206,35 +15946,53 @@ export namespace Prisma {
     mainImage?: NullableStringFieldUpdateOperationsInput | string | null
     website?: NullableStringFieldUpdateOperationsInput | string | null
     walletAddress?: StringFieldUpdateOperationsInput | string
+    cryptocurrencyType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    goalReached?: BoolFieldUpdateOperationsInput | boolean
+    fundsDistributed?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ContributionUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
     campaign?: CampaignUpdateOneRequiredWithoutContributionsNestedInput
   }
 
   export type ContributionUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
     campaignId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ContributionUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
     campaignId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -14255,9 +16013,14 @@ export namespace Prisma {
   export type ContributionCreateManyCampaignInput = {
     id?: string
     amount: number
+    originalAmount: number
+    donationCurrency: string
+    transactionHash?: string | null
+    donorWalletAddress: string
     message?: string | null
     anonymous?: boolean
     createdAt?: Date | string
+    refunded?: boolean
     userId: string
   }
 
@@ -14306,27 +16069,42 @@ export namespace Prisma {
   export type ContributionUpdateWithoutCampaignInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutContributionsNestedInput
   }
 
   export type ContributionUncheckedUpdateWithoutCampaignInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ContributionUncheckedUpdateManyWithoutCampaignInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
+    originalAmount?: FloatFieldUpdateOperationsInput | number
+    donationCurrency?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    donorWalletAddress?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     anonymous?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    refunded?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
   }
 

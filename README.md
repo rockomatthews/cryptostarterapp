@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CryptoStarter
+
+CryptoStarter is a decentralized crowdfunding platform for crypto projects. It allows creators to raise funds for their projects in their preferred cryptocurrency, while donors can contribute in any supported cryptocurrency.
+
+## Features
+
+- **Campaign Creation**: Create and manage crowdfunding campaigns with the ability to set funding goals, deadlines, and select your preferred cryptocurrency.
+- **Multi-Currency Donations**: Donors can contribute using any supported cryptocurrency (BTC, ETH, SOL, ADA, DOT, USDT).
+- **Escrow System**: All donations are converted to stablecoin and held in escrow until the campaign deadline.
+- **Automated Distribution**: If a campaign reaches its goal, funds are automatically converted to the creator's preferred cryptocurrency and distributed.
+- **Automated Refunds**: If a campaign fails to meet its goal, donors receive refunds in their original donation currency.
+
+## Supported Cryptocurrencies
+
+- Bitcoin (BTC)
+- Ethereum (ETH)
+- Solana (SOL)
+- Cardano (ADA)
+- Polkadot (DOT)
+- Tether (USDT)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (v18 or later)
+- PostgreSQL database
+- CryptoProcessing.io API account
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/cryptostarterapp.git
+cd cryptostarterapp
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up environment variables:
+
+Create a `.env` file with the following variables:
+
+```
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/cryptostarter"
+
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key
+
+# OAuth Providers
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# CryptoProcessing.io API
+CRYPTO_PROCESSING_API_KEY=your-api-key
+CRYPTO_PROCESSING_API_SECRET=your-api-secret
+
+# Cron API Key (for automatic processing)
+CRON_API_KEY=your-cron-api-key
+```
+
+4. Set up the database:
+
+```bash
+npx prisma migrate dev
+```
+
+5. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API Integration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project uses CryptoProcessing.io's API for handling cryptocurrency transactions. The integration is mainly handled through the `/lib/cryptoApi.ts` file, which provides functions for:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Currency conversion
+- Processing donations
+- Creating payment intents
+- Distributing funds after successful campaigns
+- Refunding donations for failed campaigns
 
-## Learn More
+To use your own CryptoProcessing.io API key, update the environment variables with your API credentials.
 
-To learn more about Next.js, take a look at the following resources:
+## Scheduled Tasks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The platform includes an API endpoint for processing campaign outcomes at `/api/cron/process-campaigns`. This endpoint should be called periodically (e.g., daily) to:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Check for campaigns that have reached their deadline
+2. Process successful campaigns by distributing funds
+3. Process failed campaigns by refunding donors
 
-## Deploy on Vercel
+You can set up a cron job to call this endpoint:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# Example cron job (daily at midnight)
+0 0 * * * curl -X GET "https://your-app-url.com/api/cron/process-campaigns?api_key=your-cron-api-key"
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+
+- **Frontend**: Next.js, Material UI
+- **Backend**: Next.js API Routes
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth.js
+- **Cryptocurrency**: CryptoProcessing.io API
+
+## License
+
+This project is licensed under the MIT License.

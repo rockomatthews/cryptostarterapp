@@ -1,12 +1,33 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { prisma } from '../../../lib/prisma';
-import { authOptions } from '../../../lib/auth';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { prisma } from '@/lib/prisma';
 
 // GET all campaigns
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+    const title = searchParams.get('title');
+    
+    let whereClause: any = { active: true };
+    
+    if (category) {
+      whereClause.category = category;
+    }
+    
+    if (title) {
+      whereClause.title = {
+        contains: title,
+        mode: 'insensitive',
+      };
+    }
+    
     const campaigns = await prisma.campaign.findMany({
+      where: whereClause,
+      orderBy: {
+        createdAt: 'desc',
+      },
       include: {
         user: {
           select: {
@@ -15,17 +36,9 @@ export async function GET() {
             image: true,
           },
         },
-        _count: {
-          select: {
-            contributions: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
       },
     });
-
+    
     return NextResponse.json(campaigns);
   } catch (error) {
     console.error('Error fetching campaigns:', error);
@@ -52,16 +65,21 @@ export async function POST(request: Request) {
     
     const { 
       title, 
-      description, 
-      targetAmount, 
+      description,
+      shortDescription,
+      fundingGoal, 
       deadline, 
       category, 
-      image,
-      walletAddress
+      mainImage,
+      additionalMedia = [],
+      website = '',
+      socials = [],
+      walletAddress,
+      cryptocurrencyType
     } = body;
 
     // Validate required fields
-    if (!title || !description || !targetAmount || !deadline || !category || !walletAddress) {
+    if (!title || !description || !fundingGoal || !deadline || !category || !walletAddress || !cryptocurrencyType) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -72,16 +90,44 @@ export async function POST(request: Request) {
     const campaign = await prisma.campaign.create({
       data: {
         title,
-        shortDescription: description.substring(0, 150) + (description.length > 150 ? '...' : ''),
+        shortDescription: shortDescription || description.substring(0, 150) + (description.length > 150 ? '...' : ''),
         description,
-        fundingGoal: parseFloat(targetAmount),
+        fundingGoal: parseFloat(fundingGoal),
         deadline: new Date(deadline),
         category,
-        mainImage: image,
+        mainImage,
+        website,
         walletAddress,
+        cryptocurrencyType,
         userId: session.user.id,
       },
     });
+
+    // Create associated media records
+    if (additionalMedia && additionalMedia.length > 0) {
+      const mediaRecords = additionalMedia.map((media: { url: string, type: string }) => ({
+        url: media.url,
+        type: media.type,
+        campaignId: campaign.id
+      }));
+      
+      await prisma.media.createMany({
+        data: mediaRecords
+      });
+    }
+    
+    // Create associated social links
+    if (socials && socials.length > 0) {
+      const socialRecords = socials.map((social: { platform: string, url: string }) => ({
+        platform: social.platform,
+        url: social.url,
+        campaignId: campaign.id
+      }));
+      
+      await prisma.social.createMany({
+        data: socialRecords
+      });
+    }
 
     return NextResponse.json(campaign);
   } catch (error) {

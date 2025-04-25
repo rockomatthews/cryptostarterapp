@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react';
 import { 
   Container, Typography, Box, Paper, TextField, Button,
   Chip, FormControl, InputLabel, Select,
-  MenuItem, InputAdornment, Divider
+  MenuItem, InputAdornment, Divider, Alert,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
@@ -15,6 +16,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { SUPPORTED_CRYPTOCURRENCIES, CAMPAIGN_CREATION_FEE, createPaymentIntent } from '@/lib/cryptoApi';
 
 // Social media platforms
 const platforms = [
@@ -64,6 +66,7 @@ export default function CreateCampaign() {
   const [category, setCategory] = useState('');
   const [website, setWebsite] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
+  const [cryptocurrencyType, setCryptocurrencyType] = useState('');
   
   // Media state
   const [mainImage, setMainImage] = useState<File | null>(null);
@@ -77,6 +80,13 @@ export default function CreateCampaign() {
   
   // Validation state
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Payment state
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [donorWalletAddress, setDonorWalletAddress] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -142,6 +152,7 @@ export default function CreateCampaign() {
     if (!deadline) newErrors.deadline = 'Deadline is required';
     if (!category) newErrors.category = 'Category is required';
     if (!walletAddress) newErrors.walletAddress = 'Wallet address is required';
+    if (!cryptocurrencyType) newErrors.cryptocurrencyType = 'Cryptocurrency type is required';
     if (!mainImage) newErrors.mainImage = 'Main image is required';
     
     setErrors(newErrors);
@@ -155,56 +166,99 @@ export default function CreateCampaign() {
       return;
     }
     
-    // Here you would upload images and create the campaign
-    // For example:
+    // Show payment modal for campaign creation fee
+    setShowPaymentModal(true);
+  };
+  
+  const handlePaymentModalClose = () => {
+    setShowPaymentModal(false);
+    setPaymentError('');
+  };
+  
+  const handleProcessPayment = async () => {
+    if (!donorWalletAddress) {
+      setPaymentError('Please enter your wallet address');
+      return;
+    }
     
-    // 1. Upload main image
-    // const formData = new FormData();
-    // formData.append('file', mainImage);
-    // const mainImageRes = await fetch('/api/upload', {
-    //   method: 'POST',
-    //   body: formData
-    // });
-    // const mainImageData = await mainImageRes.json();
-    // const mainImageUrl = mainImageData.url;
+    setIsProcessingPayment(true);
+    setPaymentError('');
     
-    // 2. Upload additional media
-    // const mediaUrls = [];
-    // for (const media of additionalMedia) {
-    //   const mediaFormData = new FormData();
-    //   mediaFormData.append('file', media.file);
-    //   const mediaRes = await fetch('/api/upload', {
-    //     method: 'POST',
-    //     body: mediaFormData
-    //   });
-    //   const mediaData = await mediaRes.json();
-    //   mediaUrls.push({
-    //     url: mediaData.url,
-    //     type: media.type
-    //   });
-    // }
-    
-    // 3. Create campaign
-    // await fetch('/api/campaigns', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     title,
-    //     shortDescription,
-    //     description,
-    //     fundingGoal: parseFloat(fundingGoal),
-    //     deadline,
-    //     category,
-    //     mainImage: mainImageUrl,
-    //     additionalMedia: mediaUrls,
-    //     website,
-    //     socials: socialLinks,
-    //     walletAddress
-    //   })
-    // });
-    
-    // For now, just navigate back to profile
-    router.push('/profile');
+    try {
+      // Create payment intent for campaign creation fee
+      const paymentIntent = await createPaymentIntent({
+        amount: CAMPAIGN_CREATION_FEE,
+        currency: 'USDT',
+        description: `Campaign creation fee for: ${title}`
+      });
+      
+      // In a real implementation, we would now:
+      // 1. Connect to user's wallet
+      // 2. Process the payment
+      // 3. Wait for blockchain confirmation
+      
+      // For demo purposes, we'll simulate a successful payment
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      setPaymentSuccess(true);
+      
+      // After successful payment, submit the campaign
+      await submitCampaign();
+      
+    } catch (error) {
+      console.error('Payment error:', error);
+      setPaymentError('Payment failed. Please try again.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+  
+  const submitCampaign = async () => {
+    try {
+      // 1. Upload main image
+      // In a real implementation, we would upload the image to a storage service
+      // For now, we'll simulate the upload
+      const mainImageUrl = `https://example.com/images/${mainImage?.name}`;
+      
+      // 2. Upload additional media
+      const mediaUrls = additionalMedia.map((media, index) => ({
+        url: `https://example.com/media/${index}-${media.file.name}`,
+        type: media.type
+      }));
+      
+      // 3. Create campaign
+      const response = await fetch('/api/campaigns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          shortDescription,
+          description,
+          fundingGoal: parseFloat(fundingGoal),
+          deadline,
+          category,
+          cryptocurrencyType,
+          mainImage: mainImageUrl,
+          additionalMedia: mediaUrls,
+          website,
+          socials: socialLinks,
+          walletAddress
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create campaign');
+      }
+      
+      const campaign = await response.json();
+      
+      // Navigate to the new campaign page
+      router.push(`/campaigns/${campaign.id}`);
+      
+    } catch (error) {
+      console.error('Error creating campaign:', error);
+      setPaymentError('Failed to create campaign after payment');
+    }
   };
 
   if (status === 'loading') {
@@ -225,6 +279,11 @@ export default function CreateCampaign() {
         </Typography>
         
         <Paper sx={{ p: 3, mt: 2 }}>
+          <Alert severity="info" sx={{ mb: 3 }}>
+            Campaign creation requires a one-time fee of {CAMPAIGN_CREATION_FEE} USDT. 
+            Your campaign will be automatically distributed if successful or refunded if not successful.
+          </Alert>
+          
           <form onSubmit={handleSubmit}>
             {/* Main Image Upload */}
             <Box sx={{ mb: 4, textAlign: 'center' }}>
@@ -366,6 +425,32 @@ export default function CreateCampaign() {
                       {errors.category}
                     </Typography>
                   )}
+                </FormControl>
+              </Box>
+              
+              <Box>
+                <FormControl fullWidth error={!!errors.cryptocurrencyType} required>
+                  <InputLabel id="cryptocurrency-label">Preferred Cryptocurrency</InputLabel>
+                  <Select
+                    labelId="cryptocurrency-label"
+                    value={cryptocurrencyType}
+                    label="Preferred Cryptocurrency"
+                    onChange={(e) => setCryptocurrencyType(e.target.value)}
+                  >
+                    {SUPPORTED_CRYPTOCURRENCIES.map((crypto) => (
+                      <MenuItem key={crypto.value} value={crypto.value}>
+                        {crypto.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.cryptocurrencyType && (
+                    <Typography color="error" variant="caption">
+                      {errors.cryptocurrencyType}
+                    </Typography>
+                  )}
+                  <Typography variant="caption" sx={{ mt: 1 }}>
+                    Select the cryptocurrency you want to receive if your campaign is successful.
+                  </Typography>
                 </FormControl>
               </Box>
               
@@ -553,7 +638,7 @@ export default function CreateCampaign() {
                   onChange={(e) => setWalletAddress(e.target.value)}
                   variant="outlined"
                   error={!!errors.walletAddress}
-                  helperText={errors.walletAddress || "Wallet address where funds will be sent"}
+                  helperText={errors.walletAddress || `Your ${cryptocurrencyType || 'cryptocurrency'} wallet address where funds will be sent if campaign is successful`}
                   required
                 />
               </Box>
@@ -572,12 +657,71 @@ export default function CreateCampaign() {
                 color="primary"
                 size="large"
               >
-                Create Campaign
+                Create Campaign ({CAMPAIGN_CREATION_FEE} USDT)
               </Button>
             </Box>
           </form>
         </Paper>
       </Box>
+      
+      {/* Payment Modal */}
+      <Dialog
+        open={showPaymentModal}
+        onClose={handlePaymentModalClose}
+        aria-labelledby="payment-dialog-title"
+      >
+        <DialogTitle id="payment-dialog-title">
+          Campaign Creation Payment
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Creating a campaign requires a one-time fee of {CAMPAIGN_CREATION_FEE} USDT.
+            This helps ensure high-quality campaigns on our platform.
+          </DialogContentText>
+          
+          {paymentSuccess ? (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              Payment successful! Creating your campaign...
+            </Alert>
+          ) : (
+            <>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Your Wallet Address"
+                type="text"
+                value={donorWalletAddress}
+                onChange={(e) => setDonorWalletAddress(e.target.value)}
+                required
+                sx={{ mt: 2 }}
+              />
+              
+              {paymentError && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  {paymentError}
+                </Alert>
+              )}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {!paymentSuccess && (
+            <>
+              <Button onClick={handlePaymentModalClose} disabled={isProcessingPayment}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleProcessPayment} 
+                disabled={isProcessingPayment || !donorWalletAddress}
+                variant="contained"
+                color="primary"
+              >
+                {isProcessingPayment ? 'Processing...' : `Pay ${CAMPAIGN_CREATION_FEE} USDT`}
+              </Button>
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 } 

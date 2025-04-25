@@ -3,15 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type RouteParams = {
-  params: {
-    id: string;
-  };
-};
-
 export async function GET(
-  request: NextRequest, 
-  { params }: RouteParams
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     const userId = params.id;
@@ -52,8 +46,8 @@ export async function GET(
 }
 
 export async function PUT(
-  request: NextRequest, 
-  { params }: RouteParams
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     const userId = params.id;

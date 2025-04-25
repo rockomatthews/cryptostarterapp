@@ -15,82 +15,83 @@ import {
   Tooltip,
 } from '@mui/material';
 import Link from 'next/link';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
   };
   
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
   
-  const handleProfileClick = () => {
-    router.push('/profile');
-    handleCloseMenu();
-  };
-  
-  const handleEditProfileClick = () => {
-    router.push('/profile/edit');
-    handleCloseMenu();
-  };
-  
-  const handleLogout = () => {
+  const handleSignOut = () => {
     signOut({ callbackUrl: '/' });
-    handleCloseMenu();
+    handleCloseUserMenu();
+  };
+
+  const handleCreateCampaign = (e: React.MouseEvent) => {
+    if (status !== 'authenticated') {
+      e.preventDefault();
+      router.push('/login');
+    }
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" color="default" elevation={1}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
-          >
-            CryptoStarter
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            <Link href="/" passHref>
-              <Button sx={{ my: 2, color: 'white', display: 'block' }}>
-                Home
-              </Button>
-            </Link>
-            <Link href="/explore" passHref>
-              <Button sx={{ my: 2, color: 'white', display: 'block' }}>
-                Explore
-              </Button>
-            </Link>
-            <Link href="/create-campaign" passHref>
-              <Button sx={{ my: 2, color: 'white', display: 'block' }}>
-                Create Campaign
-              </Button>
+        <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Link href="/" passHref style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
+                  fontWeight: 700,
+                  color: 'primary.main',
+                }}
+              >
+                CryptoStarter
+              </Typography>
             </Link>
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
-            {status === 'authenticated' ? (
-              <>
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Button component={Link} href="/" color="inherit">
+              Home
+            </Button>
+            <Button component={Link} href="/explore" color="inherit">
+              Explore
+            </Button>
+            <Button 
+              component={Link} 
+              href={status === 'authenticated' ? "/create-campaign" : "#"} 
+              color="inherit"
+              onClick={handleCreateCampaign}
+            >
+              Create Campaign
+            </Button>
+
+            {status === 'authenticated' && session?.user ? (
+              <Box sx={{ ml: 2 }}>
+                <Tooltip title="Open profile menu">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar 
-                      alt={session?.user?.name || "User"} 
-                      src={session?.user?.image || ""} 
+                      alt={session.user.name || 'User'} 
+                      src={session.user.image || ''}
                     />
                   </IconButton>
                 </Tooltip>
                 <Menu
                   sx={{ mt: '45px' }}
                   id="menu-appbar"
-                  anchorEl={anchorEl}
+                  anchorEl={anchorElUser}
                   anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -100,27 +101,23 @@ const Navbar = () => {
                     vertical: 'top',
                     horizontal: 'right',
                   }}
-                  open={Boolean(anchorEl)}
-                  onClose={handleCloseMenu}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
                 >
-                  <MenuItem onClick={handleProfileClick}>
-                    Profile
+                  <MenuItem onClick={handleCloseUserMenu} component={Link} href="/profile">
+                    <Typography textAlign="center">Profile</Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleEditProfileClick}>
-                    Edit Profile
+                  <MenuItem onClick={handleCloseUserMenu} component={Link} href="/dashboard">
+                    <Typography textAlign="center">Dashboard</Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleLogout}>
-                    Logout
+                  <MenuItem onClick={handleSignOut}>
+                    <Typography textAlign="center">Logout</Typography>
                   </MenuItem>
                 </Menu>
-              </>
+              </Box>
             ) : (
-              <Button 
-                color="inherit" 
-                variant="outlined" 
-                onClick={() => signIn(undefined, { callbackUrl: '/profile' })}
-              >
-                Log In
+              <Button component={Link} href="/login" variant="contained" color="primary" sx={{ ml: 2 }}>
+                Sign In
               </Button>
             )}
           </Box>

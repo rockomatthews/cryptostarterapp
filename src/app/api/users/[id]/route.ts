@@ -3,12 +3,18 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+type RouteParams = {
+  params: {
+    id: string;
+  };
+};
+
 export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
+  request: NextRequest, 
+  { params }: RouteParams
+): Promise<NextResponse> {
   try {
-    const userId = context.params.id;
+    const userId = params.id;
 
     const session = await getServerSession(authOptions);
 
@@ -46,11 +52,11 @@ export async function GET(
 }
 
 export async function PUT(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
+  request: NextRequest, 
+  { params }: RouteParams
+): Promise<NextResponse> {
   try {
-    const userId = context.params.id;
+    const userId = params.id;
     
     const session = await getServerSession(authOptions);
 

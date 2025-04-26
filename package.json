@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node prisma/vercel-build.js && node prisma/manual-generate.js",
+    "prebuild": "node prisma/cleanup.js && node prisma/vercel-build.js && node prisma/manual-generate.js",
     "build": "rm -rf .next && next build",
     "postbuild": "node prisma/wrap-handlers.js",
     "start": "next start",

@@ -16,11 +16,7 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
-    },
-    // Allow fallbacks for missing Prisma Client
-    fallbackPooling: true,
-    // Enable better error handling
-    instrumentationHook: true,
+    }
   },
   // Allow build to continue even if there are some page errors
   onDemandEntries: {

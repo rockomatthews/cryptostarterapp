@@ -1,75 +1,51 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Link from 'next/link';
 
-// Define a proper interface for the auth config
-interface AuthConfig {
-  providers: string[];
-  callbackUrl: string;
-  isConfigured: boolean;
-  [key: string]: unknown; // Allow for additional properties with unknown type
-}
-
-function AuthErrorContent() {
+function ErrorDisplay() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
-  const [authConfig, setAuthConfig] = useState<AuthConfig | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Fetch auth configuration for debugging
-    fetch('/api/auth/check')
-      .then(res => res.json())
-      .then(data => {
-        setAuthConfig(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching auth config:', err);
-        setLoading(false);
-      });
-  }, []);
-
+  
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white shadow-lg rounded-lg p-8 max-w-2xl w-full">
-        <h1 className="text-3xl font-bold text-red-600 mb-4">Authentication Error</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-tr from-indigo-900 to-purple-900 text-white">
+      <div className="max-w-md w-full bg-white/10 backdrop-blur-sm rounded-xl p-8 shadow-2xl">
+        <h1 className="text-2xl font-bold mb-4">Authentication Error</h1>
         
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded">
-          <h2 className="text-xl font-semibold mb-2">Error Details</h2>
-          <p className="mb-1"><strong>Error Code:</strong> {error || 'Unknown'}</p>
-          {error === 'Callback' && (
-            <div className="mt-2 text-sm">
-              <p>This typically indicates an issue with the OAuth callback configuration.</p>
-              <ul className="list-disc pl-5 mt-2">
-                <li>Make sure your Google OAuth credentials are correctly configured.</li>
-                <li>Verify that the correct callback URL is added to your Google OAuth settings.</li>
-                <li>Check that environment variables are properly set in your deployment.</li>
-              </ul>
-            </div>
-          )}
-        </div>
-
-        {loading ? (
-          <p>Loading configuration details...</p>
-        ) : (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Auth Configuration</h2>
-            <div className="bg-gray-50 p-4 rounded overflow-auto max-h-60">
-              <pre className="text-xs">{JSON.stringify(authConfig, null, 2)}</pre>
-            </div>
+        <div className="mb-6">
+          <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-4">
+            <p className="font-medium">Error code: {error || 'Unknown error'}</p>
           </div>
-        )}
-
+          
+          <div className="space-y-3 text-sm">
+            {error === 'OAuthSignin' && <p>Error starting the OAuth sign-in flow. Please try again.</p>}
+            {error === 'OAuthCallback' && <p>Error in the OAuth callback. The authorization code or token might be invalid.</p>}
+            {error === 'OAuthCreateAccount' && <p>Could not create user account in the database.</p>}
+            {error === 'EmailCreateAccount' && <p>Could not create email user in the database.</p>}
+            {error === 'Callback' && <p>Error in the OAuth callback. Check the server logs for more information.</p>}
+            {error === 'OAuthAccountNotLinked' && <p>This email is already associated with another provider. Please sign in using the original provider.</p>}
+            {error === 'EmailSignin' && <p>Error sending the email for sign-in. Please check your email address.</p>}
+            {error === 'CredentialsSignin' && <p>The credentials you provided were invalid. Please try again.</p>}
+            {error === 'SessionRequired' && <p>You must be signed in to access this page.</p>}
+            {error === 'Default' && <p>An unspecified authentication error occurred. Please try again later.</p>}
+            {!error && <p>An authentication error occurred. Please try again later or contact support if the issue persists.</p>}
+          </div>
+        </div>
+        
         <div className="space-y-4">
-          <Link href="/login" className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
-            Return to Login
-          </Link>
-          <Link href="/" className="block w-full text-center border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded">
-            Go to Homepage
-          </Link>
+          <div className="text-sm">
+            <p>Check our troubleshooting guide or contact support if you continue having issues.</p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <Link href="/login" className="flex-1 bg-white text-purple-900 px-4 py-2 rounded-lg font-medium text-center hover:bg-white/90 transition">
+              Try Again
+            </Link>
+            <Link href="/" className="flex-1 border border-white/30 px-4 py-2 rounded-lg font-medium text-center hover:bg-white/10 transition">
+              Go Home
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -79,11 +55,14 @@ function AuthErrorContent() {
 export default function AuthErrorPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading error details...</p>
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-tr from-indigo-900 to-purple-900 text-white">
+        <div className="max-w-md w-full bg-white/10 backdrop-blur-sm rounded-xl p-8 shadow-2xl">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+          <p>Please wait while we retrieve error details...</p>
+        </div>
       </div>
     }>
-      <AuthErrorContent />
+      <ErrorDisplay />
     </Suspense>
   );
 } 

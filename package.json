@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node prisma/vercel-build.js",
-    "build": "rm -rf .next && prisma generate && next build",
+    "prebuild": "node prisma/vercel-build.js && node prisma/manual-generate.js",
+    "build": "rm -rf .next && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"

@@ -42,8 +42,18 @@ try {
   } as unknown as PrismaClient;
 }
 
+// Ensure we have a proper URL for callbacks
+const getBaseUrl = () => {
+  // SSR should use the deployment URL, CSR can use the window location
+  if (typeof window !== 'undefined') return ''; // Root relative URL for client-side
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL;
+  return 'https://cryptostarter.app'; // Fallback to production URL
+};
+
 // Configure NextAuth options with error handling
 export const authOptions: NextAuthOptions = {
+  debug: true, // Enable debug logs for troubleshooting
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -82,8 +92,29 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    redirect: async ({ url, baseUrl }) => {
+      // Log for debugging
+      console.log("Redirect callback:", { url, baseUrl });
+      
+      // Use appropriate base URL
+      const resolvedBaseUrl = baseUrl || getBaseUrl();
+      
+      // If the URL starts with the base URL, it's safe
+      if (url.startsWith(resolvedBaseUrl)) {
+        return url;
+      }
+      
+      // Handle relative URLs 
+      if (url.startsWith("/")) {
+        return `${resolvedBaseUrl}${url}`;
+      }
+      
+      // Default to the base URL if something unexpected happens
+      return resolvedBaseUrl;
+    },
   },
   pages: {
     signIn: '/login',
+    error: '/auth-error', // Custom error page for auth errors
   },
 }; 

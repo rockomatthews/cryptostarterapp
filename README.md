@@ -26,6 +26,7 @@ CryptoStarter is a decentralized crowdfunding platform for crypto projects. It a
 - Node.js (v18 or later)
 - PostgreSQL database
 - CryptoProcessing.io API account
+- Google OAuth Credentials (for authentication)
 
 ### Installation
 
@@ -44,7 +45,7 @@ npm install
 
 3. Set up environment variables:
 
-Create a `.env` file with the following variables:
+Create a `.env.local` file with the following variables:
 
 ```
 # Database
@@ -60,7 +61,9 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 # CryptoProcessing.io API
 CRYPTO_PROCESSING_API_KEY=your-api-key
-CRYPTO_PROCESSING_API_SECRET=your-api-secret
+CRYPTO_PROCESSING_STORE_ID=your-store-id
+PLATFORM_ESCROW_WALLET=your-escrow-wallet-address
+PLATFORM_WALLET_TYPE=SOL
 
 # Cron API Key (for automatic processing)
 CRON_API_KEY=your-cron-api-key
@@ -77,6 +80,24 @@ npx prisma migrate dev
 ```bash
 npm run dev
 ```
+
+### Google OAuth Configuration
+
+To enable Google authentication:
+
+1. Create a project in the [Google Cloud Console](https://console.cloud.google.com/)
+2. Go to "APIs & Services" > "Credentials"
+3. Create an OAuth 2.0 Client ID
+4. Add the following authorized redirect URIs:
+   - For local development: `http://localhost:3000/api/auth/callback/google`
+   - For production: `https://yourdomain.com/api/auth/callback/google`
+5. Copy the Client ID and Client Secret to your environment variables
+
+For Vercel deployment, ensure these environment variables are set in your Vercel project settings:
+
+- `NEXTAUTH_URL`: Your production URL (e.g., https://cryptostarter.app)
+- `NEXTAUTH_SECRET`: A secure random string (can be generated with `openssl rand -base64 32`)
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`: Your Google OAuth credentials
 
 ## API Integration
 
@@ -104,6 +125,17 @@ You can set up a cron job to call this endpoint:
 # Example cron job (daily at midnight)
 0 0 * * * curl -X GET "https://your-app-url.com/api/cron/process-campaigns?api_key=your-cron-api-key"
 ```
+
+## Troubleshooting
+
+### Authentication Issues
+
+If you encounter authentication errors:
+
+1. Check that your environment variables are correctly set
+2. Verify that the Google OAuth callback URL is correctly configured in the Google Cloud Console
+3. For detailed diagnostics, visit `/auth-error` or `/api/auth/check` in your browser
+4. Make sure your `NEXTAUTH_URL` matches your actual deployment URL
 
 ## Tech Stack
 

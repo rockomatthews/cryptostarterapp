@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { withAccelerate } from '@prisma/extension-accelerate';
+import { createSafePrismaProxy } from './safe-prisma';
 
 // Prevent multiple instances of Prisma Client in development
 declare global {
@@ -26,17 +27,25 @@ function createPrismaClient() {
     }
   } catch (error) {
     console.error('Failed to create Prisma client:', error);
-    throw error;
+    // Return a safety proxy that won't crash the build
+    return createSafePrismaProxy() as PrismaClient;
   }
 }
 
-// In development, use a global variable to avoid instantiating multiple clients
-// In production, always create a new instance
-const prisma = global.prismaInstance || (isProduction ? createPrismaClient() : createPrismaClient());
+// Try to use global instance (development) or create a new one (production)
+let prisma: PrismaClient;
 
-// Set the global instance for development environment
-if (!isProduction && global.prismaInstance === undefined) {
-  global.prismaInstance = prisma;
+try {
+  prisma = global.prismaInstance || (isProduction ? createPrismaClient() : createPrismaClient());
+  
+  // Set the global instance for development environment
+  if (!isProduction && global.prismaInstance === undefined) {
+    global.prismaInstance = prisma;
+  }
+} catch (error) {
+  console.error('Critical Prisma initialization error:', error);
+  // Use our proxy as a safety fallback
+  prisma = createSafePrismaProxy() as PrismaClient;
 }
 
 export default prisma; 

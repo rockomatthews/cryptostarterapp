@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { createSafeHandler } from '@/lib/safe-prisma';
 
-export async function GET(
+// Define the handler function
+async function getContributions(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -48,4 +50,10 @@ export async function GET(
       { status: 500 }
     );
   }
-} 
+}
+
+// Export the wrapped handler
+export const GET = createSafeHandler(
+  'campaigns/[id]/contributions',
+  getContributions
+); 

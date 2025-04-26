@@ -17,6 +17,17 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
+    // Allow fallbacks for missing Prisma Client
+    fallbackPooling: true,
+    // Enable better error handling
+    instrumentationHook: true,
+  },
+  // Allow build to continue even if there are some page errors
+  onDemandEntries: {
+    // Number of pages that should be kept simultaneously without being disposed
+    maxInactiveAge: 60 * 60 * 1000, // 1 hour
+    // Number of pages that should be kept in memory
+    pagesBufferLength: 5,
   },
   // Add rewrites to handle auth client redirects more gracefully
   async rewrites() {

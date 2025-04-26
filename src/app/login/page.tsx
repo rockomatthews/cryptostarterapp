@@ -2,19 +2,36 @@
 
 import { useEffect, useState } from 'react';
 import { signIn, getProviders, type ClientSafeProvider } from 'next-auth/react';
-import { Button, Container, Box, Typography, Paper } from '@mui/material';
+import { Button, Container, Box, Typography, Paper, CircularProgress, Alert } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 
 export default function Login() {
   const [providers, setProviders] = useState<Record<string, ClientSafeProvider> | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProviders = async () => {
-      const providers = await getProviders();
-      setProviders(providers);
+      try {
+        setLoading(true);
+        const providers = await getProviders();
+        console.log('Auth providers loaded:', providers);
+        setProviders(providers);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch providers:', err);
+        setError('Could not load authentication providers. Using fallback.');
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProviders();
   }, []);
+
+  const handleGoogleSignIn = () => {
+    console.log('Signing in with Google...');
+    signIn('google', { callbackUrl: '/profile' });
+  };
 
   return (
     <Container maxWidth="sm">
@@ -40,18 +57,29 @@ export default function Login() {
             Sign in to CryptoStarter
           </Typography>
           
-          {providers && providers.google && (
-            <Button
-              startIcon={<GoogleIcon />}
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={() => signIn('google', { callbackUrl: '/profile' })}
-              sx={{ mt: 2 }}
-            >
-              Sign in with Google
-            </Button>
+          {loading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+              <CircularProgress size={24} />
+            </Box>
           )}
+
+          {error && (
+            <Alert severity="warning" sx={{ mb: 3, width: '100%' }}>
+              {error}
+            </Alert>
+          )}
+          
+          {/* Show Google sign-in button regardless of provider loading */}
+          <Button
+            startIcon={<GoogleIcon />}
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleGoogleSignIn}
+            sx={{ mt: 2 }}
+          >
+            Sign in with Google
+          </Button>
         </Paper>
       </Box>
     </Container>

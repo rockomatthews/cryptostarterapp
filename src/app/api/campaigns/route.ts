@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
+
+// Define an interface for the where clause
+interface CampaignWhereClause {
+  active: boolean;
+  category?: string;
+  title?: {
+    contains: string;
+    mode: 'insensitive';
+  };
+}
 
 // GET all campaigns
 export async function GET(request: Request) {
@@ -10,7 +20,7 @@ export async function GET(request: Request) {
     const category = searchParams.get('category');
     const title = searchParams.get('title');
     
-    let whereClause: any = { active: true };
+    const whereClause: CampaignWhereClause = { active: true };
     
     if (category) {
       whereClause.category = category;

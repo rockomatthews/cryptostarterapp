@@ -2,7 +2,7 @@
  * Utility functions for interacting with the cryptoprocessing.io API
  */
 
-import { prisma } from './prisma';
+import prisma from './prisma';
 import axios from 'axios';
 import { Prisma } from '@prisma/client';
 

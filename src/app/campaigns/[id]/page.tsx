@@ -6,12 +6,13 @@ import { useRouter } from 'next/navigation';
 import { 
   Container, Box, Typography, Paper, Grid, Chip, Avatar,
   Button, LinearProgress, Divider, Link as MuiLink,
-  List, ListItem, ListItemIcon, ListItemText
+  List, ListItem, ListItemIcon, ListItemText, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { format } from 'date-fns';
 import DonationModal from '@/components/DonationModal';
 import DonationLeaderboard from '@/components/DonationLeaderboard';
@@ -67,7 +68,7 @@ interface Contribution {
 }
 
 export default function CampaignDetail({ params }: { params: { id: string } }) {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [loading, setLoading] = useState(true);
@@ -167,9 +168,8 @@ export default function CampaignDetail({ params }: { params: { id: string } }) {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
-        <Grid container spacing={4}>
-          {/* Left column - Campaign info */}
-          <Grid xs={12} md={8}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={8}>
             <Paper sx={{ p: 3, mb: 4 }}>
               <Grid container spacing={4}>
                 {/* Campaign Image */}
@@ -420,8 +420,7 @@ export default function CampaignDetail({ params }: { params: { id: string } }) {
             </Paper>
           </Grid>
           
-          {/* Right column - sidebar */}
-          <Grid xs={12} md={4}>
+          <Grid item xs={12} md={4}>
             {/* Creator Info */}
             <Paper sx={{ p: 3, mb: 4 }}>
               <Typography variant="h6" gutterBottom>
@@ -445,6 +444,37 @@ export default function CampaignDetail({ params }: { params: { id: string } }) {
                 </Box>
               </Box>
             </Paper>
+            
+            {/* Delete Campaign Button - Only shown to campaign creator */}
+            {session?.user?.id === campaign.user.id && (
+              <Box sx={{ mt: 3, textAlign: 'center' }}>
+                <Button 
+                  variant="outlined" 
+                  color="error"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete this campaign? This will refund all contributors.')) {
+                      fetch(`/api/campaigns/${campaign.id}`, {
+                        method: 'DELETE',
+                      })
+                      .then(response => {
+                        if (response.ok) {
+                          router.push('/profile');
+                        } else {
+                          alert('Failed to delete campaign');
+                        }
+                      })
+                      .catch(error => {
+                        console.error('Error deleting campaign:', error);
+                        alert('Error deleting campaign');
+                      });
+                    }
+                  }}
+                >
+                  Delete Campaign
+                </Button>
+              </Box>
+            )}
             
             {/* Campaign Details */}
             <Paper sx={{ p: 3 }}>

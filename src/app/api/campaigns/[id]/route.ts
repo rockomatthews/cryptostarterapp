@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { processFailedCampaignRefunds } from '@/lib/cryptoApi';
 
 // GET a specific campaign
 export async function GET(
@@ -23,6 +24,8 @@ export async function GET(
             image: true,
           },
         },
+        additionalMedia: true,
+        socials: true,
       },
     });
 
@@ -170,6 +173,15 @@ export async function DELETE(
         { message: "Unauthorized - You are not the owner of this campaign" },
         { status: 403 }
       );
+    }
+
+    // Process refunds to all contributors
+    try {
+      // This function handles all refunds from the escrow wallet
+      await processFailedCampaignRefunds(id);
+    } catch (refundError) {
+      console.error('Error processing refunds:', refundError);
+      // Continue with deletion even if refunds fail, but log the error
     }
 
     // Delete the campaign

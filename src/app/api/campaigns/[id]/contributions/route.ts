@@ -3,10 +3,11 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const campaignId = params.id;
+    const resolvedParams = await params;
+    const campaignId = resolvedParams.id;
     const { searchParams } = new URL(request.url);
     const leaderboard = searchParams.get('leaderboard') === 'true';
     

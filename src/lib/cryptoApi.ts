@@ -10,6 +10,8 @@ import { Prisma } from '@prisma/client';
 const API_BASE_URL = 'https://api.cryptoprocessing.io/v1';
 const API_KEY = process.env.CRYPTO_PROCESSING_API_KEY || '';
 const STORE_ID = process.env.CRYPTO_PROCESSING_STORE_ID || '';
+const PLATFORM_WALLET = process.env.PLATFORM_ESCROW_WALLET || '';
+const PLATFORM_WALLET_TYPE = process.env.PLATFORM_WALLET_TYPE || 'SOL'; // Default to SOL if not specified
 
 // Create axios instance for API calls
 const apiClient = axios.create({
@@ -136,7 +138,8 @@ export async function processDonation(params: ProcessDonationParams) {
         description: `Donation to campaign: ${campaign.title}`,
         callback_url: `${process.env.NEXTAUTH_URL}/api/webhooks/crypto-payment?transactionId=${transactionLog.id}`,
         payer_wallet: donorWalletAddress,
-        receiver_wallet: process.env.PLATFORM_ESCROW_WALLET, // Platform's escrow wallet
+        receiver_wallet: PLATFORM_WALLET, // Platform's escrow wallet
+        wallet_type: PLATFORM_WALLET_TYPE // Specify the wallet type (SOL)
       });
       
       if (!paymentResponse.data.success) {
@@ -316,7 +319,7 @@ export async function distributeSuccessfulCampaignFunds(campaignId: string) {
         amount: convertedAmount,
         currency: campaign.cryptocurrencyType,
         description: `Campaign payout: ${campaign.title}`,
-        source_wallet: process.env.PLATFORM_ESCROW_WALLET,
+        source_wallet: PLATFORM_WALLET,
         destination_wallet: campaign.walletAddress,
         callback_url: `${process.env.NEXTAUTH_URL}/api/webhooks/crypto-transfer?transactionId=${transactionLog.id}&type=distribution`,
       });
@@ -426,7 +429,7 @@ export async function processFailedCampaignRefunds(campaignId: string) {
           amount: refundAmount,
           currency: contribution.donationCurrency,
           description: `Refund for failed campaign: ${campaign.title}`,
-          source_wallet: process.env.PLATFORM_ESCROW_WALLET,
+          source_wallet: PLATFORM_WALLET,
           destination_wallet: contribution.donorWalletAddress,
           callback_url: `${process.env.NEXTAUTH_URL}/api/webhooks/crypto-transfer?transactionId=${transactionLog.id}&type=refund&contributionId=${contribution.id}`,
         });

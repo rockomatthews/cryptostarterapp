@@ -4,13 +4,15 @@ import { NextRequest } from 'next/server';
  * This file is used to add logging and debugging for the auth routes
  * It's not directly imported, but will be bundled with the auth route
  */
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   // Log request details for debugging auth issues
   const url = req.nextUrl.toString();
   const method = req.method;
   const isCallback = url.includes('/callback');
   const provider = isCallback ? url.split('/callback/')[1]?.split('?')[0] : 'unknown';
   
+  // In Next.js 15, headers accesses are async, but NextRequest.headers is synchronous
+  // because it's not from the headers() function
   console.log(`[Auth Debug] ${method} ${url}`, {
     isCallback,
     provider,

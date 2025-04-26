@@ -4,7 +4,7 @@ import { createFallbackHandler } from "./fallback";
 import { testDbConnection } from "@/lib/prisma";
 
 // Create the handler in a way that gracefully handles errors
-const createHandler = () => {
+const createHandler = async () => {
   try {
     // Log environment details for debugging
     console.log("NextAuth initialization environment:", {
@@ -35,14 +35,13 @@ const createHandler = () => {
   }
 };
 
-// Create the handler once, with error boundary
-let handler;
-try {
-  handler = createHandler();
-} catch (error) {
-  console.error("Fatal error creating NextAuth handler:", error);
-  handler = createFallbackHandler();
+// Export async handlers to properly handle Next.js 15 async request APIs
+export async function GET(req: Request, ctx: { params: { nextauth: string[] } }) {
+  const handler = await createHandler();
+  return handler.GET(req, ctx);
 }
 
-// Export the handler
-export { handler as GET, handler as POST }; 
+export async function POST(req: Request, ctx: { params: { nextauth: string[] } }) {
+  const handler = await createHandler();
+  return handler.POST(req, ctx);
+} 

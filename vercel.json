@@ -1,5 +1,23 @@
 {
-  "env": {
-    "PRISMA_SKIP_POSTINSTALL_GENERATE": "true"
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "rewrites": [
+    { "source": "/api/auth/:match*", "destination": "/api/auth/:match*" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" }
+      ]
+    }
+  ],
+  "build": {
+    "env": {
+      "PRISMA_SKIP_POSTINSTALL_GENERATE": "1"
+    }
   }
 } 

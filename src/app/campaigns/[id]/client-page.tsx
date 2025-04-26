@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { 
   Container, Box, Typography, Paper, Chip, Avatar,
   Button, LinearProgress, Divider, Link as MuiLink,
-  List, ListItem, ListItemIcon, ListItemText, Grid
+  List, ListItem, ListItemIcon, ListItemText
 } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -170,12 +170,12 @@ export default function CampaignClientPage({ id }: { id: string }) {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
-        <Grid container spacing={3}>
-          <Grid item md={8} sm={12} xs={12}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+          <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 66.67%' }}}>
             <Paper sx={{ p: 3, mb: 4 }}>
-              <Grid container spacing={4}>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
                 {/* Campaign Image */}
-                <Grid item md={6} xs={12}>
+                <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 50%' }}}>
                   {campaign.mainImage ? (
                     <Box sx={{ 
                       height: '100%', 
@@ -207,10 +207,10 @@ export default function CampaignClientPage({ id }: { id: string }) {
                       </Typography>
                     </Box>
                   )}
-                </Grid>
+                </Box>
                 
                 {/* Campaign Info */}
-                <Grid item md={6} xs={12}>
+                <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 50%' }}}>
                   <Box>
                     <Chip 
                       label={categories.find(c => c.value === campaign.category)?.label || campaign.category} 
@@ -325,8 +325,8 @@ export default function CampaignClientPage({ id }: { id: string }) {
                       )}
                     </Box>
                   </Box>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </Paper>
             
             <Paper sx={{ p: 3, mb: 4 }}>
@@ -343,9 +343,9 @@ export default function CampaignClientPage({ id }: { id: string }) {
                   <Typography variant="h6" gutterBottom>
                     Gallery
                   </Typography>
-                  <Grid container spacing={2}>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 2 }}>
                     {campaign.additionalMedia.map((media, index) => (
-                      <Grid item sm={4} xs={6} key={index}>
+                      <Box sx={{ gridColumn: { xs: 'span 6', sm: 'span 4' } }} key={index}>
                         {media.type === 'image' ? (
                           <img 
                             src={media.url} 
@@ -359,9 +359,9 @@ export default function CampaignClientPage({ id }: { id: string }) {
                             style={{ width: '100%', borderRadius: '4px' }} 
                           />
                         )}
-                      </Grid>
+                      </Box>
                     ))}
-                  </Grid>
+                  </Box>
                 </Box>
               )}
             </Paper>
@@ -420,9 +420,9 @@ export default function CampaignClientPage({ id }: { id: string }) {
                 </Box>
               )}
             </Paper>
-          </Grid>
+          </Box>
           
-          <Grid item md={4} xs={12}>
+          <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 33.33%' }}}>
             {/* Creator Info */}
             <Paper sx={{ p: 3, mb: 4 }}>
               <Typography variant="h6" gutterBottom>
@@ -538,8 +538,8 @@ export default function CampaignClientPage({ id }: { id: string }) {
                 </>
               )}
             </Paper>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Box>
       
       {/* Donation Modal */}

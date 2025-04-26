@@ -1,51 +1,42 @@
 import { PrismaClient } from '@prisma/client';
 import { withAccelerate } from '@prisma/extension-accelerate';
-import { createSafePrismaProxy } from './safe-prisma';
 
-// Prevent multiple instances of Prisma Client in development
-declare global {
-  // eslint-disable-next-line no-var
-  var prismaInstance: PrismaClient | undefined;
+// PrismaClient is attached to the `global` object in development to prevent
+// exhausting your database connection limit.
+//
+// Learn more:
+// https://pris.ly/d/help/next-js-best-practices
+
+interface CustomNodeJsGlobal extends NodeJS.Global {
+  prisma: PrismaClient;
 }
 
-// This is to prevent "The Edge Runtime does not support Node.js 'process'" errors
-const isProduction = process.env.NODE_ENV === 'production';
+declare const global: CustomNodeJsGlobal;
 
-// Function to create a new Prisma client
+// Create a new PrismaClient instance with Accelerate, wrapped in try-catch
 function createPrismaClient() {
   try {
-    const client = new PrismaClient({
-      log: ['error'],
-    });
+    const prisma = new PrismaClient();
     
-    // Apply Accelerate extension if available
     try {
-      return client.$extends(withAccelerate());
+      // Apply Accelerate extension
+      return prisma.$extends(withAccelerate());
     } catch (extError) {
-      console.warn('Failed to extend Prisma with Accelerate:', extError);
-      return client;
+      console.warn("Failed to extend Prisma with Accelerate:", extError);
+      return prisma; // Return regular Prisma client if extension fails
     }
   } catch (error) {
-    console.error('Failed to create Prisma client:', error);
-    // Return a safety proxy that won't crash the build
-    return createSafePrismaProxy() as PrismaClient;
+    console.error("Failed to initialize Prisma client:", error);
+    throw error; // Re-throw to ensure the error is not silently ignored
   }
 }
 
-// Try to use global instance (development) or create a new one (production)
-let prisma: PrismaClient;
+// Use different creation strategies for development vs production
+const prisma = global.prisma || createPrismaClient();
 
-try {
-  prisma = global.prismaInstance || (isProduction ? createPrismaClient() : createPrismaClient());
-  
-  // Set the global instance for development environment
-  if (!isProduction && global.prismaInstance === undefined) {
-    global.prismaInstance = prisma;
-  }
-} catch (error) {
-  console.error('Critical Prisma initialization error:', error);
-  // Use our proxy as a safety fallback
-  prisma = createSafePrismaProxy() as PrismaClient;
+// Ensure caching in development only, not in production
+if (process.env.NODE_ENV === "development") {
+  global.prisma = prisma;
 }
 
 export default prisma; 

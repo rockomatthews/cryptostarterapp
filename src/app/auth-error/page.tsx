@@ -1,13 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function AuthErrorPage() {
+// Define a proper interface for the auth config
+interface AuthConfig {
+  providers: string[];
+  callbackUrl: string;
+  isConfigured: boolean;
+  [key: string]: unknown; // Allow for additional properties with unknown type
+}
+
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
-  const [authConfig, setAuthConfig] = useState<any>(null);
+  const [authConfig, setAuthConfig] = useState<AuthConfig | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -65,5 +73,17 @@ export default function AuthErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading error details...</p>
+      </div>
+    }>
+      <AuthErrorContent />
+    </Suspense>
   );
 } 

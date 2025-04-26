@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Configure Next.js for edge compatibility
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'bcrypt'],
-  },
+  serverExternalPackages: ['@prisma/client', 'bcrypt'],
   // Add rewrites to handle auth client redirects more gracefully
   async rewrites() {
     return [

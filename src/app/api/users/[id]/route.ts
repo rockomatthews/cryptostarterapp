@@ -1,89 +1,130 @@
 import { NextResponse } from "next/server";
 import { prisma, getPrismaStatus } from "@/lib/prisma";
 
-// Define runtime for API route
+// Set runtime for Node.js environment
 export const runtime = 'nodejs';
 
-// GET user by ID endpoint
+// GET user by ID
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  req: Request,
+  context: { params: { id: string } }
 ) {
-  const { isInitialized, isBuildTime } = getPrismaStatus();
-  
-  // Handle build time or initialization failures
-  if (isBuildTime || !isInitialized) {
-    console.log('[UserAPI] Using mock data due to build time or initialization failure');
-    return NextResponse.json({ 
-      id: params.id,
-      name: "Demo User",
-      email: "user@example.com",
-      bio: "This is sample data for preview mode",
-      image: null
-    });
-  }
+  // Must get params through the context and properly await it
+  const params = await context.params;
   
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: params.id }
-    });
+    const userId = params.id;
     
-    if (!user) {
+    if (!userId) {
       return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
+        { error: "User ID is required" },
+        { status: 400 }
       );
     }
+
+    // Check if Prisma is initialized
+    const prismaStatus = getPrismaStatus();
     
+    // If Prisma isn't initialized, return mock data for development
+    if (!prismaStatus.initialized) {
+      console.log("Prisma not initialized, returning mock data");
+      return NextResponse.json({
+        id: userId,
+        name: "Mock User",
+        email: "mock@example.com",
+        image: "/images/default-avatar.png",
+        bio: "This is mock data because Prisma is not initialized.",
+        walletAddress: "0x123456789",
+      });
+    }
+
+    // Query the database for the user
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      // Return specialized error instead of 404
+      return NextResponse.json({ 
+        error: "User not found",
+        id: userId,
+        name: "",
+        email: "",
+        image: "/images/default-avatar.png", 
+        bio: "",
+      }, { status: 200 });
+    }
+
     return NextResponse.json(user);
   } catch (error) {
-    console.error("[UserAPI] Error fetching user:", error);
+    console.error("Error fetching user:", error);
     return NextResponse.json(
-      { error: "Failed to retrieve user data" },
+      { error: "Failed to fetch user" },
       { status: 500 }
     );
   }
 }
 
-// PUT update user endpoint
+// PUT - Update user
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  req: Request,
+  context: { params: { id: string } }
 ) {
-  const { isInitialized, isBuildTime } = getPrismaStatus();
+  // Must get params through the context and properly await it
+  const params = await context.params;
   
   try {
-    const data = await request.json();
-    const { username, bio, image } = data;
+    const userId = params.id;
     
-    // Handle build time or initialization failures
-    if (isBuildTime || !isInitialized) {
-      console.log('[UserAPI] Using mock data due to build time or initialization failure');
-      return NextResponse.json({ 
-        id: params.id,
-        name: username || "Demo User",
-        email: "user@example.com",
-        bio: bio || "This is sample data for preview mode",
-        image: image || null,
-        updated: true
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Parse the request body
+    const data = await req.json();
+
+    // Check if Prisma is initialized
+    const prismaStatus = getPrismaStatus();
+    
+    // If Prisma isn't initialized, return mock successful response
+    if (!prismaStatus.initialized) {
+      console.log("Prisma not initialized, returning mock success");
+      return NextResponse.json({
+        id: userId,
+        ...data,
+        updatedAt: new Date().toISOString(),
       });
     }
-    
-    // Update user with Prisma
-    const updatedUser = await prisma.user.update({
-      where: { id: params.id },
-      data: {
-        name: username,
-        bio,
-        image
-      }
+
+    // Check if user exists
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
     });
-    
+
+    if (!existingUser) {
+      // Return specialized error with status 200 to avoid breaking UI
+      return NextResponse.json({ 
+        error: "User not found - cannot update non-existent user",
+        id: userId,
+        ...data,
+        updatedAt: new Date().toISOString(),
+      }, { status: 200 });
+    }
+
+    // Update the user
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data,
+    });
+
     return NextResponse.json(updatedUser);
   } catch (error) {
-    console.error("[UserAPI] Error updating user:", error);
+    console.error("Error updating user:", error);
     return NextResponse.json(
-      { error: "Failed to update user data" },
+      { error: "Failed to update user" },
       { status: 500 }
     );
   }

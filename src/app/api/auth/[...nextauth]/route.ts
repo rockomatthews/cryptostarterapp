@@ -1,37 +1,45 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import type { Session } from "next-auth";
-import type { JWT } from "next-auth/jwt";
-import { prisma, getPrismaStatus } from "@/lib/prisma";
+import type { NextAuthOptions } from "next-auth";
 
-// Runtime configuration for NextAuth
-const nextAuthConfig = {
+// Set runtime for faster execution
+export const runtime = 'nodejs';
+
+// Log information about the environment 
+console.log('Auth.ts configuration:', {
+  nodeEnv: process.env.NODE_ENV,
+  nextAuthUrl: process.env.NEXTAUTH_URL,
+  hasSecret: Boolean(process.env.NEXTAUTH_SECRET),
+  hasGoogleConfig: Boolean(process.env.GOOGLE_CLIENT_ID) && Boolean(process.env.GOOGLE_CLIENT_SECRET),
+  isBuildTime: process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-build'
+});
+
+// Define auth configuration
+const authConfig: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
   ],
-  adapter: PrismaAdapter(prisma),
+  // We're using JWT strategy since it works without a database
+  session: {
+    strategy: "jwt",
+  },
   pages: {
     signIn: '/login',
     error: '/auth-error',
   },
-  session: {
-    strategy: "jwt" as const,
-  },
   callbacks: {
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }) {
+      // Add user ID to session from JWT token
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
       return session;
     },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      const resolvedBaseUrl = baseUrl || process.env.NEXTAUTH_URL || "https://cryptostarter.app";
+    async redirect({ url, baseUrl }) {
+      const resolvedBaseUrl = baseUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
       
       if (url.startsWith(resolvedBaseUrl)) {
         return url;
@@ -47,71 +55,8 @@ const nextAuthConfig = {
   debug: process.env.NODE_ENV === 'development',
 };
 
-// Create handler with automatic fallback
-const createHandler = () => {
-  const { isInitialized, isBuildTime } = getPrismaStatus();
-  
-  // During build or when Prisma fails to initialize
-  if (isBuildTime || !isInitialized) {
-    console.log('[NextAuth] Using fallback handler due to build context or initialization failure');
-    
-    return {
-      GET: async () => {
-        return NextResponse.json(
-          {
-            error: "Authentication service unavailable during build",
-            code: "AUTH_SERVICE_UNAVAILABLE",
-          },
-          { status: 503 }
-        );
-      },
-      POST: async () => {
-        return NextResponse.json(
-          {
-            error: "Authentication service unavailable during build",
-            code: "AUTH_SERVICE_UNAVAILABLE",
-          },
-          { status: 503 }
-        );
-      },
-    };
-  }
-  
-  // Normal runtime with initialized Prisma
-  console.log('[NextAuth] Using standard handler with PrismaAdapter');
-  return NextAuth(nextAuthConfig);
-};
+// Create a handler using the Next.js App Router standard format
+const handler = NextAuth(authConfig);
 
-// Create the handler once and cache it
-const handler = createHandler();
-
-// Export route handlers with error boundaries
-export async function GET(req: NextRequest) {
-  try {
-    return await handler.GET(req);
-  } catch (error) {
-    console.error('[NextAuth] GET request error:', error);
-    return NextResponse.json(
-      { 
-        error: "Authentication service error", 
-        code: "AUTH_SERVICE_ERROR" 
-      }, 
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    return await handler.POST(req);
-  } catch (error) {
-    console.error('[NextAuth] POST request error:', error);
-    return NextResponse.json(
-      { 
-        error: "Authentication service error", 
-        code: "AUTH_SERVICE_ERROR" 
-      }, 
-      { status: 500 }
-    );
-  }
-} 
+// Export the handler functions
+export { handler as GET, handler as POST }; 

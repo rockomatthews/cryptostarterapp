@@ -8,17 +8,16 @@ const nextConfig = {
   experimental: {
     // Support for authInterrupts provides better error handling for authentication
     authInterrupts: true,
+    // Server actions configuration
+    serverActions: {
+      bodySizeLimit: '2mb',
+    }
   },
   // Enable serverExternalPackages for better Prisma support
   serverExternalPackages: [
     'prisma',
     '@prisma/client'
   ],
-  // On-demand ISR
-  staticGeneration: {
-    // Prevent static generation of pages with dynamic routes
-    excludeDynamic: true,
-  },
   // Disable ESLint during build
   eslint: {
     // Warning: This allows production builds to successfully complete even if
@@ -28,12 +27,6 @@ const nextConfig = {
   // Disable TypeScript type checking during build to avoid issues
   typescript: {
     ignoreBuildErrors: true,
-  },
-  // Increase the build timeout to accommodate Prisma generation
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '2mb',
-    }
   },
   // Allow build to continue even if there are some page errors
   onDemandEntries: {

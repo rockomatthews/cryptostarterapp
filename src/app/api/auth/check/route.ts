@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { prisma, getPrismaStatus } from '@/lib/prisma';
 
 // Set runtime for faster execution
 export const runtime = 'nodejs';
@@ -55,9 +54,15 @@ export async function GET() {
     hints.push('NEXTAUTH_URL is not set. This should be your full deployment URL.');
   }
   
+  // Database information
+  const dbStatus = {
+    connected: false,
+    initialized: false,
+    url: '',
+    error: ''
+  };
+
   // Check database connection
-  let dbConnected = false;
-  let dbErrorMessage = '';
   let databaseUrl = process.env.DATABASE_URL || '';
   
   // Hide the actual database password in the response
@@ -73,27 +78,29 @@ export async function GET() {
     }
   }
   
-  // Check Prisma status
-  const { isInitialized } = getPrismaStatus();
-  
-  // Test database connection
+  // Check Prisma status without direct import
   try {
-    if (isInitialized) {
-      // Use the existing singleton connection
-      await prisma.$queryRaw`SELECT 1`;
-      dbConnected = true;
-    } else {
-      dbErrorMessage = 'Prisma client not initialized';
-      dbConnected = false;
-    }
+    dbStatus.url = databaseUrl;
+    
+    // Dynamically import the PrismaClient to avoid build-time issues
+    const { PrismaClient } = await import('@prisma/client');
+    const prisma = new PrismaClient();
+    
+    // Test connection
+    await prisma.$connect();
+    dbStatus.connected = true;
+    dbStatus.initialized = true;
+    
+    // Disconnect to avoid hanging connections
+    await prisma.$disconnect();
   } catch (error) {
-    dbConnected = false;
-    dbErrorMessage = error instanceof Error ? error.message : String(error);
-    hints.push(`Database connection failed: ${dbErrorMessage}`);
-    console.error('Database connection error:', dbErrorMessage);
+    dbStatus.connected = false;
+    dbStatus.error = error instanceof Error ? error.message : String(error);
+    hints.push(`Database connection failed: ${dbStatus.error}`);
+    console.error('Database connection error:', dbStatus.error);
   }
   
-  if (environment === 'production' && !dbConnected) {
+  if (environment === 'production' && !dbStatus.connected) {
     hints.push('Database connection failed. Check your DATABASE_URL and ensure your database is accessible.');
   }
   
@@ -143,11 +150,7 @@ export async function GET() {
         useSecureCookies,
         cookiePrefix: useSecureCookies ? '__Secure-' : '',
       },
-      database: {
-        url: databaseUrl,
-        connected: dbConnected,
-        initialized: isInitialized,
-      },
+      database: dbStatus,
     },
     request: {
       headers: {

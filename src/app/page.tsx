@@ -23,7 +23,7 @@ const featuredCampaigns: Campaign[] = [
     id: 1,
     title: 'Eco-Friendly Water Bottle',
     description: 'A sustainable water bottle that removes microplastics from your water.',
-    image: '/card-energy.svg',
+    image: '/images/hero-image.png',
     raised: 15000,
     goal: 20000,
     backers: 254,
@@ -33,7 +33,7 @@ const featuredCampaigns: Campaign[] = [
     id: 2,
     title: 'Smart Home Garden',
     description: 'An AI-powered garden that grows vegetables with minimal intervention.',
-    image: '/card-healthcare.svg',
+    image: '/images/hero-image.png',
     raised: 45000,
     goal: 50000,
     backers: 532,
@@ -43,7 +43,7 @@ const featuredCampaigns: Campaign[] = [
     id: 3,
     title: 'Blockchain Education Platform',
     description: 'Making blockchain learning accessible to everyone through interactive courses.',
-    image: '/card-identity.svg',
+    image: '/images/hero-image.png',
     raised: 85000,
     goal: 100000,
     backers: 943,
@@ -225,10 +225,11 @@ export default function Home() {
                 }}
               >
                 <Image
-                  src="/hero-blockchain.svg"
+                  src="/images/hero-image.png"
                   alt="Cryptocurrency illustration"
-                  width={400}
-                  height={350}
+                  width={600}
+                  height={400}
+                  priority
                   style={{
                     maxWidth: '100%',
                     height: 'auto',

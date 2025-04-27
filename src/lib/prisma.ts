@@ -1,49 +1,44 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma'
 
-// Detect build time vs runtime
-const isBuildTime = typeof window === 'undefined' && 
-                   (process.env.NEXT_PHASE === 'phase-production-build' || 
-                    process.env.VERCEL_ENV === 'development');
+// PrismaClient is attached to the `global` object in development to prevent
+// exhausting your database connection limit.
+//
+// Learn more:
+// https://pris.ly/d/help/next-js-best-practices
 
-// Initialize a singleton PrismaClient
-function getClient() {
-  // During build time, return an empty object
-  if (isBuildTime) {
-    console.log('[Prisma] Build-time detected, skipping initialization');
-    return {} as PrismaClient;
-  }
+const globalForPrisma = global as unknown as { prisma: PrismaClient, _prismaInitialized: boolean }
 
-  try {
-    // Use the generated client path which works in all environments including production
-    console.log('[Prisma] Runtime detected, initializing client');
-    const client = new PrismaClient({
-      log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-    });
-    return client;
-  } catch (error) {
-    console.error('[Prisma] Failed to initialize client:', error);
-    return {} as PrismaClient;
-  }
-}
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient()
 
-// In development, we need to make sure Prisma Client isn't instantiated multiple times
-// which causes too many connections
-declare global {
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
-}
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-// Export client with proper singleton pattern for both development and production
-const prisma = global.prisma || getClient();
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
-
-// Check if client is working
+// Function to check if Prisma is initialized
 export function getPrismaStatus() {
-  return {
-    isInitialized: !isBuildTime && !!prisma,
-    isBuildTime
-  };
-}
-
-export default prisma;
-export { prisma }; 
+  try {
+    // Try a simple query to check if connection works
+    if (process.env.NODE_ENV !== 'production' && typeof window === 'undefined') {
+      // Only test connection on server side and non-production
+      prisma.$queryRaw`SELECT 1`
+        .then(() => {
+          globalForPrisma._prismaInitialized = true;
+        })
+        .catch((err) => {
+          console.error('Prisma connection test failed:', err);
+          globalForPrisma._prismaInitialized = false;
+        });
+    }
+    
+    return {
+      initialized: globalForPrisma._prismaInitialized || false,
+      client: prisma
+    };
+  } catch (error) {
+    console.error('Error checking Prisma status:', error);
+    return {
+      initialized: false,
+      error: 'Failed to check Prisma status'
+    };
+  }
+} 

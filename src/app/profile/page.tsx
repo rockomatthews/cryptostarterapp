@@ -2,8 +2,8 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Container, Typography, Box, Paper, Avatar, Button, Tabs, Tab, Card, CardContent, CardMedia } from '@mui/material';
+import { useEffect, useState, useCallback } from 'react';
+import { Container, Typography, Box, Paper, Avatar, Button, Tabs, Tab, Card, CardContent, CardMedia, Alert } from '@mui/material';
 import Link from 'next/link';
 
 interface TabPanelProps {
@@ -24,7 +24,7 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ py: 3 }}>
           {children}
         </Box>
       )}
@@ -32,66 +32,97 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-export default function Profile() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [tabValue, setTabValue] = useState(0);
-  const [campaigns, setCampaigns] = useState([]);
-  const [contributions, setContributions] = useState([]);
+// Custom hook for fetching and managing user data
+function useUserData(userId: string | undefined) {
   const [userData, setUserData] = useState<{
     username?: string;
     bio?: string;
     image?: string;
   }>({});
+  
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Fetch user data function that can be called on demand
+  const fetchUserData = useCallback(async () => {
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log(`Fetching user data for ID: ${userId}`);
+      const response = await fetch(`/api/users/${userId}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched user data:', data);
+        setUserData(data);
+      } else {
+        console.warn(`Failed to fetch user data: ${response.status}`);
+        // Don't set error - we'll use session data as fallback
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      // Don't set error - we'll use session data as fallback
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+  
+  // Initial data fetch
+  useEffect(() => {
+    if (userId) {
+      fetchUserData();
+    } else {
+      setLoading(false);
+    }
+  }, [userId, fetchUserData]);
+  
+  return {
+    userData,
+    loading,
+    error,
+    retry: fetchUserData
+  };
+}
 
+export default function Profile() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [tabValue, setTabValue] = useState(0);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [contributions, setContributions] = useState<any[]>([]);
+  
+  // Get user data from custom hook
+  const {
+    userData,
+    loading: fetchingUserData,
+    retry: refetchUserData
+  } = useUserData(session?.user?.id);
+  
+  // Use session data as fallback if API fails
+  const displayName = userData?.username || userData?.name || session?.user?.name || 'User';
+  const displayImage = userData?.image || session?.user?.image || '';
+  const displayBio = userData?.bio || 'No bio information available';
+  
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
     }
     
-    const fetchUserData = async () => {
-      if (session?.user?.id) {
-        try {
-          setLoading(true);
-          const response = await fetch(`/api/users/${session.user.id}`);
-          if (response.ok) {
-            const data = await response.json();
-            setUserData(data);
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    
-    if (session?.user?.id) {
-      fetchUserData();
-    }
-    
     // Here you would fetch campaigns and contributions data
-    // When implemented, you would use the user's ID to fetch their campaigns and contributions
-    // For now, we'll use dummy data
-    
-    // For example:
-    // if (session?.user?.id) {
-    //   fetch(`/api/users/${session.user.id}/campaigns`)
-    //     .then(res => res.json())
-    //     .then(data => setCampaigns(data));
-    //   
-    //   fetch(`/api/users/${session.user.id}/contributions`)
-    //     .then(res => res.json())
-    //     .then(data => setContributions(data));
-    // }
-  }, [status, router, session]);
+    // For now, we'll use empty arrays
+  }, [status, router]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
-  if (status === 'loading' || loading) {
+  if (status === 'loading' || fetchingUserData) {
     return (
       <Container maxWidth="md">
         <Box sx={{ mt: 8, display: 'flex', justifyContent: 'center' }}>
@@ -109,12 +140,12 @@ export default function Profile() {
             <Box sx={{ flex: { md: '0 0 33.33%' }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Box sx={{ position: 'relative' }}>
                 <Avatar
-                  src={userData.image || session?.user?.image || ''}
-                  alt={userData.username || session?.user?.name || 'Profile'}
+                  src={displayImage}
+                  alt={displayName}
                   sx={{ width: 120, height: 120, mb: 2 }}
                 />
               </Box>
-              <Typography variant="h5">{userData.username || session?.user?.name}</Typography>
+              <Typography variant="h5">{displayName}</Typography>
               <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
                 {session?.user?.email}
               </Typography>
@@ -135,7 +166,7 @@ export default function Profile() {
                   Username
                 </Typography>
                 <Typography variant="body1">
-                  {userData.username || session?.user?.name || 'Not set'}
+                  {displayName}
                 </Typography>
               </Box>
               
@@ -144,7 +175,7 @@ export default function Profile() {
                   Bio
                 </Typography>
                 <Typography variant="body1">
-                  {userData.bio || 'No bio information available'}
+                  {displayBio}
                 </Typography>
               </Box>
             </Box>
@@ -163,25 +194,24 @@ export default function Profile() {
             {campaigns && campaigns.length > 0 ? (
               <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 3 }}>
                 {/* Map through the user's campaigns */}
-                {/* This would be populated with actual campaign data */}
-                <Box>
-                  <Card>
+                {campaigns.map((campaign) => (
+                  <Card key={campaign.id}>
                     <CardMedia
                       component="img"
                       height="140"
-                      image="/placeholder-image.jpg"
-                      alt="Campaign"
+                      image={campaign.image || "/placeholder-image.jpg"}
+                      alt={campaign.title}
                     />
                     <CardContent>
                       <Typography gutterBottom variant="h6" component="div">
-                        Example Campaign
+                        {campaign.title}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        This is a placeholder for when you create your first campaign.
+                        {campaign.shortDescription}
                       </Typography>
                     </CardContent>
                   </Card>
-                </Box>
+                ))}
               </Box>
             ) : (
               <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -202,24 +232,23 @@ export default function Profile() {
           
           <TabPanel value={tabValue} index={1}>
             {contributions && contributions.length > 0 ? (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 3 }}>
                 {/* Map through the user's contributions */}
-                {/* This would be populated with actual contribution data */}
-                <Box>
-                  <Card>
+                {contributions.map((contribution) => (
+                  <Card key={contribution.id}>
                     <CardContent>
-                      <Typography variant="h6">
-                        Example Contribution
+                      <Typography gutterBottom variant="h6" component="div">
+                        {contribution.campaign?.title || 'Untitled Campaign'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        You contributed $100 to Example Campaign
+                        Amount: {contribution.amount} {contribution.currency}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        April 24, 2025
+                      <Typography variant="body2" color="text.secondary">
+                        Date: {new Date(contribution.createdAt).toLocaleDateString()}
                       </Typography>
                     </CardContent>
                   </Card>
-                </Box>
+                ))}
               </Box>
             ) : (
               <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -230,9 +259,9 @@ export default function Profile() {
                   variant="contained" 
                   color="primary"
                   component={Link}
-                  href="/explore"
+                  href="/campaigns"
                 >
-                  Explore Campaigns
+                  Browse Campaigns
                 </Button>
               </Box>
             )}

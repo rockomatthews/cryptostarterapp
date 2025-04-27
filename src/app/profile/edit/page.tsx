@@ -2,76 +2,155 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Container, Typography, Box, Paper, TextField, Button, Avatar, IconButton, Tooltip, Snackbar, Alert, CircularProgress } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
-export default function EditProfile() {
-  const { data: session, status, update } = useSession();
-  const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [bio, setBio] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [fetchingUser, setFetchingUser] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [initialData, setInitialData] = useState<{username: string, bio: string, image: string | null}>({
+// Custom hook for fetching and managing user data
+function useUserData(userId: string | undefined) {
+  const { data: session } = useSession();
+  
+  const [userData, setUserData] = useState<{
+    username: string;
+    bio: string;
+    image: string | null;
+  }>({
     username: '',
     bio: '',
     image: null
   });
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  
+  // Fetch user data function that can be called on demand
+  const fetchUserData = useCallback(async () => {
+    if (!userId) {
+      setError('User ID is missing');
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log(`Fetching user data for ID: ${userId}`);
+      const response = await fetch(`/api/users/${userId}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || `Failed to fetch user data (${response.status})`);
+      }
+      
+      const data = await response.json();
+      console.log('Fetched user data:', data);
+      
+      // Check if we got an error but with status 200
+      if (data.error) {
+        console.log('Received error with 200 status:', data.error);
+        // Still use any data provided as fallback
+        setUserData({
+          username: data.name || session?.user?.name || '',
+          bio: data.bio || '',
+          image: data.image || session?.user?.image || null
+        });
+        
+        // Don't throw - use what we got
+        setLoading(false);
+        return;
+      }
+      
+      // Extract relevant data with fallbacks
+      const username = data.name || data.username || session?.user?.name || '';
+      const bio = data.bio || '';
+      const image = data.image || session?.user?.image || null;
+      
+      setUserData({
+        username,
+        bio,
+        image
+      });
+      
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching user data:', err);
+      
+      // Fallback to session data if available
+      if (session?.user) {
+        setUserData({
+          username: session.user.name || '',
+          bio: '',
+          image: session.user.image || null
+        });
+      }
+      
+      setError(err instanceof Error ? err.message : 'Failed to load your profile data');
+      setLoading(false);
+      
+      // If there's an error, increment retry count
+      setRetryCount(prev => prev + 1);
+    }
+  }, [userId, session]);
+  
+  // Initial data fetch
+  useEffect(() => {
+    if (userId) {
+      fetchUserData();
+    } else {
+      setLoading(false);
+    }
+  }, [userId, fetchUserData]);
+  
+  return {
+    userData,
+    setUserData,
+    loading,
+    error,
+    retry: fetchUserData,
+    retryCount
+  };
+}
 
+export default function EditProfile() {
+  const { data: session, status, update } = useSession();
+  const router = useRouter();
+  
+  // Get user data from custom hook
+  const {
+    userData: initialData,
+    loading: fetchingUser,
+    error: fetchError,
+    retry: retryFetch
+  } = useUserData(session?.user?.id);
+  
+  // Form state
+  const [username, setUsername] = useState(initialData.username);
+  const [bio, setBio] = useState(initialData.bio);
+  const [imagePreview, setImagePreview] = useState<string | null>(initialData.image);
+  
+  // UI state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  
+  // Update form values when initialData changes
+  useEffect(() => {
+    setUsername(initialData.username);
+    setBio(initialData.bio);
+    setImagePreview(initialData.image);
+  }, [initialData]);
+  
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
     }
-    
-    const fetchUserData = async () => {
-      if (session?.user?.id) {
-        setFetchingUser(true);
-        try {
-          const response = await fetch(`/api/users/${session.user.id}`);
-          if (!response.ok) {
-            throw new Error('Failed to fetch user data');
-          }
-          
-          const userData = await response.json();
-          console.log('Fetched user data:', userData);
-          
-          const username = userData.username || userData.name || session?.user?.name || '';
-          const bio = userData.bio || '';
-          const image = userData.image || session?.user?.image || null;
-          
-          setUsername(username);
-          setBio(bio);
-          setImagePreview(image);
-          setInitialData({
-            username,
-            bio,
-            image
-          });
-        } catch (err) {
-          console.error('Error fetching user data:', err);
-          setError('Failed to load your profile data. Please try again.');
-        } finally {
-          setFetchingUser(false);
-        }
-      } else {
-        setFetchingUser(false);
-      }
-    };
-    
-    if (session?.user?.id) {
-      fetchUserData();
-    }
-  }, [status, router, session]);
+  }, [status, router]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -84,7 +163,6 @@ export default function EditProfile() {
     setUsername(initialData.username);
     setBio(initialData.bio);
     setImagePreview(initialData.image);
-    setImageFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,7 +178,7 @@ export default function EditProfile() {
       // For now, we'll just use the image preview as the image URL
       // In a real app, you would upload the image to a storage service
       const userData = {
-        username,
+        name: username, // Use name instead of username to match schema
         bio,
         image: imagePreview
       };
@@ -114,20 +192,21 @@ export default function EditProfile() {
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         console.error('Error response:', errorData);
-        throw new Error(errorData.error || 'Failed to update profile');
+        throw new Error(errorData.error || `Failed to update profile (${response.status})`);
       }
       
       const updatedUser = await response.json();
-      console.log('Profile updated successfully:', updatedUser);
       
-      // Update the initial data to reflect the changes
-      setInitialData({
-        username,
-        bio,
-        image: imagePreview
-      });
+      // Check if we got an error with status 200
+      if (updatedUser.error) {
+        console.warn('Profile update returned error with 200 status:', updatedUser.error);
+        // We still update the session
+        throw new Error(updatedUser.error);
+      }
+      
+      console.log('Profile updated successfully:', updatedUser);
       
       // Update the session to reflect changes
       await update({
@@ -176,6 +255,20 @@ export default function EditProfile() {
           <Typography variant="h4" gutterBottom align="center">
             Edit Profile
           </Typography>
+          
+          {fetchError && (
+            <Alert 
+              severity="warning" 
+              sx={{ mb: 3 }}
+              action={
+                <Button color="inherit" size="small" onClick={retryFetch}>
+                  Retry
+                </Button>
+              }
+            >
+              {fetchError}
+            </Alert>
+          )}
           
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
             <Box sx={{ position: 'relative' }}>
@@ -248,6 +341,18 @@ export default function EditProfile() {
               />
             </Box>
             
+            {error && (
+              <Alert severity="error" sx={{ mb: 3 }}>
+                {error}
+              </Alert>
+            )}
+            
+            {success && (
+              <Alert severity="success" sx={{ mb: 3 }}>
+                Profile updated successfully!
+              </Alert>
+            )}
+            
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Button 
                 variant="outlined" 
@@ -269,16 +374,12 @@ export default function EditProfile() {
         </Paper>
       </Box>
       
-      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError(null)}>
-        <Alert onClose={() => setError(null)} severity="error" sx={{ width: '100%' }}>
-          {error}
-        </Alert>
-      </Snackbar>
-      
-      <Snackbar open={success} autoHideDuration={6000} onClose={() => setSuccess(false)}>
-        <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
-          Profile updated successfully!
-        </Alert>
+      <Snackbar 
+        open={success} 
+        autoHideDuration={3000} 
+        onClose={() => setSuccess(false)}
+      >
+        <Alert severity="success">Profile updated successfully!</Alert>
       </Snackbar>
     </Container>
   );

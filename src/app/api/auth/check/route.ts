@@ -1,15 +1,14 @@
-import { createSafeHandler } from "@/lib/safe-prisma";
-import { PrismaClient } from '@prisma/client';
-import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
+import { prisma, getPrismaStatus } from '@/lib/prisma';
 
-// Environment utility function
-const getEnv = (key: string): string | undefined => {
-  return process.env[key];
-};
+// Set runtime for faster execution
+export const runtime = 'nodejs';
 
-// Enhanced diagnostic endpoint to check auth configuration
-export const GET = createSafeHandler('auth-check', async () => {
+/**
+ * API endpoint for checking authentication and database status
+ */
+export async function GET() {
   // Capture the current timestamp
   const timestamp = new Date().toISOString();
   
@@ -31,7 +30,7 @@ export const GET = createSafeHandler('auth-check', async () => {
   const vercelUrl = process.env.VERCEL_URL || '';
   
   // Determine the actual base URL being used
-  const baseUrl = getEnv('NEXTAUTH_URL') || 
+  const baseUrl = process.env.NEXTAUTH_URL || 
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
   
   // Expected callback URL that should be configured in Google OAuth console
@@ -58,17 +57,15 @@ export const GET = createSafeHandler('auth-check', async () => {
   
   // Check database connection
   let dbConnected = false;
-  let databaseUrl = process.env.DATABASE_URL || '';
   let dbErrorMessage = '';
+  let databaseUrl = process.env.DATABASE_URL || '';
   
   // Hide the actual database password in the response
   if (databaseUrl) {
-    // Mask the password part of the connection string if it exists
     try {
       const urlObj = new URL(databaseUrl);
       if (urlObj.password) {
-        const maskedPassword = '****';
-        urlObj.password = maskedPassword;
+        urlObj.password = '****';
         databaseUrl = urlObj.toString();
       }
     } catch {
@@ -76,18 +73,24 @@ export const GET = createSafeHandler('auth-check', async () => {
     }
   }
   
+  // Check Prisma status
+  const { isInitialized } = getPrismaStatus();
+  
   // Test database connection
-  const prisma = new PrismaClient();
   try {
-    await prisma.$connect();
-    dbConnected = true;
+    if (isInitialized) {
+      // Use the existing singleton connection
+      await prisma.$queryRaw`SELECT 1`;
+      dbConnected = true;
+    } else {
+      dbErrorMessage = 'Prisma client not initialized';
+      dbConnected = false;
+    }
   } catch (error) {
     dbConnected = false;
     dbErrorMessage = error instanceof Error ? error.message : String(error);
     hints.push(`Database connection failed: ${dbErrorMessage}`);
     console.error('Database connection error:', dbErrorMessage);
-  } finally {
-    await prisma.$disconnect();
   }
   
   if (environment === 'production' && !dbConnected) {
@@ -109,12 +112,10 @@ export const GET = createSafeHandler('auth-check', async () => {
   if (hints.length === 0) {
     hints.push('Your configuration looks good. Check if Google OAuth is correctly configured in Google Cloud Console.');
     hints.push('Ensure the authorized redirect URI in Google Console matches exactly: ' + expectedCallbackUrl);
-    hints.push('Check your browser console for any CORS errors or cookie issues.');
-    hints.push('Try incognito mode to rule out browser extension issues.');
   }
   
   // Get the headers
-  const headersList = await headers();
+  const headersList = headers();
   const host = headersList.get('host') || 'unknown';
   const userAgent = headersList.get('user-agent') || 'unknown';
   
@@ -145,6 +146,7 @@ export const GET = createSafeHandler('auth-check', async () => {
       database: {
         url: databaseUrl,
         connected: dbConnected,
+        initialized: isInitialized,
       },
     },
     request: {
@@ -155,4 +157,4 @@ export const GET = createSafeHandler('auth-check', async () => {
     },
     hints,
   });
-}); 
+} 

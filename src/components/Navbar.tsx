@@ -44,17 +44,22 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static" color="default" elevation={1}>
+    <AppBar position="static" elevation={1} sx={{ bgcolor: 'black', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Link href="/" passHref style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
               <Typography
-                variant="h6"
+                variant="h5"
                 noWrap
                 sx={{
+                  fontFamily: 'var(--font-logo)',
                   fontWeight: 700,
-                  color: 'primary.main',
+                  fontSize: '28px',
+                  color: '#FFEB3B',
+                  letterSpacing: '0.02em',
+                  textTransform: 'uppercase',
+                  textShadow: '0 0 10px rgba(255, 235, 59, 0.3)',
                 }}
               >
                 CryptoStarter
@@ -63,16 +68,16 @@ const Navbar = () => {
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button component={Link} href="/" color="inherit">
+            <Button component={Link} href="/" sx={{ color: 'white' }}>
               Home
             </Button>
-            <Button component={Link} href="/explore" color="inherit">
+            <Button component={Link} href="/explore" sx={{ color: 'white' }}>
               Explore
             </Button>
             <Button 
               component={Link} 
               href={status === 'authenticated' ? "/create-campaign" : "#"} 
-              color="inherit"
+              sx={{ color: 'white' }}
               onClick={handleCreateCampaign}
             >
               Create Campaign
@@ -85,11 +90,19 @@ const Navbar = () => {
                     <Avatar 
                       alt={session.user.name || 'User'} 
                       src={session.user.image || ''}
+                      sx={{ border: '2px solid #FFEB3B' }}
                     />
                   </IconButton>
                 </Tooltip>
                 <Menu
-                  sx={{ mt: '45px' }}
+                  sx={{ 
+                    mt: '45px',
+                    '& .MuiPaper-root': {
+                      backgroundColor: '#121212',
+                      borderRadius: 2,
+                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                    }
+                  }}
                   id="menu-appbar"
                   anchorEl={anchorElUser}
                   anchorOrigin={{
@@ -116,7 +129,19 @@ const Navbar = () => {
                 </Menu>
               </Box>
             ) : (
-              <Button component={Link} href="/login" variant="contained" color="primary" sx={{ ml: 2 }}>
+              <Button 
+                component={Link} 
+                href="/login" 
+                variant="contained" 
+                sx={{ 
+                  ml: 2,
+                  bgcolor: '#FFEB3B', 
+                  color: 'black',
+                  '&:hover': {
+                    bgcolor: '#FFD600',
+                  } 
+                }}
+              >
                 Sign In
               </Button>
             )}

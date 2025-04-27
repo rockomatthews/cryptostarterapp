@@ -1,7 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configure Next.js for edge compatibility
-  serverExternalPackages: ['@prisma/client', 'bcrypt'],
+  reactStrictMode: true,
+  images: {
+    domains: ['lh3.googleusercontent.com'],
+  },
+  // Enable middleware for authentication
+  experimental: {
+    // Support for authInterrupts provides better error handling for authentication
+    authInterrupts: true,
+  },
+  // Enable serverExternalPackages for better Prisma support
+  serverExternalPackages: [
+    'prisma',
+    '@prisma/client'
+  ],
+  // On-demand ISR
+  staticGeneration: {
+    // Prevent static generation of pages with dynamic routes
+    excludeDynamic: true,
+  },
   // Disable ESLint during build
   eslint: {
     // Warning: This allows production builds to successfully complete even if

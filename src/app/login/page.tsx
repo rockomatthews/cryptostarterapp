@@ -1,12 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { signIn, getProviders, type ClientSafeProvider } from 'next-auth/react';
+import { signIn, getProviders } from 'next-auth/react';
 import { Button, Container, Box, Typography, Paper, CircularProgress, Alert } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 
 export default function Login() {
-  const [providers, setProviders] = useState<Record<string, ClientSafeProvider> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -16,7 +15,6 @@ export default function Login() {
         setLoading(true);
         const providers = await getProviders();
         console.log('Auth providers loaded:', providers);
-        setProviders(providers);
         setError(null);
       } catch (err) {
         console.error('Failed to fetch providers:', err);
@@ -77,6 +75,7 @@ export default function Login() {
             fullWidth
             onClick={handleGoogleSignIn}
             sx={{ mt: 2 }}
+            disabled={loading}
           >
             Sign in with Google
           </Button>

@@ -9,9 +9,11 @@
     "postbuild": "node prisma/wrap-handlers.js",
     "start": "next start",
     "lint": "next lint",
-    "prisma:generate": "prisma generate",
-    "vercel-build": "prisma generate && next build",
-    "postinstall": "prisma generate"
+    "prisma:generate": "prisma generate --no-engine",
+    "vercel-build": "prisma generate --no-engine && next build",
+    "postinstall": "prisma generate --no-engine",
+    "test-db": "node prisma/test-db-connection.js",
+    "update-env": "node prisma/update-env.js"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -43,6 +45,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "ts-node": "^10.9.1"
   }
 }

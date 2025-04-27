@@ -14,7 +14,7 @@ try {
   
   // Generate Prisma client
   console.log('🚀 Generating Prisma client...');
-  execSync('npx prisma generate', { 
+  execSync('npx prisma generate --no-engine', { 
     stdio: 'inherit',
     env: {
       ...process.env,

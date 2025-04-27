@@ -4,8 +4,8 @@ const { execSync } = require('child_process');
 try {
   console.log('🚀 Running Prisma generate for Vercel deployment...');
   
-  // Force a new Prisma Client generation
-  execSync('npx prisma generate', { stdio: 'inherit' });
+  // Force a new Prisma Client generation with --no-engine flag for production
+  execSync('npx prisma generate --no-engine', { stdio: 'inherit' });
   
   console.log('✅ Prisma Client generated successfully!');
 } catch (error) {

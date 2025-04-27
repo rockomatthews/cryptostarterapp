@@ -1,14 +1,4 @@
-import { 
-  Box, 
-  Button, 
-  Card, 
-  CardActions, 
-  CardContent, 
-  Container,
-  LinearProgress, 
-  Stack, 
-  Typography
-} from "@mui/material";
+import { Box, Button, Card, CardContent, Container, Grid, LinearProgress, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
 import Image from 'next/image';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -16,7 +6,6 @@ import ChatIcon from '@mui/icons-material/Chat';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import TelegramIcon from '@mui/icons-material/Telegram';
 
-// Define campaign type
 type Campaign = {
   id: number;
   title: string;
@@ -29,159 +18,127 @@ type Campaign = {
 };
 
 // Mock data for featured campaigns
-const featuredCampaigns = [
+const featuredCampaigns: Campaign[] = [
   {
     id: 1,
-    title: "Decentralized Healthcare Platform",
-    description: "A blockchain-based platform to securely store and share medical records.",
-    image: "/images/card-healthcare.svg",
-    raised: 240,
-    goal: 500,
-    backers: 45,
-    daysLeft: 18
+    title: 'Eco-Friendly Water Bottle',
+    description: 'A sustainable water bottle that removes microplastics from your water.',
+    image: '/images/campaign1.jpg',
+    raised: 15000,
+    goal: 20000,
+    backers: 254,
+    daysLeft: 12,
   },
   {
     id: 2,
-    title: "Green Energy Trading Marketplace",
-    description: "Enabling peer-to-peer renewable energy trading with transparent token economics.",
-    image: "/images/card-energy.svg",
-    raised: 180,
-    goal: 300,
-    backers: 32,
-    daysLeft: 12
+    title: 'Smart Home Garden',
+    description: 'An AI-powered garden that grows vegetables with minimal intervention.',
+    image: '/images/campaign2.jpg',
+    raised: 45000,
+    goal: 50000,
+    backers: 532,
+    daysLeft: 8,
   },
   {
     id: 3,
-    title: "Decentralized Identity Solution",
-    description: "Self-sovereign identity platform using blockchain for secure and private authentication.",
-    image: "/images/card-identity.svg",
-    raised: 80,
-    goal: 200,
-    backers: 15,
-    daysLeft: 25
+    title: 'Blockchain Education Platform',
+    description: 'Making blockchain learning accessible to everyone through interactive courses.',
+    image: '/images/campaign3.jpg',
+    raised: 85000,
+    goal: 100000,
+    backers: 943,
+    daysLeft: 25,
   }
 ];
 
+interface CampaignCardProps {
+  campaign: Campaign;
+}
+
 // Campaign card component
-function CampaignCard({ campaign }: { campaign: Campaign }) {
+const CampaignCard = ({ campaign }: CampaignCardProps) => {
   const progress = (campaign.raised / campaign.goal) * 100;
   
   return (
     <Card 
-      elevation={2} 
       sx={{ 
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column',
-        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-        bgcolor: 'black',
-        color: 'white',
-        borderRadius: 2,
+        transition: 'transform 0.3s ease-in-out',
         '&:hover': {
-          transform: 'translateY(-8px)',
-          boxShadow: '0 8px 16px rgba(255, 255, 255, 0.2)'
+          transform: 'translateY(-5px)',
+          boxShadow: 6,
         }
       }}
     >
-      <Box sx={{ position: 'relative', height: 180 }}>
+      <Box sx={{ position: 'relative', width: '100%', height: 200 }}>
         <Image
           src={campaign.image}
           alt={campaign.title}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           style={{ objectFit: 'cover' }}
         />
       </Box>
       <CardContent sx={{ flexGrow: 1 }}>
-        <Typography gutterBottom variant="h6" component="h2" sx={{ color: 'white' }}>
+        <Typography gutterBottom variant="h5" component="h2">
           {campaign.title}
         </Typography>
-        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2 }}>
+        <Typography variant="body2" color="text.secondary">
           {campaign.description}
         </Typography>
-        <LinearProgress 
-          variant="determinate" 
-          value={progress} 
-          sx={{ 
-            height: 8, 
-            borderRadius: 4, 
-            mb: 1,
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            '.MuiLinearProgress-bar': {
-              backgroundColor: '#FFEB3B'
-            }
-          }} 
-        />
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-            ${campaign.raised}K raised
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-            ${campaign.goal}K goal
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-            {campaign.backers} backers
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-            {campaign.daysLeft} days left
-          </Typography>
+        <Box sx={{ mt: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+            <Typography variant="body2" fontWeight="bold">${campaign.raised.toLocaleString()}</Typography>
+            <Typography variant="body2" color="text.secondary">${campaign.goal.toLocaleString()}</Typography>
+          </Box>
+          <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 4 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+            <Typography variant="body2">{campaign.backers} backers</Typography>
+            <Typography variant="body2">{campaign.daysLeft} days left</Typography>
+          </Box>
         </Box>
       </CardContent>
-      <CardActions>
-        <Button 
-          size="small" 
-          component={Link} 
-          href={`/campaigns/${campaign.id}`}
-          endIcon={<ArrowForwardIcon />}
-          sx={{
-            backgroundColor: '#FFEB3B', 
-            color: 'black',
-            '&:hover': {
-              backgroundColor: '#FFD600',
-            }
-          }}
-        >
-          View Campaign
-        </Button>
-      </CardActions>
     </Card>
   );
+};
+
+interface HowItWorksStepProps {
+  number: number;
+  title: string;
+  description: string;
 }
 
 // How it works step component
-function HowItWorksStep({ 
-  number, 
-  title, 
-  description 
-}: { 
-  number: number; 
-  title: string; 
-  description: string;
-}) {
+const HowItWorksStep = ({ number, title, description }: HowItWorksStepProps) => {
   return (
-    <Box textAlign="center" p={2}>
-      <Box 
-        sx={{ 
-          backgroundColor: '#FFEB3B', 
-          color: 'black', 
-          width: 60, 
-          height: 60, 
-          borderRadius: '50%', 
-          display: 'flex', 
-          alignItems: 'center', 
+    <Box textAlign="center" sx={{ mb: { xs: 4, md: 0 } }}>
+      <Box
+        sx={{
+          width: 60,
+          height: 60,
+          borderRadius: '50%',
+          backgroundColor: 'primary.main',
+          display: 'flex',
+          alignItems: 'center',
           justifyContent: 'center',
-          margin: '0 auto 16px'
+          mb: 2,
+          mx: 'auto',
         }}
       >
-        {number}
+        <Typography variant="h5" color="white">
+          {number}
+        </Typography>
       </Box>
-      <Typography variant="h6" gutterBottom sx={{ color: 'white' }}>{title}</Typography>
-      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>{description}</Typography>
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {description}
+      </Typography>
     </Box>
   );
-}
+};
 
 export default function Home() {
   return (
@@ -196,13 +153,8 @@ export default function Home() {
         }}
       >
         <Container maxWidth="lg">
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 6,
-            alignItems: 'center' 
-          }}>
-            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 58.33%' } }}>
+          <Grid container component="div" spacing={6} alignItems="center">
+            <Grid size={{ xs: 12, md: 7 }} component="div">
               <Typography 
                 component="h1" 
                 variant="h2" 
@@ -255,13 +207,8 @@ export default function Home() {
                   Start a Campaign
                 </Button>
               </Stack>
-            </Box>
-            <Box 
-              sx={{ 
-                flex: { xs: '1 1 100%', md: '1 1 41.67%' }, 
-                display: { xs: 'none', md: 'block' }
-              }}
-            >
+            </Grid>
+            <Grid size={{ xs: 12, md: 5 }} component="div" sx={{ display: { xs: 'none', md: 'block' } }}>
               <Box 
                 sx={{ 
                   borderRadius: 4, 
@@ -269,9 +216,10 @@ export default function Home() {
                   height: 350,
                 }}
               >
-                <img
+                <Image
                   src="/images/hero-image.png"
                   alt="Cryptocurrency illustration"
+                  fill
                   style={{
                     width: '100%',
                     height: '100%',
@@ -279,8 +227,8 @@ export default function Home() {
                   }}
                 />
               </Box>
-            </Box>
-          </Box>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
 
@@ -294,36 +242,29 @@ export default function Home() {
             Our platform makes it easy to launch and support blockchain projects
           </Typography>
           
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              flexDirection: { xs: 'column', md: 'row' },
-              gap: 4,
-              mt: 4 
-            }}
-          >
-            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 33.333%' } }}>
+          <Grid container component="div" spacing={4} sx={{ mt: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }} component="div">
               <HowItWorksStep 
                 number={1} 
                 title="Create Your Campaign" 
                 description="Set up your fundraising campaign with project details, funding goals, and rewards."
               />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 33.333%' } }}>
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }} component="div">
               <HowItWorksStep 
                 number={2} 
                 title="Get Funded" 
                 description="Receive funding in cryptocurrency from supporters around the world."
               />
-            </Box>
-            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 33.333%' } }}>
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }} component="div">
               <HowItWorksStep 
                 number={3} 
                 title="Build Your Project" 
                 description="Use the funds to build your project and deliver on your promises."
               />
-            </Box>
-          </Box>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
       
@@ -337,26 +278,13 @@ export default function Home() {
             Discover innovative blockchain projects seeking support
           </Typography>
           
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              flexWrap: 'wrap',
-              margin: '-8px', // Negative margin to offset padding
-            }}
-          >
+          <Grid container component="div" spacing={2}>
             {featuredCampaigns.map((campaign) => (
-              <Box 
-                key={campaign.id} 
-                sx={{ 
-                  width: { xs: '100%', md: '33.33%' },
-                  padding: '8px',
-                  boxSizing: 'border-box',
-                }}
-              >
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} component="div" key={campaign.id}>
                 <CampaignCard campaign={campaign} />
-              </Box>
+              </Grid>
             ))}
-          </Box>
+          </Grid>
           
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
             <Button 
@@ -395,39 +323,38 @@ export default function Home() {
             Connect with creators, backers, and blockchain enthusiasts
           </Typography>
           
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              flexDirection: { xs: 'column', sm: 'row' },
-              justifyContent: 'center',
-              gap: 2
-            }}
-          >
-            <Button 
-              variant="outlined" 
-              size="large"
-              startIcon={<ChatIcon />}
-              sx={{ borderRadius: 2, px: 3 }}
-            >
-              Discord
-            </Button>
-            <Button 
-              variant="outlined" 
-              size="large"
-              startIcon={<TwitterIcon />}
-              sx={{ borderRadius: 2, px: 3 }}
-            >
-              Twitter
-            </Button>
-            <Button 
-              variant="outlined" 
-              size="large"
-              startIcon={<TelegramIcon />}
-              sx={{ borderRadius: 2, px: 3 }}
-            >
-              Telegram
-            </Button>
-          </Box>
+          <Grid container component="div" justifyContent="center" spacing={2}>
+            <Grid size={{ xs: 12, md: 6 }} component="div">
+              <Button 
+                variant="outlined" 
+                size="large"
+                startIcon={<ChatIcon />}
+                sx={{ borderRadius: 2, px: 3 }}
+              >
+                Discord
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }} component="div">
+              <Button 
+                variant="outlined" 
+                size="large"
+                startIcon={<TwitterIcon />}
+                sx={{ borderRadius: 2, px: 3 }}
+              >
+                Twitter
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }} component="div">
+              <Button 
+                variant="outlined" 
+                size="large"
+                startIcon={<TelegramIcon />}
+                sx={{ borderRadius: 2, px: 3 }}
+              >
+                Telegram
+              </Button>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
     </Box>

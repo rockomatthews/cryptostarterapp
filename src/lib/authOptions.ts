@@ -1,10 +1,10 @@
-import { AuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 
 // Auth configuration options
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -16,10 +16,13 @@ export const authOptions: AuthOptions = {
     signIn: '/login',
     error: '/auth-error',
   },
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session: async ({ session, user }) => {
-      if (session?.user && user?.id) {
-        session.user.id = user.id;
+    async session({ session, token }) {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
       }
       return session;
     },

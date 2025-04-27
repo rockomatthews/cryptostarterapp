@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 
 export async function GET() {
   // Get Prisma status from the helper function
-  const status = getPrismaStatus();
+  const status = await getPrismaStatus();
   
   return NextResponse.json({
     timestamp: new Date().toISOString(),

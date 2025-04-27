@@ -15,19 +15,26 @@ export const prisma =
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // Function to check if Prisma is initialized
-export function getPrismaStatus() {
+export async function getPrismaStatus() {
   try {
+    // If we already know Prisma is initialized, return that status
+    if (globalForPrisma._prismaInitialized) {
+      return {
+        initialized: true,
+        client: prisma
+      };
+    }
+    
     // Try a simple query to check if connection works
     if (process.env.NODE_ENV !== 'production' && typeof window === 'undefined') {
       // Only test connection on server side and non-production
-      prisma.$queryRaw`SELECT 1`
-        .then(() => {
-          globalForPrisma._prismaInitialized = true;
-        })
-        .catch((err) => {
-          console.error('Prisma connection test failed:', err);
-          globalForPrisma._prismaInitialized = false;
-        });
+      try {
+        await prisma.$queryRaw`SELECT 1`;
+        globalForPrisma._prismaInitialized = true;
+      } catch (err) {
+        console.error('Prisma connection test failed:', err);
+        globalForPrisma._prismaInitialized = false;
+      }
     }
     
     return {

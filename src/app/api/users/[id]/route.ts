@@ -23,7 +23,7 @@ export async function GET(
     }
 
     // Check if Prisma is initialized
-    const prismaStatus = getPrismaStatus();
+    const prismaStatus = await getPrismaStatus();
     
     // If Prisma isn't initialized, return mock data for development
     if (!prismaStatus.initialized) {
@@ -87,7 +87,7 @@ export async function PUT(
     const data = await req.json();
 
     // Check if Prisma is initialized
-    const prismaStatus = getPrismaStatus();
+    const prismaStatus = await getPrismaStatus();
     
     // If Prisma isn't initialized, return mock successful response
     if (!prismaStatus.initialized) {

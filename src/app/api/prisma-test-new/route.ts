@@ -15,7 +15,7 @@ type ConnectionTest = {
 export async function GET() {
   try {
     // Get Prisma status
-    const status = getPrismaStatus();
+    const status = await getPrismaStatus();
     
     // Try to run a test query
     let connectionTest: ConnectionTest = { success: false, message: 'Not attempted' };

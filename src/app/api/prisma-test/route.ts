@@ -37,7 +37,7 @@ export async function GET() {
     }
     
     // Get Prisma status
-    const status = getPrismaStatus();
+    const status = await getPrismaStatus();
     
     return NextResponse.json({
       status,

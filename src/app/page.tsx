@@ -23,7 +23,7 @@ const featuredCampaigns: Campaign[] = [
     id: 1,
     title: 'Eco-Friendly Water Bottle',
     description: 'A sustainable water bottle that removes microplastics from your water.',
-    image: '/images/campaign1.jpg',
+    image: '/card-energy.svg',
     raised: 15000,
     goal: 20000,
     backers: 254,
@@ -33,7 +33,7 @@ const featuredCampaigns: Campaign[] = [
     id: 2,
     title: 'Smart Home Garden',
     description: 'An AI-powered garden that grows vegetables with minimal intervention.',
-    image: '/images/campaign2.jpg',
+    image: '/card-healthcare.svg',
     raised: 45000,
     goal: 50000,
     backers: 532,
@@ -43,7 +43,7 @@ const featuredCampaigns: Campaign[] = [
     id: 3,
     title: 'Blockchain Education Platform',
     description: 'Making blockchain learning accessible to everyone through interactive courses.',
-    image: '/images/campaign3.jpg',
+    image: '/card-identity.svg',
     raised: 85000,
     goal: 100000,
     backers: 943,
@@ -76,8 +76,9 @@ const CampaignCard = ({ campaign }: CampaignCardProps) => {
         <Image
           src={campaign.image}
           alt={campaign.title}
-          fill
-          style={{ objectFit: 'cover' }}
+          width={400}
+          height={200}
+          style={{ objectFit: 'contain' }}
         />
       </Box>
       <CardContent sx={{ flexGrow: 1 }}>
@@ -149,7 +150,9 @@ export default function Home() {
           bgcolor: 'black', 
           color: 'white',
           py: { xs: 8, md: 12 },
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          position: 'relative',
+          zIndex: 1
         }}
       >
         <Container maxWidth="lg">
@@ -185,7 +188,9 @@ export default function Home() {
                     fontWeight: 'bold',
                     '&:hover': {
                       bgcolor: '#FFD600'
-                    }
+                    },
+                    position: 'relative',
+                    zIndex: 2
                   }}
                 >
                   Explore Projects
@@ -201,7 +206,9 @@ export default function Home() {
                     '&:hover': {
                       borderColor: '#FFEB3B',
                       bgcolor: 'rgba(255, 255, 255, 0.05)'
-                    }
+                    },
+                    position: 'relative',
+                    zIndex: 2
                   }}
                 >
                   Start a Campaign
@@ -214,15 +221,17 @@ export default function Home() {
                   borderRadius: 4, 
                   overflow: 'hidden',
                   height: 350,
+                  position: 'relative'
                 }}
               >
                 <Image
-                  src="/images/hero-image.png"
+                  src="/hero-blockchain.svg"
                   alt="Cryptocurrency illustration"
-                  fill
+                  width={400}
+                  height={350}
                   style={{
-                    width: '100%',
-                    height: '100%',
+                    maxWidth: '100%',
+                    height: 'auto',
                     objectFit: 'contain',
                   }}
                 />

@@ -9,6 +9,8 @@
     "postbuild": "node prisma/wrap-handlers.js",
     "start": "next start",
     "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "vercel-build": "prisma generate && next build",
     "postinstall": "prisma generate"
   },
   "prisma": {

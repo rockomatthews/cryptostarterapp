@@ -28,6 +28,26 @@ try {
   const indexFile = path.join(outputDir, 'index.js');
   if (fs.existsSync(indexFile)) {
     console.log('✓ Client files generated successfully.');
+    
+    // Also make sure the default Prisma client location exists for compatibility
+    const defaultPrismaDir = path.join(__dirname, '..', 'node_modules', '.prisma', 'client');
+    if (!fs.existsSync(defaultPrismaDir)) {
+      fs.mkdirSync(defaultPrismaDir, { recursive: true });
+      console.log('📁 Created default Prisma client directory for compatibility.');
+      
+      // Copy key files to ensure compatibility with libraries expecting default location
+      const defaultDir = path.join(defaultPrismaDir, 'default');
+      if (!fs.existsSync(defaultDir)) {
+        fs.mkdirSync(defaultDir, { recursive: true });
+      }
+      
+      // Create a simple index.js file
+      fs.writeFileSync(
+        path.join(defaultDir, 'index.js'),
+        `// Compatibility file - redirects to our custom location\nmodule.exports = require('../../../../src/generated/prisma');\n`
+      );
+      console.log('✓ Created compatibility files for default Prisma client location.');
+    }
   } else {
     console.error('✗ Client files not found at expected location.');
     process.exit(1);

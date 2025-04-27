@@ -1,7 +1,7 @@
 /**
  * Utility to fix Prisma initialization issues
  */
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 
 // Define a global type
 type GlobalWithPrisma = {
@@ -65,13 +65,13 @@ export async function testPrismaConnection() {
       success: true, 
       message: 'Successfully connected to database',
       result
-    };
+    } as const;
   } catch (error) {
     return {
       success: false,
       message: 'Failed to connect to database',
       error: String(error)
-    };
+    } as const;
   }
 }
 

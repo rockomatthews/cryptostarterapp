@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
-import { getPrismaStatus } from '@/lib/prisma';
-import prisma from '@/lib/prisma';
+import { prisma, getPrismaStatus } from '@/lib/prisma';
 
 // Set runtime for faster execution
 export const runtime = 'nodejs';
+
+// Define proper types
+type ConnectionTest = {
+  success: boolean;
+  message: string;
+  result?: unknown;
+  error?: string;
+};
 
 // Run Prisma regeneration
 export async function GET() {
@@ -12,7 +19,7 @@ export async function GET() {
     const result = await regeneratePrisma();
     
     // Test Prisma connection
-    let connectionTest = { success: false, message: 'Not attempted' };
+    let connectionTest: ConnectionTest = { success: false, message: 'Not attempted' };
     try {
       // Try to use the Prisma client
       const count = await prisma.$queryRaw`SELECT 1 as count`;
@@ -71,7 +78,7 @@ async function regeneratePrisma() {
     const output = childProcess.execSync('npx prisma generate').toString();
     
     // Set global status
-    (global as any)._prismaInitialized = true;
+    (global as unknown as { _prismaInitialized?: boolean })._prismaInitialized = true;
     
     return { success: true, output };
   } catch (error) {

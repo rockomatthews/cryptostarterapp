@@ -86,63 +86,50 @@ export async function testDbConnection(client?: PrismaClient) {
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
-
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 let prisma: PrismaClient;
 
-// During build, use mock client to prevent initialization errors
-if (isBuildTime) {
-  console.log('Using mock PrismaClient during build phase');
-  prisma = createMockPrisma();
-} else {
-  // In development/runtime, use actual PrismaClient
-  try {
+// Cache a single instance of PrismaClient
+if (!globalForPrisma.prisma) {
+  if (isBuildTime) {
+    console.log('Using mock PrismaClient during build phase');
+    globalForPrisma.prisma = createMockPrisma();
+  } else {
     console.log('Initializing real Prisma client for runtime');
-    if (process.env.NODE_ENV === 'production') {
-      // In production, always create a new client with appropriate config
-      prisma = new PrismaClient({
-        log: ['error', 'warn'],
+    try {
+      // Create a new PrismaClient instance with proper configuration
+      const newPrisma = new PrismaClient({
+        log: process.env.NODE_ENV === 'production' ? ['error', 'warn'] : ['query', 'info', 'warn', 'error'],
         errorFormat: 'pretty',
-        datasources: {
-          db: {
-            url: process.env.DATABASE_URL
-          }
-        }
       });
       
-      // Immediately test the connection
-      prisma.$connect().then(() => {
-        console.log('Prisma connection established successfully in production');
-        testDbConnection(prisma).then(isConnected => {
-          console.log('Production DB connection test result:', isConnected);
-        });
-      }).catch(error => {
-        console.error('Prisma connection failed in production:', error);
-      });
-    } else {
-      // In development, reuse client if it exists
-      if (!globalForPrisma.prisma) {
-        globalForPrisma.prisma = new PrismaClient({
-          log: ['query', 'info', 'warn', 'error']
-        });
+      // Try to extend with Accelerate if needed
+      try {
+        if (process.env.DATABASE_ACCELERATE_URL || process.env.PRISMA_ACCELERATE_URL) {
+          console.log('Extending Prisma with Accelerate');
+          globalForPrisma.prisma = newPrisma.$extends(withAccelerate());
+        } else {
+          globalForPrisma.prisma = newPrisma;
+        }
+      } catch (extError) {
+        console.warn('Failed to extend with Accelerate, using standard client', extError);
+        globalForPrisma.prisma = newPrisma;
       }
-      prisma = globalForPrisma.prisma;
+      
+      // Ensure we're connected
+      globalForPrisma.prisma.$connect().catch(e => {
+        console.error('Failed to connect to database:', e);
+      });
+    } catch (initError) {
+      console.error('Failed to initialize Prisma client:', initError);
+      // Fallback to mock client if initialization fails
+      globalForPrisma.prisma = createMockPrisma();
     }
-
-    // Try to extend with Accelerate
-    try {
-      console.log('Attempting to extend Prisma with Accelerate');
-      prisma = prisma.$extends(withAccelerate());
-      console.log('Successfully extended Prisma with Accelerate');
-    } catch (extError) {
-      console.warn('Failed to extend Prisma with Accelerate:', extError);
-    }
-  } catch (initError) {
-    console.error('Failed to initialize real Prisma client:', initError);
-    // Fallback to mock client if initialization fails
-    prisma = createMockPrisma();
   }
 }
+
+// Use the cached client
+prisma = globalForPrisma.prisma;
 
 export default prisma; 

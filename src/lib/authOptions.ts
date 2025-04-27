@@ -24,8 +24,15 @@ export const authOptions: AuthOptions = {
       return session;
     },
     redirect: async ({ url, baseUrl }) => {
-      // Handle URL redirects
-      const resolvedBaseUrl = baseUrl || process.env.NEXTAUTH_URL || "https://cryptostarter.app";
+      // Get the current hostname to determine if we're in development or production
+      const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+      
+      // Use localhost URL for development, otherwise use the configured URL
+      const resolvedBaseUrl = isLocalhost 
+        ? 'http://localhost:3000' 
+        : (baseUrl || process.env.NEXTAUTH_URL || "https://cryptostarter.app");
+      
+      console.log('NextAuth redirect:', { url, baseUrl, resolvedBaseUrl });
       
       // Handle absolute URLs from the same origin
       if (url.startsWith(resolvedBaseUrl)) {
@@ -41,5 +48,18 @@ export const authOptions: AuthOptions = {
       return resolvedBaseUrl;
     }
   },
-  debug: process.env.NODE_ENV === 'development',
+  // More detailed debugging in both development and production
+  debug: true,
+  // Ensure cookies work correctly in all environments
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  }
 }; 

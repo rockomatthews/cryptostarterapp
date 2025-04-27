@@ -1,19 +1,67 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import prisma from "@/lib/prisma";
+import type { PrismaClient } from "@prisma/client";
+
+// Detect build time vs runtime
+const isBuildTime = typeof window === 'undefined' && 
+                   (process.env.NEXT_PHASE === 'phase-production-build' || 
+                    process.env.VERCEL_ENV === 'development');
+
+// Create a mock adapter for build time
+const getMockAdapter = () => {
+  return {
+    createUser: async (data: any) => ({ id: 'mock-id', ...data }),
+    getUser: async () => null,
+    getUserByEmail: async () => null,
+    getUserByAccount: async () => null,
+    updateUser: async (data: any) => ({ id: 'mock-id', ...data }),
+    deleteUser: async () => ({}),
+    linkAccount: async (data: any) => data,
+    unlinkAccount: async () => ({}),
+    createSession: async (data: any) => data,
+    getSessionAndUser: async () => null,
+    updateSession: async (data: any) => data,
+    deleteSession: async () => ({}),
+    createVerificationToken: async (data: any) => data,
+    useVerificationToken: async () => null,
+  };
+};
 
 // Log configuration details to help with debugging
 console.log("Auth.ts configuration:", {
   nodeEnv: process.env.NODE_ENV,
   nextAuthUrl: process.env.NEXTAUTH_URL,
   hasSecret: !!process.env.NEXTAUTH_SECRET,
-  hasGoogleConfig: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
+  hasGoogleConfig: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+  isBuildTime
 });
+
+// For build time, use a mock adapter
+let adapter: any;
+if (isBuildTime) {
+  console.log('Using mock adapter for build');
+  adapter = getMockAdapter();
+} else {
+  try {
+    // For runtime, use dynamic import of Prisma
+    // Note: This will be executed during initialization, 
+    // which happens after build time
+    import("@/lib/prisma").then((module) => {
+      adapter = PrismaAdapter(module.default as PrismaClient);
+    }).catch(err => {
+      console.error('Failed to load Prisma adapter:', err);
+      adapter = getMockAdapter();
+    });
+  } catch (error) {
+    console.error('Error initializing adapter:', error);
+    adapter = getMockAdapter();
+  }
+}
 
 // Centralized NextAuth configuration - Next.js 15 pattern
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",

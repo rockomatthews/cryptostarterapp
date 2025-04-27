@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Container, Typography, Box, Paper, TextField, Button, Avatar, IconButton, Tooltip, Snackbar, Alert } from '@mui/material';
+import { Container, Typography, Box, Paper, TextField, Button, Avatar, IconButton, Tooltip, Snackbar, Alert, CircularProgress } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
 export default function EditProfile() {
@@ -14,8 +14,14 @@ export default function EditProfile() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fetchingUser, setFetchingUser] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [initialData, setInitialData] = useState<{username: string, bio: string, image: string | null}>({
+    username: '',
+    bio: '',
+    image: null
+  });
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -24,30 +30,36 @@ export default function EditProfile() {
     
     const fetchUserData = async () => {
       if (session?.user?.id) {
+        setFetchingUser(true);
         try {
           const response = await fetch(`/api/users/${session.user.id}`);
-          if (response.ok) {
-            const userData = await response.json();
-            
-            if (userData.username) {
-              setUsername(userData.username);
-            } else if (session?.user?.name) {
-              setUsername(session.user.name);
-            }
-            
-            if (userData.bio) {
-              setBio(userData.bio);
-            }
-            
-            if (userData.image) {
-              setImagePreview(userData.image);
-            } else if (session?.user?.image) {
-              setImagePreview(session.user.image);
-            }
+          if (!response.ok) {
+            throw new Error('Failed to fetch user data');
           }
+          
+          const userData = await response.json();
+          console.log('Fetched user data:', userData);
+          
+          const username = userData.username || userData.name || session?.user?.name || '';
+          const bio = userData.bio || '';
+          const image = userData.image || session?.user?.image || null;
+          
+          setUsername(username);
+          setBio(bio);
+          setImagePreview(image);
+          setInitialData({
+            username,
+            bio,
+            image
+          });
         } catch (err) {
           console.error('Error fetching user data:', err);
+          setError('Failed to load your profile data. Please try again.');
+        } finally {
+          setFetchingUser(false);
         }
+      } else {
+        setFetchingUser(false);
       }
     };
     
@@ -68,12 +80,23 @@ export default function EditProfile() {
     }
   };
 
+  const resetForm = () => {
+    setUsername(initialData.username);
+    setBio(initialData.bio);
+    setImagePreview(initialData.image);
+    setImageFile(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     
     try {
+      if (!session?.user?.id) {
+        throw new Error('You must be logged in to update your profile');
+      }
+      
       // For now, we'll just use the image preview as the image URL
       // In a real app, you would upload the image to a storage service
       const userData = {
@@ -82,7 +105,9 @@ export default function EditProfile() {
         image: imagePreview
       };
       
-      const response = await fetch(`/api/users/${session?.user?.id}`, {
+      console.log('Updating user with data:', userData);
+      
+      const response = await fetch(`/api/users/${session.user.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
@@ -90,8 +115,19 @@ export default function EditProfile() {
       
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('Error response:', errorData);
         throw new Error(errorData.error || 'Failed to update profile');
       }
+      
+      const updatedUser = await response.json();
+      console.log('Profile updated successfully:', updatedUser);
+      
+      // Update the initial data to reflect the changes
+      setInitialData({
+        username,
+        bio,
+        image: imagePreview
+      });
       
       // Update the session to reflect changes
       await update({
@@ -117,11 +153,17 @@ export default function EditProfile() {
     }
   };
 
-  if (status === 'loading') {
+  const hasChanges = 
+    username !== initialData.username || 
+    bio !== initialData.bio || 
+    imagePreview !== initialData.image;
+
+  if (status === 'loading' || fetchingUser) {
     return (
       <Container maxWidth="md">
-        <Box sx={{ mt: 8, display: 'flex', justifyContent: 'center' }}>
-          <Typography>Loading...</Typography>
+        <Box sx={{ mt: 8, display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+          <CircularProgress />
+          <Typography sx={{ mt: 2 }}>Loading profile data...</Typography>
         </Box>
       </Container>
     );
@@ -176,6 +218,8 @@ export default function EditProfile() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 variant="outlined"
+                disabled={loading}
+                required
               />
             </Box>
             
@@ -200,24 +244,25 @@ export default function EditProfile() {
                 multiline
                 rows={4}
                 placeholder="Tell us about yourself"
+                disabled={loading}
               />
             </Box>
             
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Button 
                 variant="outlined" 
-                onClick={() => router.push('/profile')}
+                onClick={() => hasChanges ? resetForm() : router.push('/profile')}
                 disabled={loading}
               >
-                Cancel
+                {hasChanges ? 'Reset Changes' : 'Cancel'}
               </Button>
               <Button 
                 type="submit" 
                 variant="contained" 
                 color="primary"
-                disabled={loading}
+                disabled={loading || !hasChanges}
               >
-                {loading ? 'Saving...' : 'Save Changes'}
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
               </Button>
             </Box>
           </form>

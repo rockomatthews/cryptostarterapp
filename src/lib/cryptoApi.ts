@@ -2,12 +2,28 @@
  * Utility functions for interacting with the cryptoprocessing.io API
  */
 
-import prisma from './prisma';
 import axios from 'axios';
-import { Prisma } from '@prisma/client';
+import type { PrismaClient, Prisma } from '@prisma/client';
 
 // Check if we're in a server build context (not client runtime)
-const isBuildOrSSR = typeof window === 'undefined';
+const isBuildOrSSR = typeof window === 'undefined' && 
+                    (process.env.NEXT_PHASE === 'phase-production-build' || 
+                     process.env.VERCEL_ENV === 'development');
+
+// Dynamically import Prisma to avoid build-time initialization
+async function getPrismaClient() {
+  if (isBuildOrSSR) {
+    return null; // Return null during build
+  }
+  
+  try {
+    const { default: prisma } = await import('./prisma');
+    return prisma;
+  } catch (error) {
+    console.error('Failed to load Prisma:', error);
+    return null;
+  }
+}
 
 // API Configuration
 const API_BASE_URL = 'https://api.cryptoprocessing.io/v1';

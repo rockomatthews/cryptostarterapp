@@ -1,4 +1,5 @@
 import { PrismaClient } from '../generated/prisma'
+import { withAccelerate } from '@prisma/extension-accelerate'
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
@@ -10,7 +11,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient, _prismaInit
 
 export const prisma =
   globalForPrisma.prisma ||
-  new PrismaClient()
+  new PrismaClient().$extends(withAccelerate())
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
@@ -25,14 +26,31 @@ export async function getPrismaStatus() {
       };
     }
     
+    console.log('[PRISMA] Checking Prisma status...');
+    console.log(`[PRISMA] DATABASE_URL starts with: ${process.env.DATABASE_URL?.substring(0, 15)}...`);
+    console.log(`[PRISMA] DIRECT_URL exists: ${Boolean(process.env.DIRECT_URL)}`);
+    
     // Try a simple query to check if connection works
     if (process.env.NODE_ENV !== 'production' && typeof window === 'undefined') {
       // Only test connection on server side and non-production
       try {
+        console.log('[PRISMA] Testing database connection with query...');
         await prisma.$queryRaw`SELECT 1`;
         globalForPrisma._prismaInitialized = true;
+        console.log('[PRISMA] Test query successful!');
       } catch (err) {
-        console.error('Prisma connection test failed:', err);
+        console.error('[PRISMA] Connection test failed:', err);
+        globalForPrisma._prismaInitialized = false;
+      }
+    } else {
+      // In production, always test the connection
+      try {
+        console.log('[PRISMA] Production: Testing database connection...');
+        await prisma.$queryRaw`SELECT 1`;
+        globalForPrisma._prismaInitialized = true;
+        console.log('[PRISMA] Production: Database connection successful!');
+      } catch (err) {
+        console.error('[PRISMA] Production: Database connection failed:', err);
         globalForPrisma._prismaInitialized = false;
       }
     }
@@ -42,7 +60,7 @@ export async function getPrismaStatus() {
       client: prisma
     };
   } catch (error) {
-    console.error('Error checking Prisma status:', error);
+    console.error('[PRISMA] Error checking Prisma status:', error);
     return {
       initialized: false,
       error: 'Failed to check Prisma status'

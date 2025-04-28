@@ -13,7 +13,8 @@
     "vercel-build": "prisma generate --no-engine && next build",
     "postinstall": "prisma generate --no-engine",
     "test-db": "node prisma/test-db-connection.js",
-    "update-env": "node prisma/update-env.js"
+    "update-env": "node prisma/update-env.js",
+    "check-db": "node prisma/check-db.js"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

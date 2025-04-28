@@ -146,7 +146,9 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
-  bio: 'bio'
+  bio: 'bio',
+  preferredCrypto: 'preferredCrypto',
+  walletAddresses: 'walletAddresses'
 };
 
 exports.Prisma.VerificationTokenScalarFieldEnum = {
@@ -225,6 +227,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -255,13 +262,20 @@ exports.Prisma.SessionOrderByRelevanceFieldEnum = {
   userId: 'userId'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
 exports.Prisma.UserOrderByRelevanceFieldEnum = {
   id: 'id',
   name: 'name',
   username: 'username',
   email: 'email',
   image: 'image',
-  bio: 'bio'
+  bio: 'bio',
+  preferredCrypto: 'preferredCrypto'
 };
 
 exports.Prisma.VerificationTokenOrderByRelevanceFieldEnum = {

@@ -3953,6 +3953,7 @@ export namespace Prisma {
     emailVerified: Date | null
     image: string | null
     bio: string | null
+    preferredCrypto: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -3963,6 +3964,7 @@ export namespace Prisma {
     emailVerified: Date | null
     image: string | null
     bio: string | null
+    preferredCrypto: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -3973,6 +3975,8 @@ export namespace Prisma {
     emailVerified: number
     image: number
     bio: number
+    preferredCrypto: number
+    walletAddresses: number
     _all: number
   }
 
@@ -3985,6 +3989,7 @@ export namespace Prisma {
     emailVerified?: true
     image?: true
     bio?: true
+    preferredCrypto?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -3995,6 +4000,7 @@ export namespace Prisma {
     emailVerified?: true
     image?: true
     bio?: true
+    preferredCrypto?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -4005,6 +4011,8 @@ export namespace Prisma {
     emailVerified?: true
     image?: true
     bio?: true
+    preferredCrypto?: true
+    walletAddresses?: true
     _all?: true
   }
 
@@ -4088,6 +4096,8 @@ export namespace Prisma {
     emailVerified: Date | null
     image: string | null
     bio: string | null
+    preferredCrypto: string | null
+    walletAddresses: JsonValue | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -4115,6 +4125,8 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: boolean
     bio?: boolean
+    preferredCrypto?: boolean
+    walletAddresses?: boolean
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     campaigns?: boolean | User$campaignsArgs<ExtArgs>
@@ -4130,6 +4142,8 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: boolean
     bio?: boolean
+    preferredCrypto?: boolean
+    walletAddresses?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4140,6 +4154,8 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: boolean
     bio?: boolean
+    preferredCrypto?: boolean
+    walletAddresses?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -4150,9 +4166,11 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: boolean
     bio?: boolean
+    preferredCrypto?: boolean
+    walletAddresses?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "username" | "email" | "emailVerified" | "image" | "bio", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "username" | "email" | "emailVerified" | "image" | "bio" | "preferredCrypto" | "walletAddresses", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -4179,6 +4197,8 @@ export namespace Prisma {
       emailVerified: Date | null
       image: string | null
       bio: string | null
+      preferredCrypto: string | null
+      walletAddresses: Prisma.JsonValue | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -4613,6 +4633,8 @@ export namespace Prisma {
     readonly emailVerified: FieldRef<"User", 'DateTime'>
     readonly image: FieldRef<"User", 'String'>
     readonly bio: FieldRef<"User", 'String'>
+    readonly preferredCrypto: FieldRef<"User", 'String'>
+    readonly walletAddresses: FieldRef<"User", 'Json'>
   }
     
 
@@ -11889,7 +11911,9 @@ export namespace Prisma {
     email: 'email',
     emailVerified: 'emailVerified',
     image: 'image',
-    bio: 'bio'
+    bio: 'bio',
+    preferredCrypto: 'preferredCrypto',
+    walletAddresses: 'walletAddresses'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -11992,6 +12016,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -12034,13 +12066,23 @@ export namespace Prisma {
   export type SessionOrderByRelevanceFieldEnum = (typeof SessionOrderByRelevanceFieldEnum)[keyof typeof SessionOrderByRelevanceFieldEnum]
 
 
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
   export const UserOrderByRelevanceFieldEnum: {
     id: 'id',
     name: 'name',
     username: 'username',
     email: 'email',
     image: 'image',
-    bio: 'bio'
+    bio: 'bio',
+    preferredCrypto: 'preferredCrypto'
   };
 
   export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
@@ -12160,6 +12202,20 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -12343,6 +12399,8 @@ export namespace Prisma {
     emailVerified?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
+    preferredCrypto?: StringNullableFilter<"User"> | string | null
+    walletAddresses?: JsonNullableFilter<"User">
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
     campaigns?: CampaignListRelationFilter
@@ -12357,6 +12415,8 @@ export namespace Prisma {
     emailVerified?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
+    preferredCrypto?: SortOrderInput | SortOrder
+    walletAddresses?: SortOrderInput | SortOrder
     accounts?: AccountOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
     campaigns?: CampaignOrderByRelationAggregateInput
@@ -12375,6 +12435,8 @@ export namespace Prisma {
     emailVerified?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
+    preferredCrypto?: StringNullableFilter<"User"> | string | null
+    walletAddresses?: JsonNullableFilter<"User">
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
     campaigns?: CampaignListRelationFilter
@@ -12389,6 +12451,8 @@ export namespace Prisma {
     emailVerified?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
+    preferredCrypto?: SortOrderInput | SortOrder
+    walletAddresses?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -12405,6 +12469,8 @@ export namespace Prisma {
     emailVerified?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
     bio?: StringNullableWithAggregatesFilter<"User"> | string | null
+    preferredCrypto?: StringNullableWithAggregatesFilter<"User"> | string | null
+    walletAddresses?: JsonNullableWithAggregatesFilter<"User">
   }
 
   export type VerificationTokenWhereInput = {
@@ -13031,6 +13097,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     campaigns?: CampaignCreateNestedManyWithoutUserInput
@@ -13045,6 +13113,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     campaigns?: CampaignUncheckedCreateNestedManyWithoutUserInput
@@ -13059,6 +13129,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     campaigns?: CampaignUpdateManyWithoutUserNestedInput
@@ -13073,6 +13145,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     campaigns?: CampaignUncheckedUpdateManyWithoutUserNestedInput
@@ -13087,6 +13161,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUpdateManyMutationInput = {
@@ -13097,6 +13173,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -13107,6 +13185,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type VerificationTokenCreateInput = {
@@ -13846,6 +13926,29 @@ export namespace Prisma {
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
@@ -13901,6 +14004,8 @@ export namespace Prisma {
     emailVerified?: SortOrder
     image?: SortOrder
     bio?: SortOrder
+    preferredCrypto?: SortOrder
+    walletAddresses?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -13911,6 +14016,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     image?: SortOrder
     bio?: SortOrder
+    preferredCrypto?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -13921,6 +14027,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     image?: SortOrder
     bio?: SortOrder
+    preferredCrypto?: SortOrder
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -13935,6 +14042,32 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type VerificationTokenOrderByRelevanceInput = {
@@ -14876,6 +15009,29 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedFloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
@@ -14925,6 +15081,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     sessions?: SessionCreateNestedManyWithoutUserInput
     campaigns?: CampaignCreateNestedManyWithoutUserInput
     contributions?: ContributionCreateNestedManyWithoutUserInput
@@ -14938,6 +15096,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     campaigns?: CampaignUncheckedCreateNestedManyWithoutUserInput
     contributions?: ContributionUncheckedCreateNestedManyWithoutUserInput
@@ -14967,6 +15127,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     sessions?: SessionUpdateManyWithoutUserNestedInput
     campaigns?: CampaignUpdateManyWithoutUserNestedInput
     contributions?: ContributionUpdateManyWithoutUserNestedInput
@@ -14980,6 +15142,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     campaigns?: CampaignUncheckedUpdateManyWithoutUserNestedInput
     contributions?: ContributionUncheckedUpdateManyWithoutUserNestedInput
@@ -14993,6 +15157,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountCreateNestedManyWithoutUserInput
     campaigns?: CampaignCreateNestedManyWithoutUserInput
     contributions?: ContributionCreateNestedManyWithoutUserInput
@@ -15006,6 +15172,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     campaigns?: CampaignUncheckedCreateNestedManyWithoutUserInput
     contributions?: ContributionUncheckedCreateNestedManyWithoutUserInput
@@ -15035,6 +15203,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUpdateManyWithoutUserNestedInput
     campaigns?: CampaignUpdateManyWithoutUserNestedInput
     contributions?: ContributionUpdateManyWithoutUserNestedInput
@@ -15048,6 +15218,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     campaigns?: CampaignUncheckedUpdateManyWithoutUserNestedInput
     contributions?: ContributionUncheckedUpdateManyWithoutUserNestedInput
@@ -15397,6 +15569,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     contributions?: ContributionCreateNestedManyWithoutUserInput
@@ -15410,6 +15584,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     contributions?: ContributionUncheckedCreateNestedManyWithoutUserInput
@@ -15531,6 +15707,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     contributions?: ContributionUpdateManyWithoutUserNestedInput
@@ -15544,6 +15722,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     contributions?: ContributionUncheckedUpdateManyWithoutUserNestedInput
@@ -15789,6 +15969,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     campaigns?: CampaignCreateNestedManyWithoutUserInput
@@ -15802,6 +15984,8 @@ export namespace Prisma {
     emailVerified?: Date | string | null
     image?: string | null
     bio?: string | null
+    preferredCrypto?: string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     campaigns?: CampaignUncheckedCreateNestedManyWithoutUserInput
@@ -15882,6 +16066,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     campaigns?: CampaignUpdateManyWithoutUserNestedInput
@@ -15895,6 +16081,8 @@ export namespace Prisma {
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredCrypto?: NullableStringFieldUpdateOperationsInput | string | null
+    walletAddresses?: NullableJsonNullValueInput | InputJsonValue
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     campaigns?: CampaignUncheckedUpdateManyWithoutUserNestedInput

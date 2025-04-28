@@ -31,6 +31,37 @@ interface CreatePaymentIntentParams {
   description: string;
 }
 
+interface ConvertCurrencyParams {
+  amount: number;
+  fromCurrency: string;
+  toCurrency: string;
+}
+
+export async function convertCurrency({ amount, fromCurrency, toCurrency }: ConvertCurrencyParams) {
+  try {
+    const response = await fetch('/api/payments/convert-currency', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount,
+        fromCurrency,
+        toCurrency,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to convert currency');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error converting currency:', error);
+    throw error;
+  }
+}
+
 export async function createPaymentIntent({ amount, currency, description }: CreatePaymentIntentParams) {
   try {
     const response = await fetch('/api/payments/create-intent', {

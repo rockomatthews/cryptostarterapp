@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -24,12 +24,70 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import MenuIcon from '@mui/icons-material/Menu';
+import PersonIcon from '@mui/icons-material/Person';
+
+// Custom hook for fetching user data
+function useUserData(userId: string | undefined) {
+  const [userData, setUserData] = useState<{
+    username?: string;
+    name?: string;
+    bio?: string;
+    image?: string;
+  }>({});
+  
+  const [loading, setLoading] = useState(false);
+  
+  // Fetch user data function
+  const fetchUserData = useCallback(async () => {
+    if (!userId) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      
+      console.log(`Fetching user data for ID: ${userId}`);
+      const response = await fetch(`/api/users/${userId}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched user data:', data);
+        setUserData(data);
+      } else {
+        console.warn(`Failed to fetch user data: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+  
+  // Initial data fetch
+  useEffect(() => {
+    if (userId) {
+      fetchUserData();
+    }
+  }, [userId, fetchUserData]);
+  
+  return {
+    userData,
+    loading
+  };
+}
 
 const Navbar = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
+  // Get user data from custom hook
+  const { userData } = useUserData(session?.user?.id);
+  
+  // Use session data as fallback if API fails
+  const displayName = userData?.username || userData?.name || session?.user?.name || 'User';
+  const displayImage = userData?.image || session?.user?.image || undefined;
   
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -157,10 +215,16 @@ const Navbar = () => {
                   <Tooltip title="Open profile menu">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                       <Avatar 
-                        alt={session.user.name || 'User'} 
-                        src={session.user.image || ''}
-                        sx={{ border: '2px solid #FFEB3B' }}
-                      />
+                        alt={displayName} 
+                        src={displayImage}
+                        sx={{ 
+                          border: '2px solid #FFEB3B',
+                          bgcolor: '#FFEB3B',
+                          color: 'black'
+                        }}
+                      >
+                        {!displayImage && <PersonIcon />}
+                      </Avatar>
                     </IconButton>
                   </Tooltip>
                   <Menu

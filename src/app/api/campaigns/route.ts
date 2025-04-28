@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 // Set Node.js runtime
 export const runtime = 'nodejs';
@@ -26,17 +29,35 @@ export async function GET() {
 }
 
 // POST a new campaign
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    // Return mock data for build
-    return NextResponse.json({
-      message: 'Campaigns POST endpoint active',
-      success: true
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const data = await request.json();
+    
+    // Create the campaign
+    const campaign = await prisma.campaign.create({
+      data: {
+        ...data,
+        userId: session.user.id,
+        active: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     });
+
+    return NextResponse.json(campaign);
   } catch (error) {
-    console.error('Error in campaigns endpoint:', error);
+    console.error('Error creating campaign:', error);
     return NextResponse.json(
-      { message: 'Error processing request' },
+      { error: 'Failed to create campaign' },
       { status: 500 }
     );
   }

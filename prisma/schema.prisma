@@ -42,17 +42,19 @@ model Session {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String?
-  username      String?        @unique
-  email         String?        @unique
-  emailVerified DateTime?
-  image         String?
-  bio           String?
-  accounts      Account[]
-  sessions      Session[]
-  campaigns     Campaign[]
-  contributions Contribution[]
+  id              String         @id @default(cuid())
+  name            String?
+  username        String?        @unique
+  email           String?        @unique
+  emailVerified   DateTime?
+  image           String?
+  bio             String?
+  preferredCrypto String? // Preferred cryptocurrency for payments
+  walletAddresses Json? // JSON object to store multiple wallet addresses
+  accounts        Account[]
+  sessions        Session[]
+  campaigns       Campaign[]
+  contributions   Contribution[]
 }
 
 model VerificationToken {

@@ -3,8 +3,28 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
-import { Container, Typography, Box, Paper, TextField, Button, Avatar, IconButton, Tooltip, Snackbar, Alert, CircularProgress } from '@mui/material';
+import { Container, Typography, Box, Paper, TextField, Button, Avatar, IconButton, Tooltip, Snackbar, Alert, CircularProgress, FormControl, InputLabel, Select, MenuItem, Divider } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+
+// List of supported cryptocurrencies
+const SUPPORTED_CRYPTOCURRENCIES = [
+  { id: 'btc', name: 'Bitcoin (BTC)' },
+  { id: 'eth', name: 'Ethereum (ETH)' },
+  { id: 'usdt', name: 'Tether (USDT)' },
+  { id: 'usdc', name: 'USD Coin (USDC)' },
+  { id: 'sol', name: 'Solana (SOL)' },
+  { id: 'xrp', name: 'Ripple (XRP)' },
+  { id: 'ada', name: 'Cardano (ADA)' },
+  { id: 'doge', name: 'Dogecoin (DOGE)' },
+  { id: 'dot', name: 'Polkadot (DOT)' },
+  { id: 'link', name: 'Chainlink (LINK)' },
+  { id: 'ltc', name: 'Litecoin (LTC)' },
+  { id: 'uni', name: 'Uniswap (UNI)' },
+  { id: 'aave', name: 'Aave (AAVE)' },
+  { id: 'matic', name: 'Polygon (MATIC)' },
+  { id: 'atom', name: 'Cosmos (ATOM)' },
+  { id: 'algo', name: 'Algorand (ALGO)' }
+];
 
 // Custom hook for fetching and managing user data
 function useUserData(userId: string | undefined) {
@@ -14,10 +34,14 @@ function useUserData(userId: string | undefined) {
     username: string;
     bio: string;
     image: string | null;
+    preferredCrypto: string | null;
+    walletAddresses: Record<string, string> | null;
   }>({
     username: '',
     bio: '',
-    image: null
+    image: null,
+    preferredCrypto: null,
+    walletAddresses: null
   });
   
   const [loading, setLoading] = useState(true);
@@ -54,7 +78,9 @@ function useUserData(userId: string | undefined) {
         setUserData({
           username: data.name || session?.user?.name || '',
           bio: data.bio || '',
-          image: data.image || session?.user?.image || null
+          image: data.image || session?.user?.image || null,
+          preferredCrypto: data.preferredCrypto || null,
+          walletAddresses: data.walletAddresses || null
         });
         
         // Don't throw - use what we got
@@ -66,11 +92,15 @@ function useUserData(userId: string | undefined) {
       const username = data.name || data.username || session?.user?.name || '';
       const bio = data.bio || '';
       const image = data.image || session?.user?.image || null;
+      const preferredCrypto = data.preferredCrypto || null;
+      const walletAddresses = data.walletAddresses || null;
       
       setUserData({
         username,
         bio,
-        image
+        image,
+        preferredCrypto,
+        walletAddresses
       });
       
       setLoading(false);
@@ -82,7 +112,9 @@ function useUserData(userId: string | undefined) {
         setUserData({
           username: session.user.name || '',
           bio: '',
-          image: session.user.image || null
+          image: session.user.image || null,
+          preferredCrypto: null,
+          walletAddresses: null
         });
       }
       
@@ -129,6 +161,10 @@ export default function EditProfile() {
   const [username, setUsername] = useState(initialData.username);
   const [bio, setBio] = useState(initialData.bio);
   const [imagePreview, setImagePreview] = useState<string | null>(initialData.image);
+  const [preferredCrypto, setPreferredCrypto] = useState<string | null>(initialData.preferredCrypto);
+  const [walletAddresses, setWalletAddresses] = useState<Record<string, string>>(
+    initialData.walletAddresses || {}
+  );
   
   // UI state
   const [loading, setLoading] = useState(false);
@@ -140,6 +176,8 @@ export default function EditProfile() {
     setUsername(initialData.username);
     setBio(initialData.bio);
     setImagePreview(initialData.image);
+    setPreferredCrypto(initialData.preferredCrypto);
+    setWalletAddresses(initialData.walletAddresses || {});
   }, [initialData]);
   
   useEffect(() => {
@@ -163,6 +201,15 @@ export default function EditProfile() {
     setUsername(initialData.username);
     setBio(initialData.bio);
     setImagePreview(initialData.image);
+    setPreferredCrypto(initialData.preferredCrypto);
+    setWalletAddresses(initialData.walletAddresses || {});
+  };
+
+  const handleWalletAddressChange = (cryptoId: string, address: string) => {
+    setWalletAddresses(prev => ({
+      ...prev,
+      [cryptoId]: address
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -180,7 +227,9 @@ export default function EditProfile() {
       const userData = {
         name: username, // Use name instead of username to match schema
         bio,
-        image: imagePreview
+        image: imagePreview,
+        preferredCrypto,
+        walletAddresses
       };
       
       console.log('Updating user with data:', userData);
@@ -235,7 +284,9 @@ export default function EditProfile() {
   const hasChanges = 
     username !== initialData.username || 
     bio !== initialData.bio || 
-    imagePreview !== initialData.image;
+    imagePreview !== initialData.image ||
+    preferredCrypto !== initialData.preferredCrypto ||
+    JSON.stringify(walletAddresses) !== JSON.stringify(initialData.walletAddresses || {});
 
   if (status === 'loading' || fetchingUser) {
     return (
@@ -341,6 +392,55 @@ export default function EditProfile() {
               />
             </Box>
             
+            <Divider sx={{ my: 4 }} />
+            
+            <Typography variant="h5" gutterBottom>
+              Payment Settings
+            </Typography>
+            
+            <Box sx={{ mb: 3 }}>
+              <FormControl fullWidth>
+                <InputLabel id="preferred-crypto-label">Preferred Crypto Payment</InputLabel>
+                <Select
+                  labelId="preferred-crypto-label"
+                  value={preferredCrypto || ''}
+                  label="Preferred Crypto Payment"
+                  onChange={(e) => setPreferredCrypto(e.target.value || null)}
+                  disabled={loading}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {SUPPORTED_CRYPTOCURRENCIES.map((crypto) => (
+                    <MenuItem key={crypto.id} value={crypto.id}>
+                      {crypto.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+            
+            <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
+              Wallet Addresses
+            </Typography>
+            <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
+              Add your wallet addresses for different cryptocurrencies
+            </Typography>
+            
+            {SUPPORTED_CRYPTOCURRENCIES.map((crypto) => (
+              <Box key={crypto.id} sx={{ mb: 2 }}>
+                <TextField
+                  fullWidth
+                  label={`${crypto.name} Wallet Address`}
+                  value={walletAddresses[crypto.id] || ''}
+                  onChange={(e) => handleWalletAddressChange(crypto.id, e.target.value)}
+                  variant="outlined"
+                  disabled={loading}
+                  placeholder={`Enter your ${crypto.name} wallet address`}
+                />
+              </Box>
+            ))}
+            
             {error && (
               <Alert severity="error" sx={{ mb: 3 }}>
                 {error}
@@ -353,21 +453,21 @@ export default function EditProfile() {
               </Alert>
             )}
             
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Button 
-                variant="outlined" 
-                onClick={() => hasChanges ? resetForm() : router.push('/profile')}
-                disabled={loading}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+              <Button
+                variant="outlined"
+                onClick={resetForm}
+                disabled={loading || !hasChanges}
               >
-                {hasChanges ? 'Reset Changes' : 'Cancel'}
+                Reset
               </Button>
-              <Button 
-                type="submit" 
-                variant="contained" 
+              <Button
+                type="submit"
+                variant="contained"
                 color="primary"
                 disabled={loading || !hasChanges}
               >
-                {loading ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
+                {loading ? <CircularProgress size={24} /> : 'Save Changes'}
               </Button>
             </Box>
           </form>

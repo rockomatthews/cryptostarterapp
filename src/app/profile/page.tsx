@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
-import { Container, Typography, Box, Paper, Avatar, Button, Tabs, Tab, Card, CardContent, CardMedia, Alert, Divider, Grid } from '@mui/material';
+import { Container, Typography, Box, Paper, Avatar, Button, Tabs, Tab, Card, CardContent, CardMedia, Alert, Grid } from '@mui/material';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -32,14 +32,6 @@ function TabPanel(props: TabPanelProps) {
     </div>
   );
 }
-
-// Define supported cryptocurrencies
-const SUPPORTED_CRYPTOCURRENCIES = [
-  { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC' },
-  { id: 'ethereum', name: 'Ethereum', symbol: 'ETH' },
-  { id: 'solana', name: 'Solana', symbol: 'SOL' },
-  { id: 'usdc', name: 'USD Coin', symbol: 'USDC' }
-] as const;
 
 // Custom hook for fetching user data
 function useUserData(userId: string | undefined) {
@@ -266,46 +258,6 @@ export default function Profile() {
               {userData.bio || 'No bio provided'}
             </Typography>
           </Box>
-          
-          {userData.preferredCrypto && (
-            <>
-              <Divider sx={{ my: 3 }} />
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Preferred Crypto Payment
-                </Typography>
-                <Typography variant="body1">
-                  {SUPPORTED_CRYPTOCURRENCIES.find((c: { id: string; name: string }) => c.id === userData.preferredCrypto)?.name || userData.preferredCrypto}
-                </Typography>
-              </Box>
-            </>
-          )}
-          
-          {userData.walletAddresses && Object.keys(userData.walletAddresses).length > 0 && (
-            <>
-              <Divider sx={{ my: 3 }} />
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Wallet Addresses
-                </Typography>
-                {Object.entries(userData.walletAddresses).map(([cryptoId, address]) => {
-                  const crypto = SUPPORTED_CRYPTOCURRENCIES.find((c: { id: string; name: string }) => c.id === cryptoId);
-                  if (!crypto || !address) return null;
-                  
-                  return (
-                    <Box key={cryptoId} sx={{ mb: 2 }}>
-                      <Typography variant="subtitle1" gutterBottom>
-                        {crypto.name}
-                      </Typography>
-                      <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
-                        {address}
-                      </Typography>
-                    </Box>
-                  );
-                })}
-              </Box>
-            </>
-          )}
         </Paper>
 
         <Box sx={{ width: '100%', mt: 4 }}>

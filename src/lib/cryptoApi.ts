@@ -37,6 +37,10 @@ interface ConvertCurrencyParams {
   toCurrency: string;
 }
 
+interface TestCampaignFeeParams {
+  currency: string;
+}
+
 export async function convertCurrency({ amount, fromCurrency, toCurrency }: ConvertCurrencyParams) {
   try {
     const response = await fetch('/api/payments/convert-currency', {
@@ -83,6 +87,29 @@ export async function createPaymentIntent({ amount, currency, description }: Cre
     return await response.json();
   } catch (error) {
     console.error('Error creating payment intent:', error);
+    throw error;
+  }
+}
+
+export async function testCampaignFee({ currency }: TestCampaignFeeParams) {
+  try {
+    const response = await fetch('/api/payments/test-campaign-fee', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        currency,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create test payment');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error testing campaign fee:', error);
     throw error;
   }
 } 

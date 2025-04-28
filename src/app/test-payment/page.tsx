@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { testCampaignFee } from '@/lib/cryptoApi';
 import { SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoApi';
+import Link from 'next/link';
 
 export default function TestPaymentPage() {
+  const { data: session, status } = useSession();
   const [selectedCurrency, setSelectedCurrency] = useState('USDT');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -22,6 +25,31 @@ export default function TestPaymentPage() {
       setLoading(false);
     }
   };
+
+  if (status === 'loading') {
+    return (
+      <div className="container mx-auto p-4 max-w-2xl">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="container mx-auto p-4 max-w-2xl">
+        <div className="text-center p-8 bg-yellow-50 rounded-lg">
+          <h2 className="text-xl font-bold mb-4">Authentication Required</h2>
+          <p className="mb-4">You need to be logged in to test payments.</p>
+          <Link 
+            href="/api/auth/signin"
+            className="inline-block bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+          >
+            Sign In
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">

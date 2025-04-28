@@ -9,14 +9,28 @@ import { withAccelerate } from '@prisma/extension-accelerate'
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient, _prismaInitialized: boolean }
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient().$extends(withAccelerate())
+// Only initialize Prisma on the server side
+const prismaClientSingleton = () => {
+  if (typeof window === 'undefined') {
+    return new PrismaClient().$extends(withAccelerate())
+  }
+  return null
+}
+
+export const prisma = globalForPrisma.prisma || prismaClientSingleton()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // Function to check if Prisma is initialized
 export async function getPrismaStatus() {
+  // Return early if we're in the browser
+  if (typeof window !== 'undefined') {
+    return {
+      initialized: false,
+      error: 'Prisma cannot be used in the browser'
+    }
+  }
+
   try {
     // If we already know Prisma is initialized, return that status
     if (globalForPrisma._prismaInitialized) {
@@ -31,7 +45,7 @@ export async function getPrismaStatus() {
     console.log(`[PRISMA] DIRECT_URL exists: ${Boolean(process.env.DIRECT_URL)}`);
     
     // Try a simple query to check if connection works
-    if (process.env.NODE_ENV !== 'production' && typeof window === 'undefined') {
+    if (process.env.NODE_ENV !== 'production') {
       // Only test connection on server side and non-production
       try {
         console.log('[PRISMA] Testing database connection with query...');

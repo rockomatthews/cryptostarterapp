@@ -2,24 +2,6 @@
  * Utility functions for interacting with the cryptoprocessing.io API
  */
 
-import axios from 'axios';
-
-// API Configuration
-const API_BASE_URL = 'https://api.cryptoprocessing.io/v1';
-const API_KEY = process.env.CRYPTO_PROCESSING_API_KEY || '';
-const STORE_ID = process.env.CRYPTO_PROCESSING_STORE_ID || '';
-
-// Create axios instance for API calls
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': API_KEY,
-    'X-Store-ID': STORE_ID
-  },
-  withCredentials: false
-});
-
 // Supported cryptocurrencies
 export const SUPPORTED_CRYPTOCURRENCIES = [
   { value: 'BTC', label: 'Bitcoin', icon: '/icons/btc.svg' },

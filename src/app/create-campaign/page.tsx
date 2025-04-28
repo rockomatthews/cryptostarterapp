@@ -54,7 +54,7 @@ interface MediaItem {
 }
 
 export default function CreateCampaign() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   
   // Campaign form state
@@ -65,8 +65,6 @@ export default function CreateCampaign() {
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [category, setCategory] = useState('');
   const [website, setWebsite] = useState('');
-  const [walletAddress, setWalletAddress] = useState('');
-  const [cryptocurrencyType, setCryptocurrencyType] = useState('');
   
   // Media state
   const [mainImage, setMainImage] = useState<File | null>(null);
@@ -87,6 +85,7 @@ export default function CreateCampaign() {
   const [paymentError, setPaymentError] = useState('');
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [donorWalletAddress, setDonorWalletAddress] = useState('');
+  const [paymentCurrency, setPaymentCurrency] = useState('USDT');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -151,8 +150,6 @@ export default function CreateCampaign() {
     if (!fundingGoal) newErrors.fundingGoal = 'Funding goal is required';
     if (!deadline) newErrors.deadline = 'Deadline is required';
     if (!category) newErrors.category = 'Category is required';
-    if (!walletAddress) newErrors.walletAddress = 'Wallet address is required';
-    if (!cryptocurrencyType) newErrors.cryptocurrencyType = 'Cryptocurrency type is required';
     if (!mainImage) newErrors.mainImage = 'Main image is required';
     
     setErrors(newErrors);
@@ -186,9 +183,9 @@ export default function CreateCampaign() {
     
     try {
       // Create payment intent for campaign creation fee
-      const paymentIntent = await createPaymentIntent({
+      await createPaymentIntent({
         amount: CAMPAIGN_CREATION_FEE,
-        currency: 'USDT',
+        currency: paymentCurrency,
         description: `Campaign creation fee for: ${title}`
       });
       
@@ -237,12 +234,10 @@ export default function CreateCampaign() {
           fundingGoal: parseFloat(fundingGoal),
           deadline,
           category,
-          cryptocurrencyType,
           mainImage: mainImageUrl,
           additionalMedia: mediaUrls,
           website,
-          socials: socialLinks,
-          walletAddress
+          socials: socialLinks
         })
       });
       
@@ -280,7 +275,7 @@ export default function CreateCampaign() {
         
         <Paper sx={{ p: 3, mt: 2 }}>
           <Alert severity="info" sx={{ mb: 3 }}>
-            Campaign creation requires a one-time fee of {CAMPAIGN_CREATION_FEE} USDT. 
+            Campaign creation requires a one-time fee of {CAMPAIGN_CREATION_FEE} USDT (or equivalent in other cryptocurrencies). 
             Your campaign will be automatically distributed if successful or refunded if not successful.
           </Alert>
           
@@ -429,32 +424,6 @@ export default function CreateCampaign() {
               </Box>
               
               <Box>
-                <FormControl fullWidth error={!!errors.cryptocurrencyType} required>
-                  <InputLabel id="cryptocurrency-label">Preferred Cryptocurrency</InputLabel>
-                  <Select
-                    labelId="cryptocurrency-label"
-                    value={cryptocurrencyType}
-                    label="Preferred Cryptocurrency"
-                    onChange={(e) => setCryptocurrencyType(e.target.value)}
-                  >
-                    {SUPPORTED_CRYPTOCURRENCIES.map((crypto) => (
-                      <MenuItem key={crypto.value} value={crypto.value}>
-                        {crypto.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errors.cryptocurrencyType && (
-                    <Typography color="error" variant="caption">
-                      {errors.cryptocurrencyType}
-                    </Typography>
-                  )}
-                  <Typography variant="caption" sx={{ mt: 1 }}>
-                    Select the cryptocurrency you want to receive if your campaign is successful.
-                  </Typography>
-                </FormControl>
-              </Box>
-              
-              <Box>
                 <TextField
                   fullWidth
                   label="Short Description"
@@ -560,9 +529,9 @@ export default function CreateCampaign() {
             
             <Divider sx={{ my: 3 }} />
             
-            {/* Links & Wallet */}
+            {/* Links */}
             <Typography variant="h6" gutterBottom>
-              Links & Wallet
+              Links
             </Typography>
             
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -629,19 +598,6 @@ export default function CreateCampaign() {
                   ))}
                 </Box>
               </Box>
-              
-              <Box>
-                <TextField
-                  fullWidth
-                  label="Wallet Address"
-                  value={walletAddress}
-                  onChange={(e) => setWalletAddress(e.target.value)}
-                  variant="outlined"
-                  error={!!errors.walletAddress}
-                  helperText={errors.walletAddress || `Your ${cryptocurrencyType || 'cryptocurrency'} wallet address where funds will be sent if campaign is successful`}
-                  required
-                />
-              </Box>
             </Box>
             
             <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
@@ -675,7 +631,7 @@ export default function CreateCampaign() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Creating a campaign requires a one-time fee of {CAMPAIGN_CREATION_FEE} USDT.
+            Creating a campaign requires a one-time fee of {CAMPAIGN_CREATION_FEE} USDT (or equivalent in other cryptocurrencies).
             This helps ensure high-quality campaigns on our platform.
           </DialogContentText>
           
@@ -685,6 +641,22 @@ export default function CreateCampaign() {
             </Alert>
           ) : (
             <>
+              <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
+                <InputLabel id="payment-currency-label">Payment Currency</InputLabel>
+                <Select
+                  labelId="payment-currency-label"
+                  value={paymentCurrency}
+                  label="Payment Currency"
+                  onChange={(e) => setPaymentCurrency(e.target.value)}
+                >
+                  {SUPPORTED_CRYPTOCURRENCIES.map((crypto) => (
+                    <MenuItem key={crypto.value} value={crypto.value}>
+                      {crypto.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              
               <TextField
                 fullWidth
                 margin="dense"
@@ -716,7 +688,7 @@ export default function CreateCampaign() {
                 variant="contained"
                 color="primary"
               >
-                {isProcessingPayment ? 'Processing...' : `Pay ${CAMPAIGN_CREATION_FEE} USDT`}
+                {isProcessingPayment ? 'Processing...' : `Pay ${CAMPAIGN_CREATION_FEE} ${paymentCurrency}`}
               </Button>
             </>
           )}

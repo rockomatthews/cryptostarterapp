@@ -2,21 +2,11 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useAccount } from 'wagmi';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
-import { solanaConfig } from '@/lib/web3Config';
 import { testCampaignFee, SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoApi';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { useWallet } from '@solana/wallet-adapter-react';
-import Image from 'next/image';
-import { WagmiProvider } from 'wagmi';
-import { config } from '@/lib/web3Config';
 
 interface Cryptocurrency {
   value: string;
   label: string;
-  icon: string;
 }
 
 interface PaymentResult {
@@ -26,11 +16,8 @@ interface PaymentResult {
   currency: string;
 }
 
-function TestPaymentContent() {
+export default function TestPaymentPage() {
   const { data: session } = useSession();
-  const { address: ethAddress } = useAccount();
-  const { publicKey: solAddress } = useWallet();
-  const { open: openWeb3Modal } = useWeb3Modal();
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
@@ -41,18 +28,9 @@ function TestPaymentContent() {
       setIsLoading(true);
       setError(null);
 
-      // Get the appropriate wallet address based on currency
-      const walletAddress = selectedCurrency === 'SOL' 
-        ? solAddress?.toString() 
-        : ethAddress;
-
-      if (!walletAddress) {
-        throw new Error('Please connect your wallet first');
-      }
-
       const response = await testCampaignFee({
         currency: selectedCurrency,
-        walletAddress
+        walletAddress: 'test-wallet-address' // This will be replaced by CryptoProcessing API
       });
 
       setResult(response);
@@ -87,16 +65,10 @@ function TestPaymentContent() {
                 <button
                   key={crypto.value}
                   onClick={() => setSelectedCurrency(crypto.value)}
-                  className="p-4 border rounded-lg hover:border-blue-500 transition-colors text-center flex flex-col items-center gap-2"
+                  className="p-4 border rounded-lg hover:border-blue-500 transition-colors text-center"
                 >
-                  <Image
-                    src={crypto.icon}
-                    alt={crypto.label}
-                    width={24}
-                    height={24}
-                  />
-                  <span>{crypto.label}</span>
-                  <span className="text-sm text-gray-500">{crypto.value}</span>
+                  <span className="font-medium">{crypto.label}</span>
+                  <span className="block text-sm text-gray-500">{crypto.value}</span>
                 </button>
               ))}
             </div>
@@ -115,38 +87,13 @@ function TestPaymentContent() {
               </button>
             </div>
 
-            {selectedCurrency === 'ETH' ? (
-              <button
-                onClick={() => openWeb3Modal()}
-                className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600"
-              >
-                Connect Ethereum Wallet
-              </button>
-            ) : (
-              <ConnectionProvider endpoint={solanaConfig.endpoint}>
-                <WalletProvider wallets={solanaConfig.wallets} autoConnect>
-                  <WalletModalProvider>
-                    <button
-                      onClick={() => {}}
-                      className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600"
-                    >
-                      Connect {selectedCurrency} Wallet
-                    </button>
-                  </WalletModalProvider>
-                </WalletProvider>
-              </ConnectionProvider>
-            )}
-
-            {((selectedCurrency === 'ETH' && ethAddress) || 
-              (selectedCurrency === 'SOL' && solAddress)) && (
-              <button
-                onClick={handleTestPayment}
-                disabled={isLoading}
-                className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
-              >
-                {isLoading ? 'Processing...' : 'Submit Payment'}
-              </button>
-            )}
+            <button
+              onClick={handleTestPayment}
+              disabled={isLoading}
+              className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            >
+              {isLoading ? 'Processing...' : 'Submit Payment'}
+            </button>
 
             {error && (
               <div className="p-4 bg-red-50 text-red-600 rounded-lg">
@@ -165,19 +112,5 @@ function TestPaymentContent() {
         )}
       </div>
     </div>
-  );
-}
-
-export default function TestPaymentPage() {
-  return (
-    <WagmiProvider config={config}>
-      <ConnectionProvider endpoint={solanaConfig.endpoint}>
-        <WalletProvider wallets={solanaConfig.wallets} autoConnect>
-          <WalletModalProvider>
-            <TestPaymentContent />
-          </WalletModalProvider>
-        </WalletProvider>
-      </ConnectionProvider>
-    </WagmiProvider>
   );
 } 

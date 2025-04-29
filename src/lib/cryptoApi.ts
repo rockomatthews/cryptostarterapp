@@ -4,22 +4,22 @@
 
 // Supported cryptocurrencies
 export const SUPPORTED_CRYPTOCURRENCIES = [
-  { value: 'BTC', label: 'Bitcoin', icon: '/icons/btc.svg' },
-  { value: 'ETH', label: 'Ethereum', icon: '/icons/eth.svg' },
-  { value: 'SOL', label: 'Solana', icon: '/icons/sol.svg' },
-  { value: 'USDT', label: 'Tether', icon: '/icons/usdt.svg' },
-  { value: 'BNB', label: 'Binance Coin', icon: '/icons/bnb.svg' },
-  { value: 'XRP', label: 'Ripple', icon: '/icons/xrp.svg' },
-  { value: 'ADA', label: 'Cardano', icon: '/icons/ada.svg' },
-  { value: 'AVAX', label: 'Avalanche', icon: '/icons/avax.svg' },
-  { value: 'DOT', label: 'Polkadot', icon: '/icons/dot.svg' },
-  { value: 'DOGE', label: 'Dogecoin', icon: '/icons/doge.svg' },
-  { value: 'MATIC', label: 'Polygon', icon: '/icons/matic.svg' },
-  { value: 'LINK', label: 'Chainlink', icon: '/icons/link.svg' },
-  { value: 'UNI', label: 'Uniswap', icon: '/icons/uni.svg' },
-  { value: 'ATOM', label: 'Cosmos', icon: '/icons/atom.svg' },
-  { value: 'LTC', label: 'Litecoin', icon: '/icons/ltc.svg' },
-  { value: 'USDC', label: 'USD Coin', icon: '/icons/usdc.svg' }
+  { value: 'BTC', label: 'Bitcoin' },
+  { value: 'ETH', label: 'Ethereum' },
+  { value: 'SOL', label: 'Solana' },
+  { value: 'USDT', label: 'Tether' },
+  { value: 'BNB', label: 'Binance Coin' },
+  { value: 'XRP', label: 'Ripple' },
+  { value: 'ADA', label: 'Cardano' },
+  { value: 'AVAX', label: 'Avalanche' },
+  { value: 'DOT', label: 'Polkadot' },
+  { value: 'DOGE', label: 'Dogecoin' },
+  { value: 'MATIC', label: 'Polygon' },
+  { value: 'LINK', label: 'Chainlink' },
+  { value: 'UNI', label: 'Uniswap' },
+  { value: 'ATOM', label: 'Cosmos' },
+  { value: 'LTC', label: 'Litecoin' },
+  { value: 'USDC', label: 'USD Coin' }
 ];
 
 // Campaign creation fee in USDT

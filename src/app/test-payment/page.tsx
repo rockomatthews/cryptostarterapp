@@ -10,6 +10,8 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Image from 'next/image';
+import { WagmiProvider } from 'wagmi';
+import { config } from '@/lib/web3Config';
 
 interface Cryptocurrency {
   value: string;
@@ -24,7 +26,7 @@ interface PaymentResult {
   currency: string;
 }
 
-export default function TestPaymentPage() {
+function TestPaymentContent() {
   const { data: session } = useSession();
   const { address: ethAddress } = useAccount();
   const { publicKey: solAddress } = useWallet();
@@ -163,5 +165,19 @@ export default function TestPaymentPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function TestPaymentPage() {
+  return (
+    <WagmiProvider config={config}>
+      <ConnectionProvider endpoint={solanaConfig.endpoint}>
+        <WalletProvider wallets={solanaConfig.wallets} autoConnect>
+          <WalletModalProvider>
+            <TestPaymentContent />
+          </WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
+    </WagmiProvider>
   );
 } 

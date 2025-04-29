@@ -179,7 +179,7 @@ export default function EditProfile() {
     setPreferredCrypto(initialData.preferredCrypto);
     setWalletAddresses(initialData.walletAddresses || {});
   }, [initialData]);
-  
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
@@ -454,16 +454,16 @@ export default function EditProfile() {
             )}
             
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-              <Button
-                variant="outlined"
+              <Button 
+                variant="outlined" 
                 onClick={resetForm}
                 disabled={loading || !hasChanges}
               >
                 Reset
               </Button>
-              <Button
-                type="submit"
-                variant="contained"
+              <Button 
+                type="submit" 
+                variant="contained" 
                 color="primary"
                 disabled={loading || !hasChanges}
               >

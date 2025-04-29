@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { createPayment } from '@/lib/cryptoProcessingApi';
 
 export async function POST(request: Request) {
   try {
@@ -23,7 +24,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create payment intent with the provided wallet address
+    // Create payment using CryptoProcessing.io API
+    const cryptoPayment = await createPayment({
+      amount,
+      currency,
+      walletAddress,
+      description,
+    });
+
+    // Create payment intent in our database
     const paymentIntent = await prisma.paymentIntent.create({
       data: {
         amount,
@@ -32,12 +41,17 @@ export async function POST(request: Request) {
         walletAddress,
         userId: session.user.id,
         status: 'pending',
+        paymentId: cryptoPayment.id,
+        apiResponse: JSON.stringify(cryptoPayment),
         createdAt: new Date(),
         updatedAt: new Date(),
       },
     });
 
-    return NextResponse.json(paymentIntent);
+    return NextResponse.json({
+      ...paymentIntent,
+      paymentUrl: cryptoPayment.payment_url,
+    });
   } catch (error) {
     console.error('Error creating payment intent:', error);
     return NextResponse.json(

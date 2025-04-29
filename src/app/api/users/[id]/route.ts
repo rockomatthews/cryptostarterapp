@@ -28,7 +28,7 @@ export async function GET(
     // If Prisma isn't initialized, return mock data for development
     if (!prismaStatus.initialized) {
       console.log("Prisma not initialized, returning mock data");
-      return NextResponse.json({
+    return NextResponse.json({
         id: userId,
         name: "Mock User",
         email: "mock@example.com",
@@ -106,7 +106,7 @@ export async function PUT(
 
     if (!existingUser) {
       // Return specialized error with status 200 to avoid breaking UI
-      return NextResponse.json({ 
+    return NextResponse.json({
         error: "User not found - cannot update non-existent user",
         id: userId,
         ...data,

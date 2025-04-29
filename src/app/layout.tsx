@@ -49,7 +49,7 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeRegistry>
             <Navbar />
-            {children}
+        {children}
           </ThemeRegistry>
         </AuthProvider>
       </body>

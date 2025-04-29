@@ -28,8 +28,8 @@ export async function getPrismaStatus() {
     return {
       initialized: false,
       error: 'Prisma cannot be used in the browser'
-    }
   }
+}
 
   try {
     // If we already know Prisma is initialized, return that status

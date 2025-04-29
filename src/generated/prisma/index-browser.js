@@ -229,6 +229,8 @@ exports.Prisma.PaymentIntentScalarFieldEnum = {
   description: 'description',
   walletAddress: 'walletAddress',
   status: 'status',
+  paymentId: 'paymentId',
+  apiResponse: 'apiResponse',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
@@ -348,6 +350,8 @@ exports.Prisma.PaymentIntentOrderByRelevanceFieldEnum = {
   description: 'description',
   walletAddress: 'walletAddress',
   status: 'status',
+  paymentId: 'paymentId',
+  apiResponse: 'apiResponse',
   userId: 'userId'
 };
 

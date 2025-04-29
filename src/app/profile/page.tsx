@@ -178,7 +178,7 @@ export default function Profile() {
     error: fetchError,
     retry: retryFetch
   } = useUserData(session?.user?.id);
-  
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
@@ -209,15 +209,15 @@ export default function Profile() {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Typography variant="h4">
               Profile
-            </Typography>
-            <Button
-              variant="contained"
+              </Typography>
+              <Button 
+                variant="contained" 
               startIcon={<EditIcon />}
-              onClick={() => router.push('/profile/edit')}
-            >
-              Edit Profile
-            </Button>
-          </Box>
+                onClick={() => router.push('/profile/edit')}
+              >
+                Edit Profile
+              </Button>
+            </Box>
           
           {fetchError && (
             <Alert 
@@ -241,22 +241,22 @@ export default function Profile() {
             />
           </Box>
           
-          <Box sx={{ mb: 3 }}>
+              <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Username
-            </Typography>
-            <Typography variant="body1">
+                  Username
+                </Typography>
+                <Typography variant="body1">
               {userData.username}
-            </Typography>
-          </Box>
-          
-          <Box sx={{ mb: 3 }}>
+                </Typography>
+              </Box>
+              
+              <Box sx={{ mb: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Bio
-            </Typography>
-            <Typography variant="body1">
+                  Bio
+                </Typography>
+                <Typography variant="body1">
               {userData.bio || 'No bio provided'}
-            </Typography>
+                </Typography>
           </Box>
         </Paper>
 
@@ -274,22 +274,22 @@ export default function Profile() {
                 {/* Map through the user's campaigns */}
                 {campaigns.map((campaign) => (
                   <Grid size={{ xs: 12, sm: 6, md: 4 }} key={campaign.id}>
-                    <Card>
-                      <CardMedia
-                        component="img"
-                        height="140"
+                  <Card>
+                    <CardMedia
+                      component="img"
+                      height="140"
                         image={campaign.image || "/placeholder-image.jpg"}
                         alt={campaign.title}
-                      />
-                      <CardContent>
-                        <Typography gutterBottom variant="h6" component="div">
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h6" component="div">
                           {campaign.title}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
                           {campaign.shortDescription}
-                        </Typography>
-                      </CardContent>
-                    </Card>
+                      </Typography>
+                    </CardContent>
+                  </Card>
                   </Grid>
                 ))}
               </Grid>
@@ -316,19 +316,19 @@ export default function Profile() {
                 {/* Map through the user's contributions */}
                 {contributions.map((contribution) => (
                   <Grid size={{ xs: 12, sm: 6, md: 4 }} key={contribution.id}>
-                    <Card>
-                      <CardContent>
+                  <Card>
+                    <CardContent>
                         <Typography gutterBottom variant="h6" component="div">
                           {contribution.campaign?.title || 'Untitled Campaign'}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
                           Amount: {contribution.amount} {contribution.currency}
-                        </Typography>
+                      </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Date: {new Date(contribution.createdAt).toLocaleDateString()}
-                        </Typography>
-                      </CardContent>
-                    </Card>
+                      </Typography>
+                    </CardContent>
+                  </Card>
                   </Grid>
                 ))}
               </Grid>

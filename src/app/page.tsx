@@ -223,8 +223,8 @@ export default function Home() {
                   height: 350,
                   position: 'relative'
                 }}
-              >
-                <Image
+          >
+            <Image
                   src="/images/hero-image.png"
                   alt="Cryptocurrency illustration"
                   width={600}

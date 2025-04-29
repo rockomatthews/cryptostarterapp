@@ -194,27 +194,27 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           {!isMobile ? (
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Button component={Link} href="/" sx={{ color: 'white' }}>
-                Home
-              </Button>
+              Home
+            </Button>
               <Button component={Link} href="/explore" sx={{ color: 'white' }}>
-                Explore
-              </Button>
-              <Button 
-                component={Link} 
-                href={status === 'authenticated' ? "/create-campaign" : "#"} 
+              Explore
+            </Button>
+            <Button 
+              component={Link} 
+              href={status === 'authenticated' ? "/create-campaign" : "#"} 
                 sx={{ color: 'white' }}
-                onClick={handleCreateCampaign}
-              >
-                Create Campaign
-              </Button>
+              onClick={handleCreateCampaign}
+            >
+              Create Campaign
+            </Button>
 
-              {status === 'authenticated' && session?.user ? (
-                <Box sx={{ ml: 2 }}>
-                  <Tooltip title="Open profile menu">
-                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                      <Avatar 
+            {status === 'authenticated' && session?.user ? (
+              <Box sx={{ ml: 2 }}>
+                <Tooltip title="Open profile menu">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar 
                         alt={displayName} 
                         src={displayImage}
                         sx={{ 
@@ -225,9 +225,9 @@ const Navbar = () => {
                       >
                         {!displayImage && <PersonIcon />}
                       </Avatar>
-                    </IconButton>
-                  </Tooltip>
-                  <Menu
+                  </IconButton>
+                </Tooltip>
+                <Menu
                     sx={{ 
                       mt: '45px',
                       '& .MuiPaper-root': {
@@ -236,32 +236,32 @@ const Navbar = () => {
                         border: '1px solid rgba(255, 255, 255, 0.12)',
                       }
                     }}
-                    id="menu-appbar"
-                    anchorEl={anchorElUser}
-                    anchorOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                    keepMounted
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                    open={Boolean(anchorElUser)}
-                    onClose={handleCloseUserMenu}
-                  >
-                    <MenuItem onClick={handleCloseUserMenu} component={Link} href="/profile">
-                      <Typography textAlign="center">Profile</Typography>
-                    </MenuItem>
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  <MenuItem onClick={handleCloseUserMenu} component={Link} href="/profile">
+                    <Typography textAlign="center">Profile</Typography>
+                  </MenuItem>
                     <MenuItem onClick={handleCloseUserMenu} component={Link} href="/profile/edit">
                       <Typography textAlign="center">Edit Profile</Typography>
-                    </MenuItem>
-                    <MenuItem onClick={handleSignOut}>
-                      <Typography textAlign="center">Logout</Typography>
-                    </MenuItem>
-                  </Menu>
-                </Box>
-              ) : (
+                  </MenuItem>
+                  <MenuItem onClick={handleSignOut}>
+                    <Typography textAlign="center">Logout</Typography>
+                  </MenuItem>
+                </Menu>
+              </Box>
+            ) : (
                 <Button 
                   component={Link} 
                   href="/login" 
@@ -275,10 +275,10 @@ const Navbar = () => {
                     } 
                   }}
                 >
-                  Sign In
-                </Button>
-              )}
-            </Box>
+                Sign In
+              </Button>
+            )}
+          </Box>
           ) : (
             /* Mobile Menu Button */
             <IconButton

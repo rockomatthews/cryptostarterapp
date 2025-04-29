@@ -16,6 +16,7 @@ interface PaymentResult {
   };
   fee: number;
   currency: string;
+  paymentUrl?: string;
 }
 
 function TestPaymentContent() {
@@ -24,7 +25,7 @@ function TestPaymentContent() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [step, setStep] = useState<'select' | 'connect' | 'process'>('select');
+  const [step, setStep] = useState<'select' | 'connect' | 'process' | 'redirect'>('select');
 
   const { address, isConnected } = useAccount();
   const { open } = useWeb3Modal();
@@ -43,7 +44,15 @@ function TestPaymentContent() {
         walletAddress: address 
       });
       setResult(response);
-      setStep('process');
+      
+      // If payment URL is returned, redirect to it
+      if (response.paymentUrl) {
+        setStep('redirect');
+        // Redirect to the payment URL
+        window.location.href = response.paymentUrl;
+      } else {
+        setStep('process');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -55,8 +64,8 @@ function TestPaymentContent() {
     try {
       await open();
       setStep('process');
-    } catch {
-      setError('Failed to connect wallet');
+    } catch (error) {
+      setError('Failed to connect wallet: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
 
@@ -168,6 +177,19 @@ function TestPaymentContent() {
           >
             Start New Payment
           </button>
+        </div>
+      )}
+
+      {step === 'redirect' && (
+        <div className="space-y-4">
+          <div className="p-4 bg-blue-50 rounded">
+            <h3 className="font-medium text-blue-700 mb-2">Redirecting to Payment Page</h3>
+            <p className="text-sm">You will be redirected to CryptoProcessing.io to complete your payment.</p>
+            <p className="text-sm mt-2">If you are not redirected automatically, <a href={result?.paymentUrl} className="text-blue-600 underline">click here</a>.</p>
+          </div>
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          </div>
         </div>
       )}
 

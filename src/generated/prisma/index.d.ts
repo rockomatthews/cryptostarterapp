@@ -12017,6 +12017,8 @@ export namespace Prisma {
     description: string | null
     walletAddress: string | null
     status: string | null
+    paymentId: string | null
+    apiResponse: string | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -12029,6 +12031,8 @@ export namespace Prisma {
     description: string | null
     walletAddress: string | null
     status: string | null
+    paymentId: string | null
+    apiResponse: string | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -12041,6 +12045,8 @@ export namespace Prisma {
     description: number
     walletAddress: number
     status: number
+    paymentId: number
+    apiResponse: number
     createdAt: number
     updatedAt: number
     userId: number
@@ -12063,6 +12069,8 @@ export namespace Prisma {
     description?: true
     walletAddress?: true
     status?: true
+    paymentId?: true
+    apiResponse?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -12075,6 +12083,8 @@ export namespace Prisma {
     description?: true
     walletAddress?: true
     status?: true
+    paymentId?: true
+    apiResponse?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -12087,6 +12097,8 @@ export namespace Prisma {
     description?: true
     walletAddress?: true
     status?: true
+    paymentId?: true
+    apiResponse?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -12186,6 +12198,8 @@ export namespace Prisma {
     description: string
     walletAddress: string
     status: string
+    paymentId: string | null
+    apiResponse: string | null
     createdAt: Date
     updatedAt: Date
     userId: string
@@ -12217,6 +12231,8 @@ export namespace Prisma {
     description?: boolean
     walletAddress?: boolean
     status?: boolean
+    paymentId?: boolean
+    apiResponse?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -12230,6 +12246,8 @@ export namespace Prisma {
     description?: boolean
     walletAddress?: boolean
     status?: boolean
+    paymentId?: boolean
+    apiResponse?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -12243,6 +12261,8 @@ export namespace Prisma {
     description?: boolean
     walletAddress?: boolean
     status?: boolean
+    paymentId?: boolean
+    apiResponse?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -12256,12 +12276,14 @@ export namespace Prisma {
     description?: boolean
     walletAddress?: boolean
     status?: boolean
+    paymentId?: boolean
+    apiResponse?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
   }
 
-  export type PaymentIntentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "currency" | "description" | "walletAddress" | "status" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["paymentIntent"]>
+  export type PaymentIntentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "currency" | "description" | "walletAddress" | "status" | "paymentId" | "apiResponse" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["paymentIntent"]>
   export type PaymentIntentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -12284,6 +12306,8 @@ export namespace Prisma {
       description: string
       walletAddress: string
       status: string
+      paymentId: string | null
+      apiResponse: string | null
       createdAt: Date
       updatedAt: Date
       userId: string
@@ -12717,6 +12741,8 @@ export namespace Prisma {
     readonly description: FieldRef<"PaymentIntent", 'String'>
     readonly walletAddress: FieldRef<"PaymentIntent", 'String'>
     readonly status: FieldRef<"PaymentIntent", 'String'>
+    readonly paymentId: FieldRef<"PaymentIntent", 'String'>
+    readonly apiResponse: FieldRef<"PaymentIntent", 'String'>
     readonly createdAt: FieldRef<"PaymentIntent", 'DateTime'>
     readonly updatedAt: FieldRef<"PaymentIntent", 'DateTime'>
     readonly userId: FieldRef<"PaymentIntent", 'String'>
@@ -13287,6 +13313,8 @@ export namespace Prisma {
     description: 'description',
     walletAddress: 'walletAddress',
     status: 'status',
+    paymentId: 'paymentId',
+    apiResponse: 'apiResponse',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     userId: 'userId'
@@ -13451,6 +13479,8 @@ export namespace Prisma {
     description: 'description',
     walletAddress: 'walletAddress',
     status: 'status',
+    paymentId: 'paymentId',
+    apiResponse: 'apiResponse',
     userId: 'userId'
   };
 
@@ -14249,6 +14279,8 @@ export namespace Prisma {
     description?: StringFilter<"PaymentIntent"> | string
     walletAddress?: StringFilter<"PaymentIntent"> | string
     status?: StringFilter<"PaymentIntent"> | string
+    paymentId?: StringNullableFilter<"PaymentIntent"> | string | null
+    apiResponse?: StringNullableFilter<"PaymentIntent"> | string | null
     createdAt?: DateTimeFilter<"PaymentIntent"> | Date | string
     updatedAt?: DateTimeFilter<"PaymentIntent"> | Date | string
     userId?: StringFilter<"PaymentIntent"> | string
@@ -14262,6 +14294,8 @@ export namespace Prisma {
     description?: SortOrder
     walletAddress?: SortOrder
     status?: SortOrder
+    paymentId?: SortOrderInput | SortOrder
+    apiResponse?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -14279,6 +14313,8 @@ export namespace Prisma {
     description?: StringFilter<"PaymentIntent"> | string
     walletAddress?: StringFilter<"PaymentIntent"> | string
     status?: StringFilter<"PaymentIntent"> | string
+    paymentId?: StringNullableFilter<"PaymentIntent"> | string | null
+    apiResponse?: StringNullableFilter<"PaymentIntent"> | string | null
     createdAt?: DateTimeFilter<"PaymentIntent"> | Date | string
     updatedAt?: DateTimeFilter<"PaymentIntent"> | Date | string
     userId?: StringFilter<"PaymentIntent"> | string
@@ -14292,6 +14328,8 @@ export namespace Prisma {
     description?: SortOrder
     walletAddress?: SortOrder
     status?: SortOrder
+    paymentId?: SortOrderInput | SortOrder
+    apiResponse?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -14312,6 +14350,8 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"PaymentIntent"> | string
     walletAddress?: StringWithAggregatesFilter<"PaymentIntent"> | string
     status?: StringWithAggregatesFilter<"PaymentIntent"> | string
+    paymentId?: StringNullableWithAggregatesFilter<"PaymentIntent"> | string | null
+    apiResponse?: StringNullableWithAggregatesFilter<"PaymentIntent"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"PaymentIntent"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PaymentIntent"> | Date | string
     userId?: StringWithAggregatesFilter<"PaymentIntent"> | string
@@ -15084,6 +15124,8 @@ export namespace Prisma {
     description: string
     walletAddress: string
     status: string
+    paymentId?: string | null
+    apiResponse?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutPaymentIntentsInput
@@ -15096,6 +15138,8 @@ export namespace Prisma {
     description: string
     walletAddress: string
     status: string
+    paymentId?: string | null
+    apiResponse?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -15108,6 +15152,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     walletAddress?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutPaymentIntentsNestedInput
@@ -15120,6 +15166,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     walletAddress?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -15132,6 +15180,8 @@ export namespace Prisma {
     description: string
     walletAddress: string
     status: string
+    paymentId?: string | null
+    apiResponse?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -15144,6 +15194,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     walletAddress?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15155,6 +15207,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     walletAddress?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -15907,6 +15961,8 @@ export namespace Prisma {
     description?: SortOrder
     walletAddress?: SortOrder
     status?: SortOrder
+    paymentId?: SortOrder
+    apiResponse?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -15923,6 +15979,8 @@ export namespace Prisma {
     description?: SortOrder
     walletAddress?: SortOrder
     status?: SortOrder
+    paymentId?: SortOrder
+    apiResponse?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -15935,6 +15993,8 @@ export namespace Prisma {
     description?: SortOrder
     walletAddress?: SortOrder
     status?: SortOrder
+    paymentId?: SortOrder
+    apiResponse?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -16977,6 +17037,8 @@ export namespace Prisma {
     description: string
     walletAddress: string
     status: string
+    paymentId?: string | null
+    apiResponse?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16988,6 +17050,8 @@ export namespace Prisma {
     description: string
     walletAddress: string
     status: string
+    paymentId?: string | null
+    apiResponse?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17162,6 +17226,8 @@ export namespace Prisma {
     description?: StringFilter<"PaymentIntent"> | string
     walletAddress?: StringFilter<"PaymentIntent"> | string
     status?: StringFilter<"PaymentIntent"> | string
+    paymentId?: StringNullableFilter<"PaymentIntent"> | string | null
+    apiResponse?: StringNullableFilter<"PaymentIntent"> | string | null
     createdAt?: DateTimeFilter<"PaymentIntent"> | Date | string
     updatedAt?: DateTimeFilter<"PaymentIntent"> | Date | string
     userId?: StringFilter<"PaymentIntent"> | string
@@ -17948,6 +18014,8 @@ export namespace Prisma {
     description: string
     walletAddress: string
     status: string
+    paymentId?: string | null
+    apiResponse?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18127,6 +18195,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     walletAddress?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18138,6 +18208,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     walletAddress?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18149,6 +18221,8 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     walletAddress?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

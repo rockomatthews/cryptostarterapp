@@ -18,7 +18,7 @@ interface PaymentResult {
   currency: string;
 }
 
-export default function TestPaymentPage() {
+function TestPaymentContent() {
   const { data: session, status } = useSession();
   const [selectedCurrency, setSelectedCurrency] = useState('USDT');
   const [loading, setLoading] = useState(false);
@@ -86,98 +86,104 @@ export default function TestPaymentPage() {
   }
 
   return (
-    <WagmiConfig config={config}>
-      <div className="container mx-auto p-4 max-w-2xl">
-        <h1 className="text-2xl font-bold mb-6">Test Payment</h1>
-        
-        {step === 'select' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Currency
-              </label>
-              <select
-                value={selectedCurrency}
-                onChange={(e) => setSelectedCurrency(e.target.value)}
-                className="w-full p-2 border rounded"
-              >
-                {SUPPORTED_CRYPTOCURRENCIES.map((currency) => (
-                  <option key={currency.value} value={currency.value}>
-                    {currency.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+    <div className="container mx-auto p-4 max-w-2xl">
+      <h1 className="text-2xl font-bold mb-6">Test Payment</h1>
+      
+      {step === 'select' && (
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Select Currency
+            </label>
+            <select
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value)}
+              className="w-full p-2 border rounded"
+            >
+              {SUPPORTED_CRYPTOCURRENCIES.map((currency) => (
+                <option key={currency.value} value={currency.value}>
+                  {currency.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={() => setStep('connect')}
+            className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Continue to Connect Wallet
+          </button>
+        </div>
+      )}
+
+      {step === 'connect' && (
+        <div className="space-y-4">
+          <div className="p-4 bg-gray-50 rounded">
+            <h3 className="font-medium mb-2">Selected Currency: {selectedCurrency}</h3>
+            <p className="text-sm text-gray-600">
+              Amount: 10 USDT (or equivalent)
+            </p>
+          </div>
+          
+          {!isConnected ? (
             <button
-              onClick={() => setStep('connect')}
+              onClick={handleConnectWallet}
               className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-              Continue to Connect Wallet
+              Connect Wallet
             </button>
-          </div>
-        )}
-
-        {step === 'connect' && (
-          <div className="space-y-4">
-            <div className="p-4 bg-gray-50 rounded">
-              <h3 className="font-medium mb-2">Selected Currency: {selectedCurrency}</h3>
-              <p className="text-sm text-gray-600">
-                Amount: 10 USDT (or equivalent)
-              </p>
-            </div>
-            
-            {!isConnected ? (
-              <button
-                onClick={handleConnectWallet}
-                className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Connect Wallet
-              </button>
-            ) : (
-              <div className="space-y-4">
-                <div className="p-4 bg-green-50 rounded">
-                  <p className="text-sm text-green-700">
-                    Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
-                  </p>
-                </div>
-                <button
-                  onClick={handleTestPayment}
-                  disabled={loading}
-                  className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-                >
-                  {loading ? 'Processing...' : 'Submit Payment'}
-                </button>
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 bg-green-50 rounded">
+                <p className="text-sm text-green-700">
+                  Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
+                </p>
               </div>
-            )}
-          </div>
-        )}
-
-        {step === 'process' && result && (
-          <div className="space-y-4">
-            <div className="p-4 bg-green-50 rounded">
-              <h3 className="font-medium text-green-700 mb-2">Payment Intent Created</h3>
-              <p className="text-sm">Payment Intent ID: {result.paymentIntent.id}</p>
-              <p className="text-sm">Amount: {result.fee} {result.currency}</p>
-              <p className="text-sm">Wallet Address: {address?.slice(0, 6)}...{address?.slice(-4)}</p>
+              <button
+                onClick={handleTestPayment}
+                disabled={loading}
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+              >
+                {loading ? 'Processing...' : 'Submit Payment'}
+              </button>
             </div>
-            <button
-              onClick={() => {
-                setStep('select');
-                setResult(null);
-              }}
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Start New Payment
-            </button>
-          </div>
-        )}
+          )}
+        </div>
+      )}
 
-        {error && (
-          <div className="mt-4 p-4 bg-red-50 rounded">
-            <p className="text-sm text-red-700">{error}</p>
+      {step === 'process' && result && (
+        <div className="space-y-4">
+          <div className="p-4 bg-green-50 rounded">
+            <h3 className="font-medium text-green-700 mb-2">Payment Intent Created</h3>
+            <p className="text-sm">Payment Intent ID: {result.paymentIntent.id}</p>
+            <p className="text-sm">Amount: {result.fee} {result.currency}</p>
+            <p className="text-sm">Wallet Address: {address?.slice(0, 6)}...{address?.slice(-4)}</p>
           </div>
-        )}
-      </div>
+          <button
+            onClick={() => {
+              setStep('select');
+              setResult(null);
+            }}
+            className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Start New Payment
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-4 p-4 bg-red-50 rounded">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function TestPaymentPage() {
+  return (
+    <WagmiConfig config={config}>
+      <TestPaymentContent />
     </WagmiConfig>
   );
 } 

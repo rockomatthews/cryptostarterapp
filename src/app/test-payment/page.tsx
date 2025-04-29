@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { solanaConfig } from '@/lib/web3Config';
 import { testCampaignFee, SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoApi';
@@ -25,7 +25,12 @@ interface PaymentResult {
 }
 
 function TestPaymentContent() {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      signIn();
+    },
+  });
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
@@ -35,6 +40,10 @@ function TestPaymentContent() {
     try {
       setIsLoading(true);
       setError(null);
+
+      if (!session?.user) {
+        throw new Error('Please sign in to continue');
+      }
 
       const response = await testCampaignFee({
         currency: selectedCurrency
@@ -168,7 +177,7 @@ function TestPaymentContent() {
 export default function TestPaymentPage() {
   const queryClient = new QueryClient();
   
-  // Define Solana wallets
+  // Define Solana wallets with proper configuration
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),

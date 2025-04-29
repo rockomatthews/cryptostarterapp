@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSession, signIn } from 'next-auth/react';
 import { solanaConfig } from '@/lib/web3Config';
 import { testCampaignFee, SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoApi';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
@@ -25,7 +25,7 @@ interface PaymentResult {
 }
 
 function TestPaymentContent() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
@@ -48,12 +48,29 @@ function TestPaymentContent() {
     }
   };
 
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+          <p className="text-gray-600">Please wait while we check your session.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!session) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Please sign in to continue</h1>
-          <p className="text-gray-600">You need to be signed in to make a test payment.</p>
+          <p className="text-gray-600 mb-6">You need to be signed in to make a test payment.</p>
+          <button
+            onClick={() => signIn()}
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          >
+            Sign In
+          </button>
         </div>
       </div>
     );

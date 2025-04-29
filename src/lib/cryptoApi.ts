@@ -109,7 +109,17 @@ export async function testCampaignFee({ currency }: TestCampaignFeeParams) {
       throw new Error(errorData.error || 'Failed to create test payment');
     }
 
-    return await response.json();
+    const data = await response.json();
+    
+    // Transform the response to match the expected format
+    return {
+      success: data.success,
+      paymentIntentId: data.paymentIntentId,
+      amount: data.amount,
+      currency: data.currency,
+      paymentUrl: data.paymentUrl,
+      payAddress: data.payAddress || data.pay_address, // Handle both formats
+    };
   } catch (error) {
     console.error('Error testing campaign fee:', error);
     throw error;

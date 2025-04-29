@@ -1,77 +1,61 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { CAMPAIGN_CREATION_FEE } from '@/lib/cryptoApi';
-import { prisma } from '@/lib/prisma';
+import { authOptions } from '@/lib/authOptions';
 
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.id) {
+
+    if (!session) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - Please sign in to continue' },
         { status: 401 }
       );
     }
 
     const { currency, walletAddress } = await request.json();
-    
-    if (!walletAddress) {
+
+    if (!currency || !walletAddress) {
       return NextResponse.json(
-        { error: 'Wallet address is required' },
+        { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Get the request origin for constructing the absolute URL
-    const origin = request.headers.get('origin') || request.headers.get('host');
-    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-    const baseUrl = `${protocol}://${origin}`;
-    
-    // Create a test payment intent for the campaign creation fee
-    const response = await fetch(`${baseUrl}/api/payments/create-intent`, {
+    // Create a test payment intent
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/payments/create-intent`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Cookie': request.headers.get('cookie') || '',
       },
       body: JSON.stringify({
-        amount: CAMPAIGN_CREATION_FEE,
+        amount: 10, // Test amount
         currency,
-        description: 'Test Campaign Creation Fee',
-        walletAddress,
+        description: 'Test campaign creation fee',
       }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to create test payment intent');
+      const error = await response.json();
+      return NextResponse.json(
+        { error: error.message || 'Failed to create payment intent' },
+        { status: response.status }
+      );
     }
 
     const paymentIntent = await response.json();
-    
-    // Log the transaction
-    await prisma.transactionLog.create({
-      data: {
-        type: 'donation',
-        amount: CAMPAIGN_CREATION_FEE,
-        currency,
-        status: 'pending',
-        apiResponse: JSON.stringify(paymentIntent),
-      },
-    });
-    
+
     return NextResponse.json({
       success: true,
-      paymentIntent,
-      message: 'Test payment intent created successfully',
-      fee: CAMPAIGN_CREATION_FEE,
-      currency
+      paymentIntentId: paymentIntent.id,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency,
     });
   } catch (error) {
-    console.error('Error creating test payment:', error);
+    console.error('Error in test-campaign-fee:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to create test payment' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -99,6 +99,7 @@ export async function testCampaignFee({ currency, walletAddress }: TestCampaignF
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         currency,
         walletAddress,

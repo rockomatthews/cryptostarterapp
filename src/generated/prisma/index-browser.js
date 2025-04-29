@@ -227,13 +227,13 @@ exports.Prisma.PaymentIntentScalarFieldEnum = {
   amount: 'amount',
   currency: 'currency',
   description: 'description',
-  walletAddress: 'walletAddress',
+  userId: 'userId',
   status: 'status',
   paymentId: 'paymentId',
   apiResponse: 'apiResponse',
+  estimatedSolAmount: 'estimatedSolAmount',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  userId: 'userId'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -348,11 +348,10 @@ exports.Prisma.PaymentIntentOrderByRelevanceFieldEnum = {
   id: 'id',
   currency: 'currency',
   description: 'description',
-  walletAddress: 'walletAddress',
+  userId: 'userId',
   status: 'status',
   paymentId: 'paymentId',
-  apiResponse: 'apiResponse',
-  userId: 'userId'
+  apiResponse: 'apiResponse'
 };
 
 

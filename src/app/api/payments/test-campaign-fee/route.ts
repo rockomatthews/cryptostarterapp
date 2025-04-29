@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { createPayment } from '@/lib/nowPaymentsApi';
 
 export async function POST(request: Request) {
   try {
@@ -13,44 +14,30 @@ export async function POST(request: Request) {
       );
     }
 
-    const { currency, walletAddress } = await request.json();
+    const { currency } = await request.json();
 
-    if (!currency || !walletAddress) {
+    if (!currency) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Create a test payment intent
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/payments/create-intent`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': request.headers.get('cookie') || '',
-      },
-      body: JSON.stringify({
-        amount: 10, // Test amount
-        currency,
-        description: 'Test campaign creation fee',
-      }),
+    // Create a test payment using NOWPayments
+    const payment = await createPayment({
+      amount: 10, // Test amount
+      currency,
+      description: 'Test campaign creation fee',
+      orderId: `test_${Date.now()}`,
     });
-
-    if (!response.ok) {
-      const error = await response.json();
-      return NextResponse.json(
-        { error: error.message || 'Failed to create payment intent' },
-        { status: response.status }
-      );
-    }
-
-    const paymentIntent = await response.json();
 
     return NextResponse.json({
       success: true,
-      paymentIntentId: paymentIntent.id,
-      amount: paymentIntent.amount,
-      currency: paymentIntent.currency,
+      paymentIntentId: payment.payment_id,
+      amount: payment.price_amount,
+      currency: payment.price_currency,
+      paymentUrl: payment.invoice_url,
+      payAddress: payment.pay_address,
     });
   } catch (error) {
     console.error('Error in test-campaign-fee:', error);

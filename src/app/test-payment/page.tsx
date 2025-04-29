@@ -6,7 +6,6 @@ import { solanaConfig } from '@/lib/web3Config';
 import { testCampaignFee, SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoApi';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
@@ -21,57 +20,24 @@ interface PaymentResult {
   paymentIntentId: string;
   amount: number;
   currency: string;
+  paymentUrl: string;
+  payAddress?: string;
 }
-
-// Group cryptocurrencies by their wallet type
-const SOLANA_BASED = ['SOL'];
 
 function TestPaymentContent() {
   const { data: session } = useSession();
-  const { publicKey: solAddress, connect: connectSolanaWallet } = useWallet();
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [walletAddress, setWalletAddress] = useState<string>('');
-  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
-
-  const handleConnectWallet = async () => {
-    try {
-      if (SOLANA_BASED.includes(selectedCurrency)) {
-        // Connect Solana wallet
-        await connectSolanaWallet();
-        if (solAddress) {
-          setWalletAddress(solAddress.toString());
-          setIsWalletConnected(true);
-        }
-      } else {
-        // For all other currencies, use CryptoProcessing's built-in wallet
-        // In a real implementation, this would integrate with CryptoProcessing's API
-        // For now, we'll use a simple input
-        const address = prompt(`Please enter your ${selectedCurrency} address:`);
-        if (address) {
-          setWalletAddress(address);
-          setIsWalletConnected(true);
-        }
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to connect wallet');
-    }
-  };
 
   const handleTestPayment = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      if (!walletAddress) {
-        throw new Error(`Please connect your ${selectedCurrency} wallet first`);
-      }
-
       const response = await testCampaignFee({
-        currency: selectedCurrency,
-        walletAddress
+        currency: selectedCurrency
       });
 
       setResult(response);
@@ -80,11 +46,6 @@ function TestPaymentContent() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleDisconnectWallet = () => {
-    setWalletAddress('');
-    setIsWalletConnected(false);
   };
 
   if (!session) {
@@ -128,7 +89,7 @@ function TestPaymentContent() {
               <button
                 onClick={() => {
                   setSelectedCurrency('');
-                  handleDisconnectWallet();
+                  setResult(null);
                 }}
                 className="text-blue-500 hover:text-blue-600"
               >
@@ -136,31 +97,21 @@ function TestPaymentContent() {
               </button>
             </div>
 
-            {!isWalletConnected ? (
-              <button
-                onClick={handleConnectWallet}
-                className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600"
-              >
-                Connect {selectedCurrency} Wallet
-              </button>
-            ) : (
-              <div className="space-y-4">
-                <div className="p-4 bg-green-50 text-green-600 rounded-lg">
-                  <p className="font-medium">Wallet Connected!</p>
-                  <p className="text-sm">
-                    Address: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-                  </p>
-                </div>
+            <div className="p-4 bg-blue-50 text-blue-600 rounded-lg">
+              <p className="font-medium">Test Payment Information</p>
+              <p className="text-sm mt-1">
+                Click the button below to generate a payment address for {selectedCurrency}.
+                You&apos;ll be redirected to NOWPayments to complete the payment.
+              </p>
+            </div>
 
-                <button
-                  onClick={handleTestPayment}
-                  disabled={isLoading}
-                  className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
-                >
-                  {isLoading ? 'Processing...' : 'Submit Payment'}
-                </button>
-              </div>
-            )}
+            <button
+              onClick={handleTestPayment}
+              disabled={isLoading}
+              className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            >
+              {isLoading ? 'Generating Payment...' : 'Generate Payment Address'}
+            </button>
 
             {error && (
               <div className="p-4 bg-red-50 text-red-600 rounded-lg">
@@ -170,9 +121,24 @@ function TestPaymentContent() {
 
             {result && (
               <div className="p-4 bg-green-50 text-green-600 rounded-lg">
-                <h3 className="font-semibold">Payment Successful!</h3>
-                <p>Payment Intent ID: {result.paymentIntentId}</p>
-                <p>Amount: {result.amount} {result.currency}</p>
+                <h3 className="font-semibold">Payment Address Generated!</h3>
+                <p className="mt-2">Amount: {result.amount} {result.currency}</p>
+                {result.payAddress && (
+                  <div className="mt-2">
+                    <p className="font-medium">Payment Address:</p>
+                    <p className="text-sm break-all bg-white p-2 rounded mt-1">{result.payAddress}</p>
+                  </div>
+                )}
+                <div className="mt-4">
+                  <a 
+                    href={result.paymentUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-block bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+                  >
+                    Go to Payment Page
+                  </a>
+                </div>
               </div>
             )}
           </div>

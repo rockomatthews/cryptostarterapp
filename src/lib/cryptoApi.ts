@@ -1,5 +1,5 @@
 /**
- * Utility functions for interacting with the cryptoprocessing.io API
+ * Utility functions for interacting with the NOWPayments API
  */
 
 // Supported cryptocurrencies
@@ -39,7 +39,6 @@ interface ConvertCurrencyParams {
 
 interface TestCampaignFeeParams {
   currency: string;
-  walletAddress: string;
 }
 
 export async function convertCurrency({ amount, fromCurrency, toCurrency }: ConvertCurrencyParams) {
@@ -92,7 +91,7 @@ export async function createPaymentIntent({ amount, currency, description }: Cre
   }
 }
 
-export async function testCampaignFee({ currency, walletAddress }: TestCampaignFeeParams) {
+export async function testCampaignFee({ currency }: TestCampaignFeeParams) {
   try {
     const response = await fetch('/api/payments/test-campaign-fee', {
       method: 'POST',
@@ -102,7 +101,6 @@ export async function testCampaignFee({ currency, walletAddress }: TestCampaignF
       credentials: 'include',
       body: JSON.stringify({
         currency,
-        walletAddress,
       }),
     });
 

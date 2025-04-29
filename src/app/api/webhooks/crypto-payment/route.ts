@@ -1,111 +1,94 @@
 import { NextResponse } from 'next/server';
 import { createSafeHandler } from '@/lib/safe-prisma';
 import { prisma } from '@/lib/prisma';
-import { getPaymentStatus, convertToSol, transferToSolWallet } from '@/lib/cryptoProcessingApi';
+import { verifyIpnSignature } from '@/lib/nowPaymentsApi';
 
 // Set Node.js runtime
 export const runtime = 'nodejs';
 
 // Define interface for webhook payload
-interface CryptoPaymentWebhookPayload {
-  id?: string;
-  transaction_id?: string;
-  status?: string;
+interface NowPaymentsWebhookPayload {
+  payment_id: number;
+  payment_status: string;
+  pay_address: string;
+  price_amount: number;
+  price_currency: string;
+  pay_amount: number;
+  actually_paid: number;
+  pay_currency: string;
+  outcome_amount: number;
+  outcome_currency: string;
+  fee: {
+    currency: string;
+    depositFee: number;
+    withdrawalFee: number;
+    serviceFee: number;
+  };
   [key: string]: string | number | boolean | object | undefined;
 }
 
 /**
- * Webhook handler for crypto payment events
- * This processes callbacks from the cryptoprocessing.io API
+ * Webhook handler for NOWPayments IPN notifications
+ * This processes callbacks from the NOWPayments API
  */
-export const POST = createSafeHandler('crypto-payment-webhook', async (request: Request) => {
+export const POST = createSafeHandler('nowpayments-webhook', async (request: Request) => {
   try {
     // Parse the webhook payload 
-    const payload = await request.json() as CryptoPaymentWebhookPayload;
+    const payload = await request.json() as NowPaymentsWebhookPayload;
     
-    // Get URL parameters
-    const { searchParams } = new URL(request.url);
-    const transactionId = searchParams.get('transactionId');
-    const type = searchParams.get('type') || 'donation';
+    // Get the signature from headers
+    const signature = request.headers.get('x-nowpayments-sig');
     
-    console.log('Processing crypto payment webhook:', { transactionId, type, payload });
+    if (!signature) {
+      console.error('Missing signature in webhook request');
+      return NextResponse.json({ 
+        success: false,
+        message: "Missing signature"
+      }, { status: 400 });
+    }
+    
+    // Verify the signature
+    if (!verifyIpnSignature(payload, signature)) {
+      console.error('Invalid signature in webhook request');
+      return NextResponse.json({ 
+        success: false,
+        message: "Invalid signature"
+      }, { status: 400 });
+    }
+    
+    console.log('Processing NOWPayments webhook:', payload);
 
     // Find the payment intent in our database
     const paymentIntent = await prisma.paymentIntent.findFirst({
       where: {
-        paymentId: payload.id,
+        paymentId: payload.payment_id.toString(),
       },
     });
 
     if (!paymentIntent) {
-      console.error('Payment intent not found:', payload.id);
+      console.error('Payment intent not found:', payload.payment_id);
       return NextResponse.json({ 
         success: false,
         message: "Payment intent not found"
       });
     }
 
-    // Get the latest payment status from CryptoProcessing.io
-    const paymentStatus = await getPaymentStatus(payload.id as string);
-
     // Update payment intent status
     await prisma.paymentIntent.update({
       where: { id: paymentIntent.id },
       data: {
-        status: paymentStatus.status,
-        apiResponse: JSON.stringify(paymentStatus),
+        status: payload.payment_status,
+        apiResponse: JSON.stringify(payload),
         updatedAt: new Date(),
       },
     });
-
-    // If payment is completed, convert to SOL and transfer to platform wallet
-    if (paymentStatus.status === 'completed') {
-      try {
-        // Convert the payment to SOL
-        const conversion = await convertToSol({
-          amount: paymentIntent.amount,
-          fromCurrency: paymentIntent.currency,
-        });
-
-        // Transfer to platform SOL wallet
-        const transfer = await transferToSolWallet(paymentIntent.paymentId as string);
-
-        // Update payment intent with conversion and transfer details
-        await prisma.paymentIntent.update({
-          where: { id: paymentIntent.id },
-          data: {
-            status: 'converted',
-            apiResponse: JSON.stringify({
-              ...paymentStatus,
-              conversion,
-              transfer,
-            }),
-            updatedAt: new Date(),
-          },
-        });
-      } catch (error) {
-        console.error('Error converting payment to SOL:', error);
-        // Update payment intent with conversion error
-        await prisma.paymentIntent.update({
-          where: { id: paymentIntent.id },
-          data: {
-            status: 'conversion_failed',
-            apiResponse: JSON.stringify({
-              ...paymentStatus,
-              conversionError: error instanceof Error ? error.message : 'Unknown error',
-            }),
-            updatedAt: new Date(),
-          },
-        });
-      }
-    }
 
     return NextResponse.json({ 
       success: true,
       message: "Payment processed successfully"
     });
   } catch (error) {
-    console.error('Error processing crypto payment webhook:', error);
+    console.error('Error processing NOWPayments webhook:', error);
     
     // Return 200 even on error to prevent retries from the payment provider
     return NextResponse.json({ 

@@ -12004,10 +12004,12 @@ export namespace Prisma {
 
   export type PaymentIntentAvgAggregateOutputType = {
     amount: number | null
+    estimatedSolAmount: number | null
   }
 
   export type PaymentIntentSumAggregateOutputType = {
     amount: number | null
+    estimatedSolAmount: number | null
   }
 
   export type PaymentIntentMinAggregateOutputType = {
@@ -12015,13 +12017,13 @@ export namespace Prisma {
     amount: number | null
     currency: string | null
     description: string | null
-    walletAddress: string | null
+    userId: string | null
     status: string | null
     paymentId: string | null
     apiResponse: string | null
+    estimatedSolAmount: number | null
     createdAt: Date | null
     updatedAt: Date | null
-    userId: string | null
   }
 
   export type PaymentIntentMaxAggregateOutputType = {
@@ -12029,13 +12031,13 @@ export namespace Prisma {
     amount: number | null
     currency: string | null
     description: string | null
-    walletAddress: string | null
+    userId: string | null
     status: string | null
     paymentId: string | null
     apiResponse: string | null
+    estimatedSolAmount: number | null
     createdAt: Date | null
     updatedAt: Date | null
-    userId: string | null
   }
 
   export type PaymentIntentCountAggregateOutputType = {
@@ -12043,23 +12045,25 @@ export namespace Prisma {
     amount: number
     currency: number
     description: number
-    walletAddress: number
+    userId: number
     status: number
     paymentId: number
     apiResponse: number
+    estimatedSolAmount: number
     createdAt: number
     updatedAt: number
-    userId: number
     _all: number
   }
 
 
   export type PaymentIntentAvgAggregateInputType = {
     amount?: true
+    estimatedSolAmount?: true
   }
 
   export type PaymentIntentSumAggregateInputType = {
     amount?: true
+    estimatedSolAmount?: true
   }
 
   export type PaymentIntentMinAggregateInputType = {
@@ -12067,13 +12071,13 @@ export namespace Prisma {
     amount?: true
     currency?: true
     description?: true
-    walletAddress?: true
+    userId?: true
     status?: true
     paymentId?: true
     apiResponse?: true
+    estimatedSolAmount?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
   }
 
   export type PaymentIntentMaxAggregateInputType = {
@@ -12081,13 +12085,13 @@ export namespace Prisma {
     amount?: true
     currency?: true
     description?: true
-    walletAddress?: true
+    userId?: true
     status?: true
     paymentId?: true
     apiResponse?: true
+    estimatedSolAmount?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
   }
 
   export type PaymentIntentCountAggregateInputType = {
@@ -12095,13 +12099,13 @@ export namespace Prisma {
     amount?: true
     currency?: true
     description?: true
-    walletAddress?: true
+    userId?: true
     status?: true
     paymentId?: true
     apiResponse?: true
+    estimatedSolAmount?: true
     createdAt?: true
     updatedAt?: true
-    userId?: true
     _all?: true
   }
 
@@ -12195,14 +12199,14 @@ export namespace Prisma {
     id: string
     amount: number
     currency: string
-    description: string
-    walletAddress: string
+    description: string | null
+    userId: string
     status: string
-    paymentId: string | null
-    apiResponse: string | null
+    paymentId: string
+    apiResponse: string
+    estimatedSolAmount: number | null
     createdAt: Date
     updatedAt: Date
-    userId: string
     _count: PaymentIntentCountAggregateOutputType | null
     _avg: PaymentIntentAvgAggregateOutputType | null
     _sum: PaymentIntentSumAggregateOutputType | null
@@ -12229,13 +12233,13 @@ export namespace Prisma {
     amount?: boolean
     currency?: boolean
     description?: boolean
-    walletAddress?: boolean
+    userId?: boolean
     status?: boolean
     paymentId?: boolean
     apiResponse?: boolean
+    estimatedSolAmount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["paymentIntent"]>
 
@@ -12244,13 +12248,13 @@ export namespace Prisma {
     amount?: boolean
     currency?: boolean
     description?: boolean
-    walletAddress?: boolean
+    userId?: boolean
     status?: boolean
     paymentId?: boolean
     apiResponse?: boolean
+    estimatedSolAmount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["paymentIntent"]>
 
@@ -12259,13 +12263,13 @@ export namespace Prisma {
     amount?: boolean
     currency?: boolean
     description?: boolean
-    walletAddress?: boolean
+    userId?: boolean
     status?: boolean
     paymentId?: boolean
     apiResponse?: boolean
+    estimatedSolAmount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["paymentIntent"]>
 
@@ -12274,16 +12278,16 @@ export namespace Prisma {
     amount?: boolean
     currency?: boolean
     description?: boolean
-    walletAddress?: boolean
+    userId?: boolean
     status?: boolean
     paymentId?: boolean
     apiResponse?: boolean
+    estimatedSolAmount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    userId?: boolean
   }
 
-  export type PaymentIntentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "currency" | "description" | "walletAddress" | "status" | "paymentId" | "apiResponse" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["paymentIntent"]>
+  export type PaymentIntentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "amount" | "currency" | "description" | "userId" | "status" | "paymentId" | "apiResponse" | "estimatedSolAmount" | "createdAt" | "updatedAt", ExtArgs["result"]["paymentIntent"]>
   export type PaymentIntentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -12303,14 +12307,14 @@ export namespace Prisma {
       id: string
       amount: number
       currency: string
-      description: string
-      walletAddress: string
+      description: string | null
+      userId: string
       status: string
-      paymentId: string | null
-      apiResponse: string | null
+      paymentId: string
+      apiResponse: string
+      estimatedSolAmount: number | null
       createdAt: Date
       updatedAt: Date
-      userId: string
     }, ExtArgs["result"]["paymentIntent"]>
     composites: {}
   }
@@ -12739,13 +12743,13 @@ export namespace Prisma {
     readonly amount: FieldRef<"PaymentIntent", 'Float'>
     readonly currency: FieldRef<"PaymentIntent", 'String'>
     readonly description: FieldRef<"PaymentIntent", 'String'>
-    readonly walletAddress: FieldRef<"PaymentIntent", 'String'>
+    readonly userId: FieldRef<"PaymentIntent", 'String'>
     readonly status: FieldRef<"PaymentIntent", 'String'>
     readonly paymentId: FieldRef<"PaymentIntent", 'String'>
     readonly apiResponse: FieldRef<"PaymentIntent", 'String'>
+    readonly estimatedSolAmount: FieldRef<"PaymentIntent", 'Float'>
     readonly createdAt: FieldRef<"PaymentIntent", 'DateTime'>
     readonly updatedAt: FieldRef<"PaymentIntent", 'DateTime'>
-    readonly userId: FieldRef<"PaymentIntent", 'String'>
   }
     
 
@@ -13311,13 +13315,13 @@ export namespace Prisma {
     amount: 'amount',
     currency: 'currency',
     description: 'description',
-    walletAddress: 'walletAddress',
+    userId: 'userId',
     status: 'status',
     paymentId: 'paymentId',
     apiResponse: 'apiResponse',
+    estimatedSolAmount: 'estimatedSolAmount',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    userId: 'userId'
+    updatedAt: 'updatedAt'
   };
 
   export type PaymentIntentScalarFieldEnum = (typeof PaymentIntentScalarFieldEnum)[keyof typeof PaymentIntentScalarFieldEnum]
@@ -13477,11 +13481,10 @@ export namespace Prisma {
     id: 'id',
     currency: 'currency',
     description: 'description',
-    walletAddress: 'walletAddress',
+    userId: 'userId',
     status: 'status',
     paymentId: 'paymentId',
-    apiResponse: 'apiResponse',
-    userId: 'userId'
+    apiResponse: 'apiResponse'
   };
 
   export type PaymentIntentOrderByRelevanceFieldEnum = (typeof PaymentIntentOrderByRelevanceFieldEnum)[keyof typeof PaymentIntentOrderByRelevanceFieldEnum]
@@ -14276,14 +14279,14 @@ export namespace Prisma {
     id?: StringFilter<"PaymentIntent"> | string
     amount?: FloatFilter<"PaymentIntent"> | number
     currency?: StringFilter<"PaymentIntent"> | string
-    description?: StringFilter<"PaymentIntent"> | string
-    walletAddress?: StringFilter<"PaymentIntent"> | string
+    description?: StringNullableFilter<"PaymentIntent"> | string | null
+    userId?: StringFilter<"PaymentIntent"> | string
     status?: StringFilter<"PaymentIntent"> | string
-    paymentId?: StringNullableFilter<"PaymentIntent"> | string | null
-    apiResponse?: StringNullableFilter<"PaymentIntent"> | string | null
+    paymentId?: StringFilter<"PaymentIntent"> | string
+    apiResponse?: StringFilter<"PaymentIntent"> | string
+    estimatedSolAmount?: FloatNullableFilter<"PaymentIntent"> | number | null
     createdAt?: DateTimeFilter<"PaymentIntent"> | Date | string
     updatedAt?: DateTimeFilter<"PaymentIntent"> | Date | string
-    userId?: StringFilter<"PaymentIntent"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -14291,48 +14294,48 @@ export namespace Prisma {
     id?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
-    description?: SortOrder
-    walletAddress?: SortOrder
+    description?: SortOrderInput | SortOrder
+    userId?: SortOrder
     status?: SortOrder
-    paymentId?: SortOrderInput | SortOrder
-    apiResponse?: SortOrderInput | SortOrder
+    paymentId?: SortOrder
+    apiResponse?: SortOrder
+    estimatedSolAmount?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
     user?: UserOrderByWithRelationInput
     _relevance?: PaymentIntentOrderByRelevanceInput
   }
 
   export type PaymentIntentWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    paymentId?: string
     AND?: PaymentIntentWhereInput | PaymentIntentWhereInput[]
     OR?: PaymentIntentWhereInput[]
     NOT?: PaymentIntentWhereInput | PaymentIntentWhereInput[]
     amount?: FloatFilter<"PaymentIntent"> | number
     currency?: StringFilter<"PaymentIntent"> | string
-    description?: StringFilter<"PaymentIntent"> | string
-    walletAddress?: StringFilter<"PaymentIntent"> | string
+    description?: StringNullableFilter<"PaymentIntent"> | string | null
+    userId?: StringFilter<"PaymentIntent"> | string
     status?: StringFilter<"PaymentIntent"> | string
-    paymentId?: StringNullableFilter<"PaymentIntent"> | string | null
-    apiResponse?: StringNullableFilter<"PaymentIntent"> | string | null
+    apiResponse?: StringFilter<"PaymentIntent"> | string
+    estimatedSolAmount?: FloatNullableFilter<"PaymentIntent"> | number | null
     createdAt?: DateTimeFilter<"PaymentIntent"> | Date | string
     updatedAt?: DateTimeFilter<"PaymentIntent"> | Date | string
-    userId?: StringFilter<"PaymentIntent"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id">
+  }, "id" | "paymentId">
 
   export type PaymentIntentOrderByWithAggregationInput = {
     id?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
-    description?: SortOrder
-    walletAddress?: SortOrder
+    description?: SortOrderInput | SortOrder
+    userId?: SortOrder
     status?: SortOrder
-    paymentId?: SortOrderInput | SortOrder
-    apiResponse?: SortOrderInput | SortOrder
+    paymentId?: SortOrder
+    apiResponse?: SortOrder
+    estimatedSolAmount?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
     _count?: PaymentIntentCountOrderByAggregateInput
     _avg?: PaymentIntentAvgOrderByAggregateInput
     _max?: PaymentIntentMaxOrderByAggregateInput
@@ -14347,14 +14350,14 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"PaymentIntent"> | string
     amount?: FloatWithAggregatesFilter<"PaymentIntent"> | number
     currency?: StringWithAggregatesFilter<"PaymentIntent"> | string
-    description?: StringWithAggregatesFilter<"PaymentIntent"> | string
-    walletAddress?: StringWithAggregatesFilter<"PaymentIntent"> | string
+    description?: StringNullableWithAggregatesFilter<"PaymentIntent"> | string | null
+    userId?: StringWithAggregatesFilter<"PaymentIntent"> | string
     status?: StringWithAggregatesFilter<"PaymentIntent"> | string
-    paymentId?: StringNullableWithAggregatesFilter<"PaymentIntent"> | string | null
-    apiResponse?: StringNullableWithAggregatesFilter<"PaymentIntent"> | string | null
+    paymentId?: StringWithAggregatesFilter<"PaymentIntent"> | string
+    apiResponse?: StringWithAggregatesFilter<"PaymentIntent"> | string
+    estimatedSolAmount?: FloatNullableWithAggregatesFilter<"PaymentIntent"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"PaymentIntent"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PaymentIntent"> | Date | string
-    userId?: StringWithAggregatesFilter<"PaymentIntent"> | string
   }
 
   export type AccountCreateInput = {
@@ -15121,11 +15124,11 @@ export namespace Prisma {
     id?: string
     amount: number
     currency: string
-    description: string
-    walletAddress: string
+    description?: string | null
     status: string
-    paymentId?: string | null
-    apiResponse?: string | null
+    paymentId: string
+    apiResponse: string
+    estimatedSolAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutPaymentIntentsInput
@@ -15135,25 +15138,25 @@ export namespace Prisma {
     id?: string
     amount: number
     currency: string
-    description: string
-    walletAddress: string
+    description?: string | null
+    userId: string
     status: string
-    paymentId?: string | null
-    apiResponse?: string | null
+    paymentId: string
+    apiResponse: string
+    estimatedSolAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
   }
 
   export type PaymentIntentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    walletAddress?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
-    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentId?: StringFieldUpdateOperationsInput | string
+    apiResponse?: StringFieldUpdateOperationsInput | string
+    estimatedSolAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutPaymentIntentsNestedInput
@@ -15163,39 +15166,39 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    walletAddress?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
-    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
-    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentId?: StringFieldUpdateOperationsInput | string
+    apiResponse?: StringFieldUpdateOperationsInput | string
+    estimatedSolAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type PaymentIntentCreateManyInput = {
     id?: string
     amount: number
     currency: string
-    description: string
-    walletAddress: string
+    description?: string | null
+    userId: string
     status: string
-    paymentId?: string | null
-    apiResponse?: string | null
+    paymentId: string
+    apiResponse: string
+    estimatedSolAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    userId: string
   }
 
   export type PaymentIntentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    walletAddress?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
-    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentId?: StringFieldUpdateOperationsInput | string
+    apiResponse?: StringFieldUpdateOperationsInput | string
+    estimatedSolAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15204,14 +15207,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    walletAddress?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
-    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
-    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentId?: StringFieldUpdateOperationsInput | string
+    apiResponse?: StringFieldUpdateOperationsInput | string
+    estimatedSolAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -15948,6 +15951,17 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type PaymentIntentOrderByRelevanceInput = {
     fields: PaymentIntentOrderByRelevanceFieldEnum | PaymentIntentOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -15959,17 +15973,18 @@ export namespace Prisma {
     amount?: SortOrder
     currency?: SortOrder
     description?: SortOrder
-    walletAddress?: SortOrder
+    userId?: SortOrder
     status?: SortOrder
     paymentId?: SortOrder
     apiResponse?: SortOrder
+    estimatedSolAmount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type PaymentIntentAvgOrderByAggregateInput = {
     amount?: SortOrder
+    estimatedSolAmount?: SortOrder
   }
 
   export type PaymentIntentMaxOrderByAggregateInput = {
@@ -15977,13 +15992,13 @@ export namespace Prisma {
     amount?: SortOrder
     currency?: SortOrder
     description?: SortOrder
-    walletAddress?: SortOrder
+    userId?: SortOrder
     status?: SortOrder
     paymentId?: SortOrder
     apiResponse?: SortOrder
+    estimatedSolAmount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type PaymentIntentMinOrderByAggregateInput = {
@@ -15991,17 +16006,34 @@ export namespace Prisma {
     amount?: SortOrder
     currency?: SortOrder
     description?: SortOrder
-    walletAddress?: SortOrder
+    userId?: SortOrder
     status?: SortOrder
     paymentId?: SortOrder
     apiResponse?: SortOrder
+    estimatedSolAmount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    userId?: SortOrder
   }
 
   export type PaymentIntentSumOrderByAggregateInput = {
     amount?: SortOrder
+    estimatedSolAmount?: SortOrder
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type UserCreateNestedOneWithoutAccountsInput = {
@@ -16480,6 +16512,14 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UserUpdateOneRequiredWithoutPaymentIntentsNestedInput = {
     create?: XOR<UserCreateWithoutPaymentIntentsInput, UserUncheckedCreateWithoutPaymentIntentsInput>
     connectOrCreate?: UserCreateOrConnectWithoutPaymentIntentsInput
@@ -16714,6 +16754,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -17034,11 +17090,11 @@ export namespace Prisma {
     id?: string
     amount: number
     currency: string
-    description: string
-    walletAddress: string
+    description?: string | null
     status: string
-    paymentId?: string | null
-    apiResponse?: string | null
+    paymentId: string
+    apiResponse: string
+    estimatedSolAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17047,11 +17103,11 @@ export namespace Prisma {
     id?: string
     amount: number
     currency: string
-    description: string
-    walletAddress: string
+    description?: string | null
     status: string
-    paymentId?: string | null
-    apiResponse?: string | null
+    paymentId: string
+    apiResponse: string
+    estimatedSolAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17223,14 +17279,14 @@ export namespace Prisma {
     id?: StringFilter<"PaymentIntent"> | string
     amount?: FloatFilter<"PaymentIntent"> | number
     currency?: StringFilter<"PaymentIntent"> | string
-    description?: StringFilter<"PaymentIntent"> | string
-    walletAddress?: StringFilter<"PaymentIntent"> | string
+    description?: StringNullableFilter<"PaymentIntent"> | string | null
+    userId?: StringFilter<"PaymentIntent"> | string
     status?: StringFilter<"PaymentIntent"> | string
-    paymentId?: StringNullableFilter<"PaymentIntent"> | string | null
-    apiResponse?: StringNullableFilter<"PaymentIntent"> | string | null
+    paymentId?: StringFilter<"PaymentIntent"> | string
+    apiResponse?: StringFilter<"PaymentIntent"> | string
+    estimatedSolAmount?: FloatNullableFilter<"PaymentIntent"> | number | null
     createdAt?: DateTimeFilter<"PaymentIntent"> | Date | string
     updatedAt?: DateTimeFilter<"PaymentIntent"> | Date | string
-    userId?: StringFilter<"PaymentIntent"> | string
   }
 
   export type MediaCreateWithoutCampaignInput = {
@@ -18011,11 +18067,11 @@ export namespace Prisma {
     id?: string
     amount: number
     currency: string
-    description: string
-    walletAddress: string
+    description?: string | null
     status: string
-    paymentId?: string | null
-    apiResponse?: string | null
+    paymentId: string
+    apiResponse: string
+    estimatedSolAmount?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18192,11 +18248,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    walletAddress?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
-    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentId?: StringFieldUpdateOperationsInput | string
+    apiResponse?: StringFieldUpdateOperationsInput | string
+    estimatedSolAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18205,11 +18261,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    walletAddress?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
-    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentId?: StringFieldUpdateOperationsInput | string
+    apiResponse?: StringFieldUpdateOperationsInput | string
+    estimatedSolAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18218,11 +18274,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    walletAddress?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
-    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
-    apiResponse?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentId?: StringFieldUpdateOperationsInput | string
+    apiResponse?: StringFieldUpdateOperationsInput | string
+    estimatedSolAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { createPayment } from '@/lib/cryptoProcessingApi';
+import { createPayment, getEstimatedPrice, getMinimumPaymentAmount } from '@/lib/nowPaymentsApi';
 
 export async function POST(request: Request) {
   try {
@@ -15,21 +15,31 @@ export async function POST(request: Request) {
       );
     }
 
-    const { amount, currency, description, walletAddress } = await request.json();
+    const { amount, currency, description } = await request.json();
 
-    if (!walletAddress) {
+    // Get minimum payment amount
+    const minAmount = await getMinimumPaymentAmount(currency, 'SOL');
+    
+    if (amount < minAmount.min_amount) {
       return NextResponse.json(
-        { error: 'Wallet address is required' },
+        { error: `Amount must be at least ${minAmount.min_amount} ${currency}` },
         { status: 400 }
       );
     }
 
-    // Create payment using CryptoProcessing.io API
-    const cryptoPayment = await createPayment({
+    // Get estimated price in SOL
+    const estimate = await getEstimatedPrice({
+      amount,
+      fromCurrency: currency,
+      toCurrency: 'SOL'
+    });
+
+    // Create payment using NOWPayments API
+    const payment = await createPayment({
       amount,
       currency,
-      walletAddress,
       description,
+      orderId: `order_${Date.now()}`,
     });
 
     // Create payment intent in our database
@@ -38,11 +48,11 @@ export async function POST(request: Request) {
         amount,
         currency,
         description,
-        walletAddress,
         userId: session.user.id,
-        status: 'pending',
-        paymentId: cryptoPayment.id,
-        apiResponse: JSON.stringify(cryptoPayment),
+        status: payment.payment_status,
+        paymentId: payment.payment_id.toString(),
+        apiResponse: JSON.stringify(payment),
+        estimatedSolAmount: estimate.estimated_amount,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -50,7 +60,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ...paymentIntent,
-      paymentUrl: cryptoPayment.payment_url,
+      paymentUrl: payment.invoice_url,
+      estimatedSolAmount: estimate.estimated_amount,
     });
   } catch (error) {
     console.error('Error creating payment intent:', error);

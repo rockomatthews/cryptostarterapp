@@ -11,6 +11,7 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WagmiProvider } from 'wagmi';
 import { config } from '@/lib/web3Config';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 interface Cryptocurrency {
   value: string;
@@ -207,15 +208,19 @@ function TestPaymentContent() {
 }
 
 export default function TestPaymentPage() {
+  const queryClient = new QueryClient();
+
   return (
-    <WagmiProvider config={config}>
-      <ConnectionProvider endpoint={solanaConfig.endpoint}>
-        <WalletProvider wallets={solanaConfig.wallets} autoConnect>
-          <WalletModalProvider>
-            <TestPaymentContent />
-          </WalletModalProvider>
-        </WalletProvider>
-      </ConnectionProvider>
-    </WagmiProvider>
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={config}>
+        <ConnectionProvider endpoint={solanaConfig.endpoint}>
+          <WalletProvider wallets={solanaConfig.wallets} autoConnect>
+            <WalletModalProvider>
+              <TestPaymentContent />
+            </WalletModalProvider>
+          </WalletProvider>
+        </ConnectionProvider>
+      </WagmiProvider>
+    </QueryClientProvider>
   );
 } 

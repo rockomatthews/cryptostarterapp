@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { CAMPAIGN_CREATION_FEE } from '@/lib/cryptoApi';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
@@ -44,7 +44,8 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to create test payment intent');
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to create test payment intent');
     }
 
     const paymentIntent = await response.json();
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error creating test payment:', error);
     return NextResponse.json(
-      { error: 'Failed to create test payment' },
+      { error: error instanceof Error ? error.message : 'Failed to create test payment' },
       { status: 500 }
     );
   }

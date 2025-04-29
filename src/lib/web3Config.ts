@@ -1,40 +1,28 @@
-import { createConfig, configureChains } from 'wagmi';
+import { defaultWagmiConfig, createWeb3Modal } from '@web3modal/wagmi/react';
 import { mainnet, sepolia } from 'wagmi/chains';
-import { publicProvider } from 'wagmi/providers/public';
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
-// Configure chains & providers
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, sepolia],
-  [publicProvider()]
-);
-
-// Set up connectors
-const connectors = [
-  new MetaMaskConnector({ chains }),
-  new WalletConnectConnector({
-    chains,
-    options: {
-      projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
-    },
-  }),
-];
+// Configure chains
+const chains = [mainnet, sepolia] as const;
 
 // Create wagmi config
-export const config = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-  webSocketPublicClient,
+export const config = defaultWagmiConfig({
+  chains,
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
+  metadata: {
+    name: 'CryptoStarter',
+    description: 'CryptoStarter - Decentralized Crowdfunding Platform',
+    url: 'https://cryptostarter.app',
+    icons: ['https://cryptostarter.app/icon.png']
+  }
 });
 
-// Web3Modal configuration
-export const web3ModalConfig = {
+// Create Web3Modal instance
+export const web3Modal = createWeb3Modal({
+  wagmiConfig: config,
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
-  theme: 'dark',
-  accentColor: 'default',
-  ethereum: {
-    appName: 'CryptoStarter',
+  themeMode: 'dark',
+  themeVariables: {
+    '--w3m-accent': '#3b82f6',
   },
-}; 
+  defaultChain: mainnet,
+}); 

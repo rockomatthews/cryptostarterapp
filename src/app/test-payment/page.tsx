@@ -5,9 +5,9 @@ import { useSession } from 'next-auth/react';
 import { testCampaignFee } from '@/lib/cryptoApi';
 import { SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoApi';
 import Link from 'next/link';
-import { useAccount, useConnect } from 'wagmi';
-import { Web3Modal } from '@web3modal/react';
-import { config, web3ModalConfig } from '@/lib/web3Config';
+import { useAccount } from 'wagmi';
+import { useWeb3Modal } from '@web3modal/wagmi/react';
+import { config } from '@/lib/web3Config';
 import { WagmiConfig } from 'wagmi';
 
 interface PaymentResult {
@@ -27,10 +27,15 @@ export default function TestPaymentPage() {
   const [step, setStep] = useState<'select' | 'connect' | 'process'>('select');
 
   const { address, isConnected } = useAccount();
-  const { connect, connectors, isLoading: isConnectLoading } = useConnect();
+  const { open } = useWeb3Modal();
 
   const handleTestPayment = async () => {
     try {
+      if (!address) {
+        setError('Wallet address is required. Please connect your wallet first.');
+        return;
+      }
+      
       setLoading(true);
       setError(null);
       const response = await testCampaignFee({ 
@@ -48,10 +53,8 @@ export default function TestPaymentPage() {
 
   const handleConnectWallet = async () => {
     try {
-      if (connectors[0]) {
-        await connect({ connector: connectors[0] });
-        setStep('process');
-      }
+      await open();
+      setStep('process');
     } catch {
       setError('Failed to connect wallet');
     }
@@ -126,10 +129,9 @@ export default function TestPaymentPage() {
             {!isConnected ? (
               <button
                 onClick={handleConnectWallet}
-                disabled={isConnectLoading}
-                className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
-                {isConnectLoading ? 'Connecting...' : 'Connect Wallet'}
+                Connect Wallet
               </button>
             ) : (
               <div className="space-y-4">
@@ -156,6 +158,7 @@ export default function TestPaymentPage() {
               <h3 className="font-medium text-green-700 mb-2">Payment Intent Created</h3>
               <p className="text-sm">Payment Intent ID: {result.paymentIntent.id}</p>
               <p className="text-sm">Amount: {result.fee} {result.currency}</p>
+              <p className="text-sm">Wallet Address: {address?.slice(0, 6)}...{address?.slice(-4)}</p>
             </div>
             <button
               onClick={() => {
@@ -174,8 +177,6 @@ export default function TestPaymentPage() {
             <p className="text-sm text-red-700">{error}</p>
           </div>
         )}
-
-        <Web3Modal {...web3ModalConfig} />
       </div>
     </WagmiConfig>
   );

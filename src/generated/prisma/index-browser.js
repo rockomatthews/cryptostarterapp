@@ -222,6 +222,18 @@ exports.Prisma.TransactionLogScalarFieldEnum = {
   campaignId: 'campaignId'
 };
 
+exports.Prisma.PaymentIntentScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  currency: 'currency',
+  description: 'description',
+  walletAddress: 'walletAddress',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -330,6 +342,15 @@ exports.Prisma.TransactionLogOrderByRelevanceFieldEnum = {
   campaignId: 'campaignId'
 };
 
+exports.Prisma.PaymentIntentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  currency: 'currency',
+  description: 'description',
+  walletAddress: 'walletAddress',
+  status: 'status',
+  userId: 'userId'
+};
+
 
 exports.Prisma.ModelName = {
   Account: 'Account',
@@ -340,7 +361,8 @@ exports.Prisma.ModelName = {
   Media: 'Media',
   Social: 'Social',
   Contribution: 'Contribution',
-  TransactionLog: 'TransactionLog'
+  TransactionLog: 'TransactionLog',
+  PaymentIntent: 'PaymentIntent'
 };
 
 /**

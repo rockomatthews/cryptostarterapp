@@ -1,17 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
-import { useAccount, useDisconnect } from 'wagmi';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { solanaConfig } from '@/lib/web3Config';
 import { testCampaignFee, SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoApi';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { WagmiProvider } from 'wagmi';
-import { config } from '@/lib/web3Config';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
+import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 
 interface Cryptocurrency {
   value: string;
@@ -26,34 +24,36 @@ interface PaymentResult {
 }
 
 // Group cryptocurrencies by their wallet type
-const ETHEREUM_BASED = ['ETH', 'MATIC', 'BNB', 'AVAX', 'UNI', 'LINK'];
 const SOLANA_BASED = ['SOL'];
-const BITCOIN_BASED = ['BTC', 'LTC'];
 
 function TestPaymentContent() {
   const { data: session } = useSession();
-  const { address: ethAddress, isConnected: isEthConnected } = useAccount();
-  const { publicKey: solAddress } = useWallet();
-  const { open: openWeb3Modal } = useWeb3Modal();
-  const { disconnect } = useDisconnect();
+  const { publicKey: solAddress, connect: connectSolanaWallet } = useWallet();
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string>('');
+  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
 
   const handleConnectWallet = async () => {
     try {
-      if (ETHEREUM_BASED.includes(selectedCurrency)) {
-        await openWeb3Modal();
-      } else if (SOLANA_BASED.includes(selectedCurrency)) {
-        // Solana wallet connection is handled by the WalletModalProvider
-        // The connect button will trigger the wallet modal automatically
-      } else if (BITCOIN_BASED.includes(selectedCurrency)) {
-        // For Bitcoin-based chains, we'll use CryptoProcessing's built-in wallet
-        // No need for external wallet connection
+      if (SOLANA_BASED.includes(selectedCurrency)) {
+        // Connect Solana wallet
+        await connectSolanaWallet();
+        if (solAddress) {
+          setWalletAddress(solAddress.toString());
+          setIsWalletConnected(true);
+        }
       } else {
-        // For other chains, we'll use CryptoProcessing's built-in wallet
-        // No need for external wallet connection
+        // For all other currencies, use CryptoProcessing's built-in wallet
+        // In a real implementation, this would integrate with CryptoProcessing's API
+        // For now, we'll use a simple input
+        const address = prompt(`Please enter your ${selectedCurrency} address:`);
+        if (address) {
+          setWalletAddress(address);
+          setIsWalletConnected(true);
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to connect wallet');
@@ -65,22 +65,8 @@ function TestPaymentContent() {
       setIsLoading(true);
       setError(null);
 
-      let walletAddress = '';
-      
-      if (ETHEREUM_BASED.includes(selectedCurrency)) {
-        if (!ethAddress) {
-          throw new Error('Please connect your Ethereum wallet first');
-        }
-        walletAddress = ethAddress;
-      } else if (SOLANA_BASED.includes(selectedCurrency)) {
-        if (!solAddress) {
-          throw new Error('Please connect your Solana wallet first');
-        }
-        walletAddress = solAddress.toString();
-      } else {
-        // For Bitcoin and other chains, we'll use a placeholder
-        // The actual wallet will be handled by CryptoProcessing
-        walletAddress = 'crypto-processing-wallet';
+      if (!walletAddress) {
+        throw new Error(`Please connect your ${selectedCurrency} wallet first`);
       }
 
       const response = await testCampaignFee({
@@ -96,16 +82,9 @@ function TestPaymentContent() {
     }
   };
 
-  const isWalletConnected = () => {
-    if (ETHEREUM_BASED.includes(selectedCurrency)) {
-      return isEthConnected;
-    } else if (SOLANA_BASED.includes(selectedCurrency)) {
-      return !!solAddress;
-    } else {
-      // For Bitcoin and other chains, we consider them "connected" by default
-      // as they'll use CryptoProcessing's built-in wallet
-      return true;
-    }
+  const handleDisconnectWallet = () => {
+    setWalletAddress('');
+    setIsWalletConnected(false);
   };
 
   if (!session) {
@@ -149,7 +128,7 @@ function TestPaymentContent() {
               <button
                 onClick={() => {
                   setSelectedCurrency('');
-                  if (isEthConnected) disconnect();
+                  handleDisconnectWallet();
                 }}
                 className="text-blue-500 hover:text-blue-600"
               >
@@ -157,7 +136,7 @@ function TestPaymentContent() {
               </button>
             </div>
 
-            {!isWalletConnected() ? (
+            {!isWalletConnected ? (
               <button
                 onClick={handleConnectWallet}
                 className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600"
@@ -169,11 +148,7 @@ function TestPaymentContent() {
                 <div className="p-4 bg-green-50 text-green-600 rounded-lg">
                   <p className="font-medium">Wallet Connected!</p>
                   <p className="text-sm">
-                    {ETHEREUM_BASED.includes(selectedCurrency) 
-                      ? `Address: ${ethAddress?.slice(0, 6)}...${ethAddress?.slice(-4)}`
-                      : SOLANA_BASED.includes(selectedCurrency)
-                      ? `Address: ${solAddress?.toString().slice(0, 6)}...${solAddress?.toString().slice(-4)}`
-                      : 'Using CryptoProcessing wallet'}
+                    Address: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                   </p>
                 </div>
 
@@ -209,18 +184,25 @@ function TestPaymentContent() {
 
 export default function TestPaymentPage() {
   const queryClient = new QueryClient();
+  
+  // Define Solana wallets
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+    ],
+    []
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={config}>
-        <ConnectionProvider endpoint={solanaConfig.endpoint}>
-          <WalletProvider wallets={solanaConfig.wallets} autoConnect>
-            <WalletModalProvider>
-              <TestPaymentContent />
-            </WalletModalProvider>
-          </WalletProvider>
-        </ConnectionProvider>
-      </WagmiProvider>
+      <ConnectionProvider endpoint={solanaConfig.endpoint}>
+        <WalletProvider wallets={wallets} autoConnect>
+          <WalletModalProvider>
+            <TestPaymentContent />
+          </WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
     </QueryClientProvider>
   );
 } 

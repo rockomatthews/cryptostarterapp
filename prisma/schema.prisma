@@ -153,6 +153,7 @@ model PaymentIntent {
   amount             Float
   currency           String
   description        String?
+  walletAddress      String
   userId             String
   status             String
   paymentId          String   @unique

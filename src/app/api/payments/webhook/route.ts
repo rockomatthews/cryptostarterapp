@@ -1,38 +1,45 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyIpnSignature } from '@/lib/nowPaymentsApi';
+import { verifyWebhookSignature } from '@/lib/cryptoProcessingApi';
 
 export async function POST(request: Request) {
   try {
-    const payload = await request.json();
-    const signature = request.headers.get('x-nowpayments-sig');
-
+    const signature = request.headers.get('x-signature');
     if (!signature) {
       return NextResponse.json(
         { error: 'Missing signature' },
-        { status: 400 }
+        { status: 401 }
       );
     }
 
-    // Verify the signature
-    if (!verifyIpnSignature(payload, signature)) {
+    const payload = await request.text();
+    
+    // Verify webhook signature
+    const isValid = verifyWebhookSignature(payload, signature);
+    if (!isValid) {
       return NextResponse.json(
         { error: 'Invalid signature' },
-        { status: 400 }
+        { status: 401 }
       );
     }
 
-    // Update payment intent status in database
-    const paymentIntent = await prisma.paymentIntent.update({
+    const data = JSON.parse(payload);
+    const { paymentId, status } = data;
+
+    // Update payment intent status
+    await prisma.paymentIntent.update({
       where: {
-        paymentId: payload.payment_id.toString(),
+        paymentId,
       },
       data: {
-        status: payload.payment_status,
-        apiResponse: JSON.stringify(payload),
+        status,
+        apiResponse: JSON.stringify(data),
         updatedAt: new Date(),
       },
     });
+
+    // If payment is successful, you can trigger additional actions here
+    // For example, update campaign status, send notifications, etc.
 
     return NextResponse.json({ success: true });
   } catch (error) {

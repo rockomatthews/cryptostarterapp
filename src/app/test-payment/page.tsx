@@ -3,8 +3,8 @@
 import { useState, useMemo } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { solanaConfig } from '@/lib/web3Config';
-import { testCampaignFee, SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoApi';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoProcessingApi';
+import { ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
@@ -13,6 +13,7 @@ import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 interface Cryptocurrency {
   value: string;
   label: string;
+  network: string;
 }
 
 interface PaymentResult {
@@ -21,7 +22,7 @@ interface PaymentResult {
   amount: number;
   currency: string;
   paymentUrl: string;
-  payAddress?: string;
+  payAddress: string;
 }
 
 function TestPaymentContent() {
@@ -31,6 +32,7 @@ function TestPaymentContent() {
       signIn();
     },
   });
+  const { publicKey, connected } = useWallet();
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
@@ -45,11 +47,37 @@ function TestPaymentContent() {
         throw new Error('Please sign in to continue');
       }
 
-      const response = await testCampaignFee({
-        currency: selectedCurrency
+      if (!connected || !publicKey) {
+        throw new Error('Please connect your wallet to continue');
+      }
+
+      const response = await fetch('/api/payments/create-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: 10, // Fixed amount for test payments
+          currency: selectedCurrency,
+          description: 'Test Payment',
+          walletAddress: publicKey.toString(),
+        }),
       });
 
-      setResult(response);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create payment');
+      }
+
+      const data = await response.json();
+      setResult({
+        success: true,
+        paymentIntentId: data.id,
+        amount: data.amount,
+        currency: data.currency,
+        paymentUrl: data.paymentUrl,
+        payAddress: data.walletAddress,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -90,6 +118,15 @@ function TestPaymentContent() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Test Payment</h1>
 
+        {!connected && (
+          <div className="p-4 bg-yellow-50 text-yellow-600 rounded-lg mb-6">
+            <p className="font-medium">Wallet Not Connected</p>
+            <p className="text-sm mt-1">
+              Please connect your wallet to make a test payment.
+            </p>
+          </div>
+        )}
+
         {!selectedCurrency ? (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Select Currency</h2>
@@ -102,6 +139,7 @@ function TestPaymentContent() {
                 >
                   <span className="font-medium">{crypto.label}</span>
                   <span className="block text-sm text-gray-500">{crypto.value}</span>
+                  <span className="block text-xs text-gray-400">{crypto.network}</span>
                 </button>
               ))}
             </div>
@@ -127,13 +165,13 @@ function TestPaymentContent() {
               <p className="font-medium">Test Payment Information</p>
               <p className="text-sm mt-1">
                 Click the button below to generate a payment address for {selectedCurrency}.
-                You&apos;ll be redirected to NOWPayments to complete the payment.
+                The payment will be sent to your connected wallet address.
               </p>
             </div>
 
             <button
               onClick={handleTestPayment}
-              disabled={isLoading}
+              disabled={isLoading || !connected}
               className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
             >
               {isLoading ? 'Generating Payment...' : 'Generate Payment Address'}
@@ -149,12 +187,10 @@ function TestPaymentContent() {
               <div className="p-4 bg-green-50 text-green-600 rounded-lg">
                 <h3 className="font-semibold">Payment Address Generated!</h3>
                 <p className="mt-2">Amount: {result.amount} {result.currency}</p>
-                {result.payAddress && (
-                  <div className="mt-2">
-                    <p className="font-medium">Payment Address:</p>
-                    <p className="text-sm break-all bg-white p-2 rounded mt-1">{result.payAddress}</p>
-                  </div>
-                )}
+                <div className="mt-2">
+                  <p className="font-medium">Payment Address:</p>
+                  <p className="text-sm break-all bg-white p-2 rounded mt-1">{result.payAddress}</p>
+                </div>
                 <div className="mt-4">
                   <a 
                     href={result.paymentUrl} 

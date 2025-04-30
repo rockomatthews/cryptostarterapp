@@ -5,6 +5,7 @@ import ThemeRegistry from '../lib/ThemeRegistry';
 import Navbar from '../components/Navbar';
 import AuthProvider from '../components/AuthProvider';
 import { logoFont } from '../lib/fonts';
+import '@solana/wallet-adapter-react-ui/styles.css';
 
 // Import fonts using the Next.js font system
 const geistSans = Geist({

@@ -5,7 +5,7 @@ import { useSession, signIn } from 'next-auth/react';
 import { solanaConfig } from '@/lib/web3Config';
 import { SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoProcessingApi';
 import { ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
+import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
@@ -134,6 +134,9 @@ function TestPaymentContent() {
             <p className="text-sm mt-1">
               Please connect your wallet to make a test payment.
             </p>
+            <div className="mt-4">
+              <WalletMultiButton />
+            </div>
           </div>
         )}
 

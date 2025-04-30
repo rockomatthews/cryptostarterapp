@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
-import { SUPPORTED_CRYPTOCURRENCIES, createPayment, connectWallet } from '@/lib/cryptoProcessingApi';
+import { SUPPORTED_CRYPTOCURRENCIES, createPayment } from '@/lib/cryptoProcessingApi';
 
 interface Cryptocurrency {
   value: string;
@@ -54,8 +54,23 @@ function TestPaymentContent() {
         throw new Error('Please select a currency first');
       }
 
-      // Connect wallet using Crypto APIs
-      const connection = await connectWallet(cryptoInfo.network);
+      // Connect wallet through our backend API
+      const response = await fetch('/api/wallet/connect', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          network: cryptoInfo.network
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to connect wallet');
+      }
+
+      const connection = await response.json();
       
       setWalletConnection({
         address: connection.address,

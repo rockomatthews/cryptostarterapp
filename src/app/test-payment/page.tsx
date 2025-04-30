@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { solanaConfig } from '@/lib/web3Config';
 import { SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoProcessingApi';
@@ -9,6 +9,7 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 
 interface Cryptocurrency {
   value: string;
@@ -32,11 +33,21 @@ function TestPaymentContent() {
       signIn();
     },
   });
-  const { publicKey, connected } = useWallet();
+  const { publicKey, connected, connecting } = useWallet();
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (connecting) {
+      setError('Connecting to wallet...');
+    } else if (!connected && !connecting) {
+      setError('Please connect your wallet to continue');
+    } else {
+      setError(null);
+    }
+  }, [connected, connecting]);
 
   const handleTestPayment = async () => {
     try {
@@ -216,8 +227,8 @@ export default function TestPaymentPage() {
   // Define Solana wallets with proper configuration
   const wallets = useMemo(
     () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
+      new PhantomWalletAdapter({ network: WalletAdapterNetwork.Mainnet }),
+      new SolflareWalletAdapter({ network: WalletAdapterNetwork.Mainnet }),
     ],
     []
   );

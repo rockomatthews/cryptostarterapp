@@ -1,20 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoProcessingApi';
-import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react';
+import { createWeb3Modal, defaultWagmiConfig, useWeb3Modal } from '@web3modal/wagmi/react';
 import { WagmiConfig, useAccount } from 'wagmi';
 import { mainnet, polygon, bsc, avalanche } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Configure chains & projectId
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';
-const chains = [mainnet, polygon, bsc, avalanche];
-const wagmiConfig = defaultWagmiConfig({ chains, projectId });
+const metadata = {
+  name: 'CryptoStarter',
+  description: 'CryptoStarter App',
+  url: 'https://cryptostarter.app',
+  icons: ['https://cryptostarter.app/icon.png']
+};
+
+const wagmiConfig = defaultWagmiConfig({
+  chains: [mainnet, polygon, bsc, avalanche],
+  projectId,
+  metadata
+});
 
 // Create modal
-createWeb3Modal({ wagmiConfig, projectId, chains });
+createWeb3Modal({ wagmiConfig, projectId });
 
 interface Cryptocurrency {
   value: string;
@@ -39,10 +49,21 @@ function TestPaymentContent() {
     },
   });
   const { address, isConnected } = useAccount();
+  const { open } = useWeb3Modal();
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isConnected && address) {
+      // Sign in with wallet when connected
+      signIn('wallet', {
+        walletAddress: address,
+        redirect: false,
+      });
+    }
+  }, [isConnected, address, signIn]);
 
   const handleTestPayment = async () => {
     try {
@@ -125,7 +146,12 @@ function TestPaymentContent() {
         <h1 className="text-3xl font-bold mb-8">Test Payment</h1>
 
         <div className="mb-6">
-          <w3m-button />
+          <button
+            onClick={() => open()}
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          >
+            {isConnected ? 'Connected' : 'Connect Wallet'}
+          </button>
         </div>
 
         {!selectedCurrency ? (

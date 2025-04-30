@@ -10,7 +10,7 @@ const isBuildTime = typeof window === 'undefined' &&
                     process.env.VERCEL_ENV === 'development');
 
 // Logging helper
-const logAuthInfo = (message: string, data?: any) => {
+const logAuthInfo = (message: string, data?: unknown) => {
   console.log(`[NextAuth] ${message}`, data || '');
 };
 
@@ -68,20 +68,31 @@ export const authOptions: NextAuthOptions = {
         const prisma = getPrismaForAuth();
         if (!prisma) return null;
 
-        const user = await prisma.user.upsert({
-          where: { walletAddress: credentials.walletAddress },
-          update: {},
-          create: {
-            walletAddress: credentials.walletAddress,
-            name: `Wallet ${credentials.walletAddress.slice(0, 6)}...${credentials.walletAddress.slice(-4)}`,
-          },
-        });
+        try {
+          const user = await prisma.user.upsert({
+            where: { 
+              walletAddresses: {
+                has: credentials.walletAddress
+              }
+            },
+            update: {},
+            create: {
+              walletAddresses: [credentials.walletAddress],
+              name: `Wallet ${credentials.walletAddress.slice(0, 6)}...${credentials.walletAddress.slice(-4)}`,
+              email: `${credentials.walletAddress}@wallet.local`,
+            },
+          });
 
-        return {
-          id: user.id,
-          name: user.name,
-          walletAddress: user.walletAddress,
-        };
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            walletAddresses: user.walletAddresses,
+          };
+        } catch (error) {
+          console.error('Error in wallet auth:', error);
+          return null;
+        }
       },
     }),
   ],
@@ -111,9 +122,17 @@ export const authOptions: NextAuthOptions = {
     return PrismaAdapter(prisma);
   })(),
   callbacks: {
-    session: async ({ session, user }) => {
-      if (session?.user && user?.id) {
-        session.user.id = user.id;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.walletAddresses = user.walletAddresses;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.walletAddresses = token.walletAddresses as string[];
       }
       return session;
     },

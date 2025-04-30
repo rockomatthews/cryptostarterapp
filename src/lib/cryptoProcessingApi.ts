@@ -36,6 +36,11 @@ interface PaymentResponse {
   status: string;
 }
 
+interface WalletConnection {
+  address: string;
+  network: string;
+}
+
 const cryptoApisClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -211,5 +216,29 @@ export function verifyWebhookSignature(payload: string, signature: string) {
   } catch (error) {
     console.error('Error verifying webhook signature:', error);
     return false;
+  }
+}
+
+/**
+ * Connect to a wallet using Crypto APIs
+ */
+export async function connectWallet(network: string): Promise<WalletConnection> {
+  try {
+    const response = await cryptoApisClient.post(`/blockchain-tools/${network}/wallets/connect`, {
+      context: 'Wallet connection',
+      data: {
+        item: {
+          network
+        }
+      }
+    });
+
+    return {
+      address: response.data.data.item.address,
+      network: response.data.data.item.network
+    };
+  } catch (error) {
+    console.error('Error connecting wallet:', error);
+    throw new Error('Failed to connect wallet');
   }
 } 

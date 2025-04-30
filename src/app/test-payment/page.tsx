@@ -1,30 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
-import { SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoProcessingApi';
-import { createWeb3Modal, defaultWagmiConfig, useWeb3Modal } from '@web3modal/wagmi/react';
-import { WagmiConfig, useAccount } from 'wagmi';
-import { mainnet, polygon, bsc, avalanche } from 'wagmi/chains';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-// Configure chains & projectId
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';
-const metadata = {
-  name: 'CryptoStarter',
-  description: 'CryptoStarter App',
-  url: 'https://cryptostarter.app',
-  icons: ['https://cryptostarter.app/icon.png']
-};
-
-const wagmiConfig = defaultWagmiConfig({
-  chains: [mainnet, polygon, bsc, avalanche],
-  projectId,
-  metadata
-});
-
-// Create modal
-createWeb3Modal({ wagmiConfig, projectId });
+import { SUPPORTED_CRYPTOCURRENCIES, createPayment, connectWallet } from '@/lib/cryptoProcessingApi';
 
 interface Cryptocurrency {
   value: string;
@@ -41,6 +19,12 @@ interface PaymentResult {
   payAddress: string;
 }
 
+interface WalletConnection {
+  address: string;
+  network: string;
+  isConnected: boolean;
+}
+
 function TestPaymentContent() {
   const { data: session, status } = useSession({
     required: true,
@@ -48,22 +32,48 @@ function TestPaymentContent() {
       signIn();
     },
   });
-  const { address, isConnected } = useAccount();
-  const { open } = useWeb3Modal();
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [walletConnection, setWalletConnection] = useState<WalletConnection>({
+    address: '',
+    network: '',
+    isConnected: false
+  });
+  const [isConnecting, setIsConnecting] = useState(false);
 
-  useEffect(() => {
-    if (isConnected && address) {
+  const handleConnectWallet = async () => {
+    try {
+      setIsConnecting(true);
+      setError(null);
+
+      // Get network info for selected currency
+      const cryptoInfo = SUPPORTED_CRYPTOCURRENCIES.find(c => c.value === selectedCurrency);
+      if (!cryptoInfo) {
+        throw new Error('Please select a currency first');
+      }
+
+      // Connect wallet using Crypto APIs
+      const connection = await connectWallet(cryptoInfo.network);
+      
+      setWalletConnection({
+        address: connection.address,
+        network: connection.network,
+        isConnected: true
+      });
+
       // Sign in with wallet when connected
       signIn('wallet', {
-        walletAddress: address,
+        walletAddress: connection.address,
         redirect: false,
       });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to connect wallet');
+    } finally {
+      setIsConnecting(false);
     }
-  }, [isConnected, address, signIn]);
+  };
 
   const handleTestPayment = async () => {
     try {
@@ -74,36 +84,24 @@ function TestPaymentContent() {
         throw new Error('Please sign in to continue');
       }
 
-      if (!isConnected || !address) {
+      if (!walletConnection.isConnected || !walletConnection.address) {
         throw new Error('Please connect your wallet to continue');
       }
 
-      const response = await fetch('/api/payments/create-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: 10, // Fixed amount for test payments
-          currency: selectedCurrency,
-          description: 'Test Payment',
-          walletAddress: address,
-        }),
+      const response = await createPayment({
+        amount: 10, // Fixed amount for test payments
+        currency: selectedCurrency,
+        description: 'Test Payment',
+        walletAddress: walletConnection.address,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create payment');
-      }
-
-      const data = await response.json();
       setResult({
         success: true,
-        paymentIntentId: data.id,
-        amount: data.amount,
-        currency: data.currency,
-        paymentUrl: data.paymentUrl,
-        payAddress: data.walletAddress,
+        paymentIntentId: response.paymentId,
+        amount: response.amount,
+        currency: response.currency,
+        paymentUrl: response.paymentUrl,
+        payAddress: response.payAddress,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -145,15 +143,6 @@ function TestPaymentContent() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Test Payment</h1>
 
-        <div className="mb-6">
-          <button
-            onClick={() => open()}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-          >
-            {isConnected ? 'Connected' : 'Connect Wallet'}
-          </button>
-        </div>
-
         {!selectedCurrency ? (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Select Currency</h2>
@@ -181,11 +170,34 @@ function TestPaymentContent() {
                 onClick={() => {
                   setSelectedCurrency('');
                   setResult(null);
+                  setWalletConnection({
+                    address: '',
+                    network: '',
+                    isConnected: false
+                  });
                 }}
                 className="text-blue-500 hover:text-blue-600"
               >
                 Change
               </button>
+            </div>
+
+            <div className="mb-6">
+              {!walletConnection.isConnected ? (
+                <button
+                  onClick={handleConnectWallet}
+                  disabled={isConnecting}
+                  className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                >
+                  {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+                </button>
+              ) : (
+                <div className="p-4 bg-green-50 text-green-600 rounded-lg">
+                  <p className="font-medium">Wallet Connected</p>
+                  <p className="text-sm mt-1 break-all">{walletConnection.address}</p>
+                  <p className="text-xs mt-1">Network: {walletConnection.network}</p>
+                </div>
+              )}
             </div>
 
             <div className="p-4 bg-blue-50 text-blue-600 rounded-lg">
@@ -198,7 +210,7 @@ function TestPaymentContent() {
 
             <button
               onClick={handleTestPayment}
-              disabled={isLoading || !isConnected}
+              disabled={isLoading || !walletConnection.isConnected}
               className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
             >
               {isLoading ? 'Generating Payment...' : 'Generate Payment Address'}
@@ -238,13 +250,5 @@ function TestPaymentContent() {
 }
 
 export default function TestPaymentPage() {
-  const queryClient = new QueryClient();
-
-  return (
-    <WagmiConfig config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <TestPaymentContent />
-      </QueryClientProvider>
-    </WagmiConfig>
-  );
+  return <TestPaymentContent />;
 } 

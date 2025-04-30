@@ -7,7 +7,6 @@ import { SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoProcessingApi';
 import { ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 
@@ -227,7 +226,6 @@ export default function TestPaymentPage() {
   // Define Solana wallets with proper configuration
   const wallets = useMemo(
     () => [
-      new PhantomWalletAdapter({ network: WalletAdapterNetwork.Mainnet }),
       new SolflareWalletAdapter({ network: WalletAdapterNetwork.Mainnet }),
     ],
     []

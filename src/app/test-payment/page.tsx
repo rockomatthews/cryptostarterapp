@@ -1,14 +1,20 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
-import { solanaConfig } from '@/lib/web3Config';
 import { SUPPORTED_CRYPTOCURRENCIES } from '@/lib/cryptoProcessingApi';
-import { ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
-import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react';
+import { WagmiConfig, useAccount } from 'wagmi';
+import { mainnet, polygon, bsc, avalanche } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+
+// Configure chains & projectId
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';
+const chains = [mainnet, polygon, bsc, avalanche];
+const wagmiConfig = defaultWagmiConfig({ chains, projectId });
+
+// Create modal
+createWeb3Modal({ wagmiConfig, projectId, chains });
 
 interface Cryptocurrency {
   value: string;
@@ -32,21 +38,11 @@ function TestPaymentContent() {
       signIn();
     },
   });
-  const { publicKey, connected, connecting } = useWallet();
+  const { address, isConnected } = useAccount();
   const [selectedCurrency, setSelectedCurrency] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<PaymentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (connecting) {
-      setError('Connecting to wallet...');
-    } else if (!connected && !connecting) {
-      setError('Please connect your wallet to continue');
-    } else {
-      setError(null);
-    }
-  }, [connected, connecting]);
 
   const handleTestPayment = async () => {
     try {
@@ -57,7 +53,7 @@ function TestPaymentContent() {
         throw new Error('Please sign in to continue');
       }
 
-      if (!connected || !publicKey) {
+      if (!isConnected || !address) {
         throw new Error('Please connect your wallet to continue');
       }
 
@@ -70,7 +66,7 @@ function TestPaymentContent() {
           amount: 10, // Fixed amount for test payments
           currency: selectedCurrency,
           description: 'Test Payment',
-          walletAddress: publicKey.toString(),
+          walletAddress: address,
         }),
       });
 
@@ -128,17 +124,9 @@ function TestPaymentContent() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Test Payment</h1>
 
-        {!connected && (
-          <div className="p-4 bg-yellow-50 text-yellow-600 rounded-lg mb-6">
-            <p className="font-medium">Wallet Not Connected</p>
-            <p className="text-sm mt-1">
-              Please connect your wallet to make a test payment.
-            </p>
-            <div className="mt-4">
-              <WalletMultiButton />
-            </div>
-          </div>
-        )}
+        <div className="mb-6">
+          <w3m-button />
+        </div>
 
         {!selectedCurrency ? (
           <div className="space-y-4">
@@ -184,7 +172,7 @@ function TestPaymentContent() {
 
             <button
               onClick={handleTestPayment}
-              disabled={isLoading || !connected}
+              disabled={isLoading || !isConnected}
               className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
             >
               {isLoading ? 'Generating Payment...' : 'Generate Payment Address'}
@@ -225,24 +213,12 @@ function TestPaymentContent() {
 
 export default function TestPaymentPage() {
   const queryClient = new QueryClient();
-  
-  // Define Solana wallets with proper configuration
-  const wallets = useMemo(
-    () => [
-      new SolflareWalletAdapter({ network: WalletAdapterNetwork.Mainnet }),
-    ],
-    []
-  );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ConnectionProvider endpoint={solanaConfig.endpoint}>
-        <WalletProvider wallets={wallets} autoConnect>
-          <WalletModalProvider>
-            <TestPaymentContent />
-          </WalletModalProvider>
-        </WalletProvider>
-      </ConnectionProvider>
-    </QueryClientProvider>
+    <WagmiConfig config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <TestPaymentContent />
+      </QueryClientProvider>
+    </WagmiConfig>
   );
 } 

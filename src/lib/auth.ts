@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "../generated/prisma";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 // Detect build time vs runtime
 const isBuildTime = typeof window === 'undefined' && 
@@ -53,6 +54,35 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
+    CredentialsProvider({
+      id: 'wallet',
+      name: 'Wallet',
+      credentials: {
+        walletAddress: { label: "Wallet Address", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.walletAddress) return null;
+        
+        // Create or get user based on wallet address
+        const prisma = getPrismaForAuth();
+        if (!prisma) return null;
+
+        const user = await prisma.user.upsert({
+          where: { walletAddress: credentials.walletAddress },
+          update: {},
+          create: {
+            walletAddress: credentials.walletAddress,
+            name: `Wallet ${credentials.walletAddress.slice(0, 6)}...${credentials.walletAddress.slice(-4)}`,
+          },
+        });
+
+        return {
+          id: user.id,
+          name: user.name,
+          walletAddress: user.walletAddress,
+        };
+      },
     }),
   ],
   // Use dynamic adapter to avoid build-time issues

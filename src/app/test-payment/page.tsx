@@ -60,6 +60,7 @@ function TestPaymentContent() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           network: cryptoInfo.network
         }),

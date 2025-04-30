@@ -54,6 +54,15 @@ function TestPaymentContent() {
         throw new Error('Please select a currency first');
       }
 
+      // Ensure we have a valid session
+      if (!session?.user) {
+        console.log('No session found, attempting to sign in...');
+        await signIn();
+        return;
+      }
+
+      console.log('Attempting to connect wallet with session:', session);
+
       // Connect wallet through our backend API
       const response = await fetch('/api/wallet/connect', {
         method: 'POST',
@@ -68,10 +77,12 @@ function TestPaymentContent() {
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('Wallet connection error:', errorData);
         throw new Error(errorData.error || 'Failed to connect wallet');
       }
 
       const connection = await response.json();
+      console.log('Wallet connection successful:', connection);
       
       setWalletConnection({
         address: connection.address,
@@ -80,11 +91,14 @@ function TestPaymentContent() {
       });
 
       // Sign in with wallet when connected
-      signIn('wallet', {
+      const walletSignInResult = await signIn('wallet', {
         walletAddress: connection.address,
         redirect: false,
       });
+
+      console.log('Wallet sign in result:', walletSignInResult);
     } catch (err) {
+      console.error('Error in handleConnectWallet:', err);
       setError(err instanceof Error ? err.message : 'Failed to connect wallet');
     } finally {
       setIsConnecting(false);

@@ -18,11 +18,14 @@ export async function POST(request: Request) {
       return new NextResponse(null, { headers });
     }
 
+    // Get session with detailed error logging
     const session = await getServerSession(authOptions);
+    console.log('Session in wallet connect:', session);
     
     if (!session?.user?.id) {
+      console.error('No valid session found in wallet connect');
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - Please sign in again' },
         { 
           status: 401,
           headers
@@ -31,6 +34,7 @@ export async function POST(request: Request) {
     }
 
     const { network } = await request.json();
+    console.log('Network in wallet connect:', network);
 
     if (!network) {
       return NextResponse.json(
@@ -42,13 +46,24 @@ export async function POST(request: Request) {
       );
     }
 
-    const connection = await connectWallet(network);
-
-    return NextResponse.json(connection, { headers });
+    try {
+      const connection = await connectWallet(network);
+      console.log('Wallet connection successful:', connection);
+      return NextResponse.json(connection, { headers });
+    } catch (error) {
+      console.error('Error in connectWallet:', error);
+      return NextResponse.json(
+        { error: 'Failed to connect wallet - Please try again' },
+        { 
+          status: 500,
+          headers
+        }
+      );
+    }
   } catch (error) {
-    console.error('Error connecting wallet:', error);
+    console.error('Error in wallet connect route:', error);
     return NextResponse.json(
-      { error: 'Failed to connect wallet' },
+      { error: 'Internal server error' },
       { 
         status: 500,
         headers: {
